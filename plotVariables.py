@@ -150,19 +150,19 @@ def MET(l1, l2, hist, totalWeight):
 
 def leading_DeltaR(l1, l2, hist, totalWeight):
 
-    hist.Fill(calculateDeltaR(l1, l1, b = False))
+    hist.Fill(calculateDeltaR(l1, l1, b = False), totalWeight)
 
 def leading_DeltaR_b(l1, l2, hist, totalWeight):
 
-    hist.Fill(calculateDeltaR(l1, l1, b = True))
+    hist.Fill(calculateDeltaR(l1, l1, b = True), totalWeight)
 
 def subleading_DeltaR(l1, l2, hist, totalWeight):
 
-    hist.Fill(calculateDeltaR(l1, l2, b = False))
+    hist.Fill(calculateDeltaR(l1, l2, b = False), totalWeight)
 
 def subleading_DeltaR_b(l1, l2, hist, totalWeight):
 
-    hist.Fill(calculateDeltaR(l1, l2, b = True))
+    hist.Fill(calculateDeltaR(l1, l2, b = True), totalWeight)
 
 def Zmass(l1, l2, hist, totalWeight):
 
