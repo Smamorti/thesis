@@ -1,5 +1,5 @@
 import ROOT
-from plotVariables import plotVariables as lepton
+from plotVariables import lepton
 from plotVariables import goodJet
 from plotVariables import diLeptonMass
 import plotVariables

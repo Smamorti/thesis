@@ -1,7 +1,7 @@
 import numpy as np
 import ROOT
 
-class plotVariables:
+class lepton:
 
 
     def __init__(self, tree, nLight, checknJets = True):
