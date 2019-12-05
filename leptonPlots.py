@@ -11,8 +11,8 @@ import makeHists, plot
 # stack = "task1_2017.stack" 
 # conf = "tuples_2017.conf"
 
-stack = "newSkim_2018.stack"
-conf = "tuples_2018_newSkim.conf"
+stack = "samples/newSkim_2018.stack"
+conf = "samples/tuples_2018_newSkim.conf"
 
 year = stack.split("_")[1].rstrip(".stack")
 print("Using files from " + year)
