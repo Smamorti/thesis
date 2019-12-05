@@ -113,10 +113,9 @@ def passEta(tree, _nLight):
 
 def passLeptonCuts(tree, _nLight):
 
-#    if (tree._leptonMvatZqTTV[_nLight] > 0.4
 #        and tree._lIsPrompt[_nLight]
     if (tree._leptonMvatZq[_nLight] > 0.4 
-       and tree._lPt[_nLight] > 10
+       and tree._lPt[_nLight] > 20
         and tree._lPOGLoose[_nLight]
         and passEta(tree, _nLight)
         ):
@@ -140,19 +139,23 @@ def twoPromptLeptons(tree, nLight):
             return False
 
     if nPrompt == 2:
+        
+        # check leading lepton pt requirement
 
-        # Check OSSF requirement
+        if tree._lPt[promptIds[0]] > 30:
+            
+            # Check OSSF requirement
 
-        if tree._lFlavor[promptIds[0]] == tree._lFlavor[promptIds[1]] and tree._lCharge[promptIds[0]] == -1 * tree._lCharge[promptIds[1]]:
+            if tree._lFlavor[promptIds[0]] == tree._lFlavor[promptIds[1]] and tree._lCharge[promptIds[0]] == -1 * tree._lCharge[promptIds[1]]:
 
-            #check mll requirement
-            lepton1 = lepton(tree, promptIds[0]) # put other properties in this class as well?              
-            lepton2 = lepton(tree, promptIds[1], checknJets = False)
+                #check mll requirement
+                lepton1 = lepton(tree, promptIds[0]) # put other properties in this class as well?              
+                lepton2 = lepton(tree, promptIds[1], checknJets = False)
 
-            if 81 < diLeptonMass(lepton1, lepton2) < 101:
+                if 81 < diLeptonMass(lepton1, lepton2) < 101:
 
-                return lepton1, lepton2
-    
+                    return lepton1, lepton2
+
     return False
 
 
@@ -195,7 +198,7 @@ def fillHist(f, xSec, histList, plotList, histZMass, year, seperateZ = False, hi
         
         # to quickly test the program
 
-#        progress += 1 # To stop testing, just comment this line out. Maybe have it as an argument or so?
+        progress += 1 # To stop testing, just comment this line out. Maybe have it as an argument or so?
 
         if progress / float(count) > 0.01:
             
