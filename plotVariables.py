@@ -126,17 +126,11 @@ def m_ll(l1, l2, hist, totalWeight):
     
 def flavComp(l1, l2, hist, totalWeight):
 
-    # left out because of OSSF requirement
-
-    # if plotVariables.lFlavor(l1) != plotVariables.lFlavor(l2): #muon and electron
-
-    #     hist.Fill(1, totalWeight)
-
-    if plotVariables.lFlavor(l1) == 0: #mumu
+    if plotVariables.lFlavor(l1) == 0: #ee
 
         hist.Fill(0, totalWeight)
 
-    else:
+    else: #mumu
 
         hist.Fill(1, totalWeight)
 

@@ -103,7 +103,9 @@ def passEta(tree, _nLight):
 
         return False
 
-    if tree._lFlavor[_nLight] == 1:
+    if tree._lFlavor[_nLight] == 0:
+
+        # electron case
 
         if np.absolute(tree._lEta[_nLight]) > 2.4:
 
