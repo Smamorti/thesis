@@ -21,13 +21,6 @@ def fillSubCanvas(subCanvas, hist, xlabel, leg, title = None, logscale = 1):
     subCanvas.Update()
     
 
-#
-# Idee: write function to fill subcanvas, such that we only give the desired hist and titles etc for a certain subcanvas
-# In the end: provide x label by using the tex list gotten in leptonplots.py?
-#
-
-
-
 def plot(plotList, histList, leg,title =  "", logscale = 1, histList_nonZ = None, titleNotZ = None, logNotZ = 1, year = "2018"):
 
     for i in range(len(plotList)):
