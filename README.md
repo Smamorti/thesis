@@ -20,3 +20,4 @@
 - Work on the naming of programs and functions
 - Finish `cutflow.py` script
 - Reconstruct W and top mass
+- Fix the amount of jets: two of the jets are actually the two leptons!
