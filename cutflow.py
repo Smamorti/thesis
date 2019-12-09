@@ -22,40 +22,93 @@ class cuts:
 
     def lMVA(self):
 
-        n = 0
+        validnLight = []
 
-        for i in range(self.nLight):
+        for i in self.nLight:
 
-            if self.tree._lPt[i] > 20:
+            if self.tree._leptonMvatZq[i] > 0.4:
 
-                n += 1
+                validnLight.append(i)
 
-            if n >= 2:
+        if len(validnLight) >= 2:
 
-                return True
+            return True, validnLight
 
-        return False
+        return False, validnLight
 
     def twoPtLeptons(self):
 
-        n20 = 0
+        validnLight = []
         n30 = 0
 
-        for i in range(self.nLight):
+        for i in self.nLight:
 
             if self.tree._lPt[i] > 20:
 
-                n20 += 1
+                validnLight.append(i)
 
                 if self.tree._lPt[i] > 30:
 
                     n30 += 1
 
-            if n20 >= 2 and n30 >= 1:
+        if len(validnLight) >= 2 and n30 >= 1:
 
-                return True
+            return True, validnLight
 
-        return False
+        return False, validnLight
+
+    def lPogLoose(self):
+
+        validnLight = []
+
+        for i in self.nLight:
+
+            if self.tree._lPOGLoose[i]:
+
+                validnLight.append(i)
+
+        if len(validnLight) >= 2:
+
+            return True, validnLight
+
+        return False, validnLight
+
+    def lEta(self):
+
+        validnLight = []
+
+        for i in self.nLight:
+
+            if np.absolute(self.tree._lEta[i]) <= 2.4:
+
+                validnLight.append(i)
+                
+            elif self.tree._lFlavor[i] == 1 and np.absolute(self.tree._lEta[i]) <= 2.5:
+                # other eta requirement for muons
+
+                validnLight.append(i)
+                
+        if len(validnLight) >= 2:
+
+            return True, validnLight
+
+        return False, validnLight
+
+    def twoOS(self):
+
+        # checks that there are at least one positively and one negatively charged lepton in the remaining selection
+
+        posNeg = np.ones(2)
+
+        for i in self.nLight:
+            
+            posNeg[self.tree._lFlavor[i]] = 0
+
+            if not np.any(posNeg):
+
+                return True, self.nLight
+
+        return False, self.nLight
 
 ###########################                                                                                                                                                                                
 ########## MAIN ###########                                                                                                                                                                               
@@ -82,7 +135,7 @@ def cutflow(f, xSec, year):
     weight, initialEvents = weight_TotalEvents(filename, xSec, lumi)
     tree = filename.Get("blackJackAndHookers/blackJackAndHookersTree")
 
-    cutList = ["lMVA", "twoPtLeptons"]
+    cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "twoOS"]
     counts = np.zeros(len(cutList))
     counts_w = np.zeros(len(cutList))
     
@@ -102,34 +155,24 @@ def cutflow(f, xSec, year):
             nLight = ord(tree._nLight)
             nJets = ord(tree._nJets)
 
-        event = cuts(tree, nLight)
+        event = cuts(tree, range(nLight))
 
         for i in range(len(cutList)):
 
-            if getattr(cuts, cutList[i])(event):
+            # from here on out, nLight is an array with all valid nLight values
+
+            validEvent, nLight = getattr(cuts, cutList[i])(event)
+
+            if validEvent:
 
                 counts[i] += 1
                 counts_w[i] += tree._weight * weight
+                event = cuts(tree, nLight)
+
 
             else:
                 
                 break
-
-        # if lMVA(tree, nLight):
-
-        #     afterMVA += 1
-        #     afterMVA_w += tree._weight * weight
-
-
-        #     if twoPtLeptons(tree, nLight):
-
-        #         lPt += 1
-        #         lPt_w += tree._weight * weight
-
-            # if lMVA(tree, nLight):
-
-            #     afterMVA += 1
-            #     afterMVA_w += tree._weight * weight
                 
     counts = np.insert(counts, 0, tree.GetEntries())
     counts_w = np.insert(counts_w, 0, initialEvents)
