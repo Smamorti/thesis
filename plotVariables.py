@@ -94,27 +94,27 @@ class lepton:
 
 def leading_leptonMVA(l1, l2, hist, totalWeight):
 
-    hist.Fill(plotVariables.leptonMVA(l1), totalWeight)
+    hist.Fill(lepton.leptonMVA(l1), totalWeight)
 
 def subleading_leptonMVA(l1, l2, hist, totalWeight):
 
-    hist.Fill(plotVariables.leptonMVA(l2), totalWeight)
+    hist.Fill(lepton.leptonMVA(l2), totalWeight)
 
 def leading_lPt(l1, l2, hist, totalWeight):
 
-    hist.Fill(plotVariables.lPt(l1), totalWeight)
+    hist.Fill(lepton.lPt(l1), totalWeight)
 
 def subleading_lPt(l1, l2, hist, totalWeight):
 
-    hist.Fill(plotVariables.lPt(l2), totalWeight)
+    hist.Fill(lepton.lPt(l2), totalWeight)
 
 def leading_lEta(l1, l2, hist, totalWeight):
 
-    hist.Fill(np.absolute(plotVariables.lEta(l1)), totalWeight)
+    hist.Fill(np.absolute(lepton.lEta(l1)), totalWeight)
     
 def subleading_lEta(l1, l2, hist, totalWeight):
 
-    hist.Fill(np.absolute(plotVariables.lEta(l2)), totalWeight)
+    hist.Fill(np.absolute(lepton.lEta(l2)), totalWeight)
 
 def nJets(l1, l2, hist, totalWeight):
 
@@ -126,7 +126,7 @@ def m_ll(l1, l2, hist, totalWeight):
     
 def flavComp(l1, l2, hist, totalWeight):
 
-    if plotVariables.lFlavor(l1) == 0: #ee
+    if lepton.lFlavor(l1) == 0: #ee
 
         hist.Fill(0, totalWeight)
 
@@ -140,7 +140,7 @@ def nbJets(l1, l2, hist, totalWeight):
 
 def MET(l1, l2, hist, totalWeight):
 
-    hist.Fill(plotVariables.MET(l1), totalWeight)
+    hist.Fill(lepton.MET(l1), totalWeight)
 
 def leading_DeltaR(l1, l2, hist, totalWeight):
 
@@ -161,7 +161,7 @@ def subleading_DeltaR_b(l1, l2, hist, totalWeight):
 def Zmass(l1, l2, hist, totalWeight):
 
 
-    if plotVariables.lMomPdg(l1) == 23 and plotVariables.lMomPdg(l2) == 23:
+    if lepton.lMomPdg(l1) == 23 and lepton.lMomPdg(l2) == 23:
 
         hist.Fill(diLeptonMass(l1, l2), totalWeight)
         
@@ -199,7 +199,7 @@ def countbJets(l1):
 
     return nbjets
 
-def calculateDeltaR(l1, lepton, b = False):
+def calculateDeltaR(l1, lep, b = False):
 
     DeltaR = 1000
     jets = l1.goodJets
@@ -210,8 +210,8 @@ def calculateDeltaR(l1, lepton, b = False):
         
     for jet in jets:
 
-        D_phi = l1.tree._jetPhi[jet] - plotVariables.lPhi(lepton)
-        D_eta = l1.tree._jetEta[jet] - plotVariables.lEta(lepton)
+        D_phi = l1.tree._jetPhi[jet] - lepton.lPhi(lep)
+        D_eta = l1.tree._jetEta[jet] - lepton.lEta(lep)
         
         D_r = np.sqrt(D_phi**2 + D_eta**2)
         DeltaR = np.minimum(D_r, DeltaR)
@@ -223,8 +223,8 @@ def diLeptonMass(l1, l2):
     vec1 = ROOT.Math.PtEtaPhiEVector()
     vec2 = ROOT.Math.PtEtaPhiEVector()
 
-    vec1.SetCoordinates(plotVariables.lPt(l1), plotVariables.lEta(l1), plotVariables.lPhi(l1), plotVariables.lE(l1))
-    vec2.SetCoordinates(plotVariables.lPt(l2), plotVariables.lEta(l2), plotVariables.lPhi(l2), plotVariables.lE(l2))
+    vec1.SetCoordinates(lepton.lPt(l1), lepton.lEta(l1), lepton.lPhi(l1), lepton.lE(l1))
+    vec2.SetCoordinates(lepton.lPt(l2), lepton.lEta(l2), lepton.lPhi(l2), lepton.lE(l2))
 
     vec1 += vec2
 
