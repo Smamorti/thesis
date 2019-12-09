@@ -35,7 +35,7 @@ def plot(plotList, histList, leg,title =  "", logscale = 1, histList_nonZ = None
         if titleNotZ:
 
             c = makeCanvas(2, 1)
-            filename = "Hist_comp_{}_{}".format(year, plotList[i])
+            filename = "plots/Hist_comp_{}_{}".format(year, plotList[i])
             p1 = c.cd(1)
             fillSubCanvas(p1, histList[-1][i], plotList[i], leg, title, logscale)
             p2 = c.cd(2)
@@ -46,7 +46,7 @@ def plot(plotList, histList, leg,title =  "", logscale = 1, histList_nonZ = None
         else: 
             
             c = makeCanvas(1, 1)
-            filename = "Hist_{}_{}".format(year, plotList[i])
+            filename = "plots/Hist_{}_{}".format(year, plotList[i])
             fillSubCanvas(c, histList[-1][i], plotList[i], leg, title, logscale)
             c.SaveAs(filename + ".pdf")
             c.SaveAs(filename + ".png")

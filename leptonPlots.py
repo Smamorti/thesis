@@ -41,7 +41,7 @@ histZMassList = makeHists.fillTList(channels_stack, ["Z mass"], [(50, 0, 180)], 
 #
 
 for i in range(len(files)):
-
+#for i in range(1, 2):
     f = TFile.Open(files[i])
     print("Working on file number {}".format(i))
     print(files[i])

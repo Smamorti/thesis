@@ -15,10 +15,11 @@ import numpy as np
 
 class cuts:
 
-    def __init__(self, tree, nLight):
+    def __init__(self, tree, nLight, nJets):
 
         self.tree = tree
         self.nLight = nLight
+        self.nJets = nJets
 
     def lMVA(self):
 
@@ -32,9 +33,9 @@ class cuts:
 
         if len(validnLight) >= 2:
 
-            return True, validnLight
+            return True, validnLight, self.nJets
 
-        return False, validnLight
+        return False, validnLight, self.nJets
 
     def twoPtLeptons(self):
 
@@ -53,9 +54,9 @@ class cuts:
 
         if len(validnLight) >= 2 and n30 >= 1:
 
-            return True, validnLight
+            return True, validnLight, self.nJets
 
-        return False, validnLight
+        return False, validnLight, self.nJets
 
     def lPogLoose(self):
 
@@ -69,9 +70,9 @@ class cuts:
 
         if len(validnLight) >= 2:
 
-            return True, validnLight
+            return True, validnLight, self.nJets
 
-        return False, validnLight
+        return False, validnLight, self.nJets
 
     def lEta(self):
 
@@ -90,25 +91,74 @@ class cuts:
                 
         if len(validnLight) >= 2:
 
-            return True, validnLight
+            return True, validnLight, self.nJets
 
-        return False, validnLight
+        return False, validnLight, self.nJets
 
     def twoOS(self):
 
         # checks that there are at least one positively and one negatively charged lepton in the remaining selection
 
         posNeg = np.ones(2)
-
+        
+    
         for i in self.nLight:
             
-            posNeg[self.tree._lFlavor[i]] = 0
+            # 0 is charge -1, 1 is charge 1
+            position = 0 if self.tree._lCharge[i] == -1 else 1
+            posNeg[position] = 0
 
             if not np.any(posNeg):
 
-                return True, self.nLight
+                return True, self.nLight, self.nJets
 
-        return False, self.nLight
+        return False, self.nLight, self.nJets
+
+    def njets(self):
+
+        validJets = []
+
+        for i in self.nJets:
+
+            if goodJet(self.tree, i):
+
+                validJets.append(i)
+
+        if len(validJets) > 5:
+
+            return True, self.nLight, validJets
+
+        return False, self.nLight, validJets
+
+    def nbjets(self):
+
+        # this function assumes that you FIRST applied the njets cut, which is the logical order
+
+        validbjets = []
+
+        for i in self.nJets:
+
+            if self.tree._jetDeepCsv_b[i] > 0.4941:
+
+                validbjets.append(i)
+
+        if validbjets:
+
+            return True, self.nLight, validbjets
+
+        return False, self.nLight, validbjets
+
+def goodJet(tree, j):
+
+    if (tree._jetIsTight[j]
+        and tree._jetPt[j] > 30
+        and np.absolute(tree._jetEta[j]) < 2.4
+        ):
+
+        return True
+
+    return False
+
 
 ###########################                                                                                                                                                                                
 ########## MAIN ###########                                                                                                                                                                               
@@ -135,7 +185,7 @@ def cutflow(f, xSec, year):
     weight, initialEvents = weight_TotalEvents(filename, xSec, lumi)
     tree = filename.Get("blackJackAndHookers/blackJackAndHookersTree")
 
-    cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "twoOS"]
+    cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "twoOS", "njets", "nbjets"]# "twoOS"]#"nbjets", "twoOS"]
     counts = np.zeros(len(cutList))
     counts_w = np.zeros(len(cutList))
     
@@ -155,19 +205,19 @@ def cutflow(f, xSec, year):
             nLight = ord(tree._nLight)
             nJets = ord(tree._nJets)
 
-        event = cuts(tree, range(nLight))
+        event = cuts(tree, range(nLight), range(nJets))
 
         for i in range(len(cutList)):
 
             # from here on out, nLight is an array with all valid nLight values
 
-            validEvent, nLight = getattr(cuts, cutList[i])(event)
+            validEvent, nLight, nJets = getattr(cuts, cutList[i])(event)
 
             if validEvent:
 
                 counts[i] += 1
                 counts_w[i] += tree._weight * weight
-                event = cuts(tree, nLight)
+                event = cuts(tree, nLight, nJets)
 
 
             else:
@@ -194,7 +244,7 @@ xSecs = xSecs.astype(float)
 
 
 cutflow("/user/mniedzie/Work/ntuples_ttz_2L_ttZ_2018/_ttZ_DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8_MiniAOD2018.root", xSecs[1], year)
-
+#cutflow("/user/mniedzie/Work/ntuples_ttz_2L_ttZ_2018/_ttZ_TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8_MiniAOD2018.root", xSecs[2], year)
 
 ###########################                                                                                                                                                                               
 ########## CUTS ###########                                                                                                                                                                               
