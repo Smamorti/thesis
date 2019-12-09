@@ -9,14 +9,57 @@ from plotVariables import diLeptonMass
 import plotVariables
 import numpy as np
 
-###########################                                                                                                                                                                                 
-########## CUTS ###########                                                                                                                                                                                 
-###########################                                                                                                                                                                                 
+###########################                                                                                                                                                                              
+########## CUTS ###########                                                                                                                                                                              
+###########################                                                                                                                                                                               
 
-def lMVA(tree, _nLight):
+class cuts:
 
-    return tree._leptonMvatZq[_nLight] > 0.4
+    def __init__(self, tree, nLight):
 
+        self.tree = tree
+        self.nLight = nLight
+
+    def lMVA(self):
+
+        n = 0
+
+        for i in range(self.nLight):
+
+            if self.tree._lPt[i] > 20:
+
+                n += 1
+
+            if n >= 2:
+
+                return True
+
+        return False
+
+    def twoPtLeptons(self):
+
+        n20 = 0
+        n30 = 0
+
+        for i in range(self.nLight):
+
+            if self.tree._lPt[i] > 20:
+
+                n20 += 1
+
+                if self.tree._lPt[i] > 30:
+
+                    n30 += 1
+
+            if n20 >= 2 and n30 >= 1:
+
+                return True
+
+        return False
+
+###########################                                                                                                                                                                                
+########## MAIN ###########                                                                                                                                                                               
+###########################
 
 
 def weight_TotalEvents(filename, xSec, lumi = 59.74):
@@ -39,8 +82,9 @@ def cutflow(f, xSec, year):
     weight, initialEvents = weight_TotalEvents(filename, xSec, lumi)
     tree = filename.Get("blackJackAndHookers/blackJackAndHookersTree")
 
-    afterMVA = 0
-    afterMVA_w = 0
+    cutList = ["lMVA", "twoPtLeptons"]
+    counts = np.zeros(len(cutList))
+    counts_w = np.zeros(len(cutList))
     
     for _ in tree:
 
@@ -58,21 +102,40 @@ def cutflow(f, xSec, year):
             nLight = ord(tree._nLight)
             nJets = ord(tree._nJets)
 
+        event = cuts(tree, nLight)
 
-        for i in range(nLight):
+        for i in range(len(cutList)):
 
-            if not lMVA(tree, i):
+            if getattr(cuts, cutList[i])(event):
+
+                counts[i] += 1
+                counts_w[i] += tree._weight * weight
+
+            else:
+                
                 break
-            
-            if i == nLight - 1:
-                afterMVA += 1
-                afterMVA_w += tree._weight * weight
 
-    print(tree.GetEntries())
-    print(initialEvents)
-    print(afterMVA)    
-    print(afterMVA_w)
+        # if lMVA(tree, nLight):
 
+        #     afterMVA += 1
+        #     afterMVA_w += tree._weight * weight
+
+
+        #     if twoPtLeptons(tree, nLight):
+
+        #         lPt += 1
+        #         lPt_w += tree._weight * weight
+
+            # if lMVA(tree, nLight):
+
+            #     afterMVA += 1
+            #     afterMVA_w += tree._weight * weight
+                
+    counts = np.insert(counts, 0, tree.GetEntries())
+    counts_w = np.insert(counts_w, 0, initialEvents)
+
+    print(counts)
+    print(counts_w)
 
 stack = "samples/newSkim_2018.stack"
 conf = "samples/tuples_2018_newSkim.conf"
