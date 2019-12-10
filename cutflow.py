@@ -148,6 +148,41 @@ class cuts:
 
         return False, self.nLight, validbjets
 
+    def justTwoLeptons(self):
+
+        # if at this point there are more than two leptons remaining, discard the event!
+        # note that this does assume you applied all other leptons cuts beforehand!
+        # the previous cuts already eliminate the events with less than two leptons, so we don't have to worry about those!
+
+        if len(self.nLight) > 2:
+
+            return False, self.nLight, self.nJets
+
+        return True, self.nLight, self.nJets
+
+    def twoSF(self):
+
+        # this assumes that there already are only 2 leptons left!
+
+        if self.tree._lFlavor[self.nLight[0]] == self.tree._lFlavor[self.nLight[1]]:
+
+            return True, self.nLight, self.nJets
+
+        return False, self.nLight, self.nJets
+
+    def onZ(self):
+
+        #check mll requirement          
+
+        lepton1 = lepton(self.tree, self.nLight[0], checknJets = False)    
+        lepton2 = lepton(self.tree, self.nLight[1], checknJets = False)
+
+        if 81 < diLeptonMass(lepton1, lepton2) < 101:
+
+            return True, self.nLight, self.nJets
+
+        return False, self.nLight, self.nJets
+
 def goodJet(tree, j):
 
     if (tree._jetIsTight[j]
@@ -185,7 +220,7 @@ def cutflow(f, xSec, year):
     weight, initialEvents = weight_TotalEvents(filename, xSec, lumi)
     tree = filename.Get("blackJackAndHookers/blackJackAndHookersTree")
 
-    cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "twoOS", "njets", "nbjets"]# "twoOS"]#"nbjets", "twoOS"]
+    cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "twoOS", "njets", "nbjets", "justTwoLeptons", "twoSF", "onZ"]
     counts = np.zeros(len(cutList))
     counts_w = np.zeros(len(cutList))
     
