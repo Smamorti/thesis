@@ -184,9 +184,13 @@ class cuts:
 
 
 ###########################                                                                                                                                                                                
-########## MAIN ###########                                                                                                                                                                               
+######## UTILITIES ########                                                                                                                                                                          
 ###########################
 
+
+def writeToFile(f, array, delimiter = "&"):
+
+    np.savetxt(f, np.array(array).T, delimiter = delimiter, fmt = "%s")
 
 def weight_TotalEvents(filename, xSec, lumi = 59.74):
 
@@ -196,7 +200,7 @@ def weight_TotalEvents(filename, xSec, lumi = 59.74):
 
     return 1000 * xSec * lumi / totalEvents, totalEvents
 
-def cutflow(f, xSec, year):
+def cutflow(f, xSec, cutList, year):
 
     filename = ROOT.TFile.Open(f)
 
@@ -208,11 +212,25 @@ def cutflow(f, xSec, year):
     weight, initialEvents = weight_TotalEvents(filename, xSec, lumi)
     tree = filename.Get("blackJackAndHookers/blackJackAndHookersTree")
 
-    cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "twoOS", "njets", "nbjets", "justTwoLeptons", "twoSF", "onZ"]
-    counts = np.zeros(len(cutList))
-    counts_w = np.zeros(len(cutList))
+    counts = list(np.zeros(len(cutList)))
+    counts_w = list(np.zeros(len(cutList)))
     
+    # counts = [0 for _ in cutList]
+    # counts_w = [0 for _ in cutList]
+
+    progress = 0
+    entries = tree.GetEntries()
+
+
     for _ in tree:
+
+        progress += 1 # To stop testing, just comment this line out. Maybe have it as an argument or so?
+
+        if progress / float(entries) > 0.01:
+
+            break
+
+
 
         if type(tree._nL) == int:
 
@@ -250,8 +268,20 @@ def cutflow(f, xSec, year):
     counts = np.insert(counts, 0, tree.GetEntries())
     counts_w = np.insert(counts_w, 0, initialEvents)
 
+    # counts.insert(0, tree.GetEntries())
+    # counts_w.insert(0, initialEvents)
+
     print(counts)
     print(counts_w)
+
+    filename.Close()
+
+    return counts, counts_w
+
+###########################                                                                                                                                                                                
+########## MAIN ###########                                                                                                                                                                             
+###########################                                                                                                                                                                               
+
 
 stack = "samples/newSkim_2018.stack"
 conf = "samples/tuples_2018_newSkim.conf"
@@ -265,7 +295,39 @@ channels_conf, files, xSecs = np.loadtxt(conf, comments = "%", unpack = True, dt
 
 xSecs = xSecs.astype(float)
 
+cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "twoOS", "njets", "nbjets", "justTwoLeptons", "twoSF", "onZ"]
 
-cutflow("/user/mniedzie/Work/ntuples_ttz_2L_ttZ_2018/_ttZ_DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8_MiniAOD2018.root", xSecs[1], year)
+cutflowList = []
+
+targetFile = open("cutflowResults/cutflowAllFiles.txt", "a")
+
+for i in range(len(files)):
+
+    f = files[i]
+    print("Working on file number {}".format(i))
+    print(f)
+    print(channels_stack[i])
+    events, weighted_events = cutflow(f, xSecs[i], cutList, year = year)
+
+#    writeToFile(targetFile, events)
+#    writeToFile(targetFile, weighted_events)
+
+    cutflowList.append(events)
+    cutflowList.append(weighted_events)
+
+print(cutflowList)
+
+cutflowList = np.around(cutflowList, 2).astype(str)
+print(cutflowList)
+for i in range(cutflowList.shape[0]):
+    for j in range(cutflowList.shape[1]):
+
+        cutflowList[i,j] = cutflowList[i,j].rstrip(".0")
+
+print(cutflowList)
+
+writeToFile("cutflowResults/cutflowAllFiles.txt", cutflowList, delimiter = "&")
+
+#cutflow("/user/mniedzie/Work/ntuples_ttz_2L_ttZ_2018/_ttZ_DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8_MiniAOD2018.root", xSecs[1], year)
 #cutflow("/user/mniedzie/Work/ntuples_ttz_2L_ttZ_2018/_ttZ_TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8_MiniAOD2018.root", xSecs[2], year)
 
