@@ -6,7 +6,6 @@ import ROOT
 from plotVariables import lepton
 from plotVariables import goodJet
 from plotVariables import diLeptonMass
-import plotVariables
 import numpy as np
 
 ###########################                                                                                                                                                                              
@@ -183,17 +182,6 @@ class cuts:
 
         return False, self.nLight, self.nJets
 
-def goodJet(tree, j):
-
-    if (tree._jetIsTight[j]
-        and tree._jetPt[j] > 30
-        and np.absolute(tree._jetEta[j]) < 2.4
-        ):
-
-        return True
-
-    return False
-
 
 ###########################                                                                                                                                                                                
 ########## MAIN ###########                                                                                                                                                                               
@@ -281,10 +269,3 @@ xSecs = xSecs.astype(float)
 cutflow("/user/mniedzie/Work/ntuples_ttz_2L_ttZ_2018/_ttZ_DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8_MiniAOD2018.root", xSecs[1], year)
 #cutflow("/user/mniedzie/Work/ntuples_ttz_2L_ttZ_2018/_ttZ_TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8_MiniAOD2018.root", xSecs[2], year)
 
-###########################                                                                                                                                                                               
-########## CUTS ###########                                                                                                                                                                               
-###########################
-
-def lMVA(tree, nLight):
-
-    return tree._leptonMvatZq[_nLight] > 0.4
