@@ -7,7 +7,6 @@ from plotVariables import lepton
 from plotVariables import goodJet
 from plotVariables import diLeptonMass
 import numpy as np
-
 ###########################                                                                                                                                                                              
 ########## CUTS ###########                                                                                                                                                                              
 ###########################                                                                                                                                                                               
@@ -215,8 +214,6 @@ def cutflow(f, xSec, cutList, year):
     counts = list(np.zeros(len(cutList)))
     counts_w = list(np.zeros(len(cutList)))
     
-    # counts = [0 for _ in cutList]
-    # counts_w = [0 for _ in cutList]
 
     progress = 0
     entries = tree.GetEntries()
@@ -224,7 +221,7 @@ def cutflow(f, xSec, cutList, year):
 
     for _ in tree:
 
-        progress += 1 # To stop testing, just comment this line out. Maybe have it as an argument or so?
+#        progress += 1 # To stop testing, just comment this line out. Maybe have it as an argument or so?
 
         if progress / float(entries) > 0.01:
 
@@ -268,11 +265,8 @@ def cutflow(f, xSec, cutList, year):
     counts = np.insert(counts, 0, tree.GetEntries())
     counts_w = np.insert(counts_w, 0, initialEvents)
 
-    # counts.insert(0, tree.GetEntries())
-    # counts_w.insert(0, initialEvents)
-
-    print(counts)
-    print(counts_w)
+    # print(counts)
+    # print(counts_w)
 
     filename.Close()
 
@@ -298,6 +292,7 @@ xSecs = xSecs.astype(float)
 cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "twoOS", "njets", "nbjets", "justTwoLeptons", "twoSF", "onZ"]
 
 cutflowList = []
+sources = [" "]
 
 targetFile = open("cutflowResults/cutflowAllFiles.txt", "a")
 
@@ -309,25 +304,29 @@ for i in range(len(files)):
     print(channels_stack[i])
     events, weighted_events = cutflow(f, xSecs[i], cutList, year = year)
 
-#    writeToFile(targetFile, events)
-#    writeToFile(targetFile, weighted_events)
+    sources.append(texList[i])
+    sources.append(texList[i] + "_weighted")
 
     cutflowList.append(events)
     cutflowList.append(weighted_events)
-
-print(cutflowList)
+    
 
 cutflowList = np.around(cutflowList, 2).astype(str)
-print(cutflowList)
+
 for i in range(cutflowList.shape[0]):
     for j in range(cutflowList.shape[1]):
 
-        cutflowList[i,j] = cutflowList[i,j].rstrip(".0")
+        if int(float(cutflowList[i,j])) == float(cutflowList[i,j]):
 
-print(cutflowList)
+            cutflowList[i,j] = cutflowList[i,j].replace(".0", "")
+
+
+
+cutList.insert(0,"Initial event count")
+
+cutflowList = np.insert(cutflowList, 0, cutList, axis = 0)
+cutflowList = np.insert(cutflowList, 0, sources, axis = 1)
+
+print(cutflowList.shape)
 
 writeToFile("cutflowResults/cutflowAllFiles.txt", cutflowList, delimiter = "&")
-
-#cutflow("/user/mniedzie/Work/ntuples_ttz_2L_ttZ_2018/_ttZ_DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8_MiniAOD2018.root", xSecs[1], year)
-#cutflow("/user/mniedzie/Work/ntuples_ttz_2L_ttZ_2018/_ttZ_TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8_MiniAOD2018.root", xSecs[2], year)
-
