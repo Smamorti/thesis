@@ -122,7 +122,7 @@ class cuts:
 
                 validJets.append(i)
 
-        if len(validJets) > 5:
+        if len(validJets) >= 5:
 
             return True, self.nLight, validJets
 
@@ -289,7 +289,9 @@ channels_conf, files, xSecs = np.loadtxt(conf, comments = "%", unpack = True, dt
 
 xSecs = xSecs.astype(float)
 
-cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "twoOS", "njets", "nbjets", "justTwoLeptons", "twoSF", "onZ"]
+#cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "twoOS", "njets", "nbjets", "justTwoLeptons", "twoSF", "onZ"]
+cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "njets", "nbjets", "twoSF", "onZ"]
+
 
 cutflowList = []
 sources = [" "]
