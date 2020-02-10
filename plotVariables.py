@@ -1,5 +1,6 @@
 import numpy as np
 import ROOT
+from  utilities import calculateWmass as W
 
 class lepton:
 
@@ -14,9 +15,9 @@ class lepton:
 
         if calcWmass:
 
-            w1, w2 = Wmass(l1)
-            self.leadingWmass = w1
-            self.subleadingWmass = w2
+            w1, w2 = W.Wmass(self)
+            self.bestWmass = w1
+            self.secondWmass = w2
 
     def countJets(self):
 
@@ -37,6 +38,14 @@ class lepton:
     def test(self):
 
         return self.nLight
+
+    def bestWmass(self):
+
+        return self.bestWmass
+
+    def secondWmass(self):
+
+        return self.secondWmass
 
     def lPt(self):
 
@@ -171,6 +180,13 @@ def Zmass(l1, l2, hist, totalWeight):
 
         hist.Fill(diLeptonMass(l1, l2), totalWeight)
         
+def bestW(l1, l2, hist, totalWeight):
+
+    hist.Fill(lepton.bestWmass(l1), totalWeight)
+
+def secondW(l1, l2, hist, totalWeight):
+
+    hist.Fill(lepton.secondWmass(l1), totalWeight)
 
         
 

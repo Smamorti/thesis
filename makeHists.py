@@ -240,7 +240,7 @@ def fillHist(f, xSec, histList, plotList, histZMass, year, seperateZ = False, hi
             #lepton1 = leptons[0] # put other properties in this class as well?
             #lepton2 = leptons[1] 
 
-            lepton1 = lepton(tree, leptons[0], checknJets = True)
+            lepton1 = lepton(tree, leptons[0], checknJets = True, calcWmass = True)
             lepton2 = lepton(tree, leptons[1], checknJets = False)
 
             for k in range(len(plotList)):
