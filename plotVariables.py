@@ -201,6 +201,9 @@ def countbJets(l1):
 
 def calculateDeltaR(l1, lep, b = False):
 
+    # The l1 is to access the jets
+    # The lep is the lepton for which we are calculating the DeltaR (leading=l1, subleading=l2)
+
     DeltaR = 1000
     jets = l1.goodJets
     

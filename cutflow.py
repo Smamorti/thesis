@@ -315,6 +315,8 @@ for i in range(len(files)):
 
 cutflowList = np.around(cutflowList, 2).astype(str)
 
+# Remove unneeded zeroes after the decimal point
+
 for i in range(cutflowList.shape[0]):
     for j in range(cutflowList.shape[1]):
 
