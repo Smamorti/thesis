@@ -20,9 +20,6 @@ def selectBest(massMatrix, jetAmount, skipids = {}):
             for j in range(i+1, jetAmount):
 
                 if j not in skipids:
-
-                    # print(skipids)
-                    # print("i: {}, j: {}".format(i, j))
                     
                     massDifference = np.abs(massMatrix[i,j] - Wmass_known)
 
