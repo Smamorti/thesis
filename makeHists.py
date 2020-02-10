@@ -4,7 +4,9 @@ from plotVariables import goodJet
 from plotVariables import diLeptonMass
 import plotVariables
 import numpy as np
+import time
 #from progressBar import progressbar
+
 
 def initializeHist(hist, name, nbins, llim, ulim):
 
@@ -151,17 +153,20 @@ def twoPromptLeptons(tree, nLight):
             if tree._lFlavor[promptIds[0]] == tree._lFlavor[promptIds[1]] and tree._lCharge[promptIds[0]] == -1 * tree._lCharge[promptIds[1]]:
 
                 #check mll requirement
-                lepton1 = lepton(tree, promptIds[0]) # put other properties in this class as well?              
+                lepton1 = lepton(tree, promptIds[0], checknJets = False) # put other properties in this class as well?              
                 lepton2 = lepton(tree, promptIds[1], checknJets = False)
 
                 if 81 < diLeptonMass(lepton1, lepton2) < 101:
 
-                    return lepton1, lepton2
+                    #return lepton1, lepton2
+                    return promptIds[0], promptIds[1]
 
     return False
 
 
 def fillHist(f, xSec, histList, plotList, histZMass, year, seperateZ = False, histListNotZ = None): 
+
+    start = time.time()
 
     if year == "2017":
         lumi = 41.53
@@ -230,9 +235,14 @@ def fillHist(f, xSec, histList, plotList, histZMass, year, seperateZ = False, hi
         if leptons:
             
             #lepList = [[], []]
-#            print(tree._lMomPdgId[promptIds[0]] == 23)
-            lepton1 = leptons[0] # put other properties in this class as well?
-            lepton2 = leptons[1] 
+            #print(tree._lMomPdgId[promptIds[0]] == 23
+
+            #lepton1 = leptons[0] # put other properties in this class as well?
+            #lepton2 = leptons[1] 
+
+            lepton1 = lepton(tree, leptons[0], checknJets = True)
+            lepton2 = lepton(tree, leptons[1], checknJets = False)
+
             for k in range(len(plotList)):
                     
                     # if seperateZ:
@@ -249,10 +259,13 @@ def fillHist(f, xSec, histList, plotList, histZMass, year, seperateZ = False, hi
                 hist = histList[k]
                     
                 getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
+
     for hist in histList:
 
         print(hist.GetEntries())
                 
+    print("Time elapsed: {} seconds".format((time.time() - start)))
+        
 
 def fillStacked( histList):
     

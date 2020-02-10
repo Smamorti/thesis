@@ -2,6 +2,8 @@ from ROOT import TFile, TH1F, TCanvas, TList, TColor, TLegend, THStack
 from ROOT import Math
 import ROOT
 import numpy as np
+import time
+
 
 import makeHists, plot
 
@@ -50,6 +52,7 @@ for i in range(len(files)):
     
     f.Close()
 
+start = time.time()
 
 makeHists.fillColor(histList, colorList)
 makeHists.fillStacked(histList)
@@ -85,3 +88,5 @@ leg = makeHists.makeLegend(texList, histList)
 
 plot.plot(plotList, histList, leg, year = year)
 plot.plot(plotList, histList, leg,title =  "No Logscale", logscale = 0, histList_nonZ = histList, titleNotZ = "Logscale", logNotZ = 1, year = year)
+
+print("Time elapsed: {} seconds".format((time.time() - start)))

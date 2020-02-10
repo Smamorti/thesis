@@ -4,13 +4,19 @@ import ROOT
 class lepton:
 
 
-    def __init__(self, tree, nLight, checknJets = True):
+    def __init__(self, tree, nLight, checknJets = True, calcWmass = False):
         self.tree = tree
         self.nLight = nLight
 
         if checknJets:
 
             self.goodJets = self.countJets()
+
+        if calcWmass:
+
+            w1, w2 = Wmass(l1)
+            self.leadingWmass = w1
+            self.subleadingWmass = w2
 
     def countJets(self):
 
