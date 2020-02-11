@@ -5,6 +5,7 @@ from plotVariables import diLeptonMass
 import plotVariables
 import numpy as np
 import time
+from cuts import cuts
 #from progressBar import progressbar
 
 
@@ -26,144 +27,6 @@ def calcWeight(filename, xSec, lumi = 41.53):
 
     return 1000 * xSec * lumi / totalEvents #times 1000 because cross section is given in picobarn and not in femtobarn!  
 
-
-def makeLeptonList(tree, gen_nL):
-
-    leptons = np.array([[[0, 0], [0, 0]],[[0, 0], [0, 0]],[[0, 0], [0, 0]]]) # gen leptons, naming is temporary
-
-    for g in range(gen_nL):
-
-
-        if tree._gen_lMomPdg[g] == 23:
-
-            if leptons[tree._gen_lFlavor[g],0,1] and not leptons[tree._gen_lFlavor[g],1,1]: # checks if there is already a charge for the first lepton of this flavor, and None for the second lepton   
-
-                if leptons[tree._gen_lFlavor[g],0,1] != tree._gen_lCharge[g]:
-
-                    leptons[tree._gen_lFlavor[g],1,0] = g #set number and charge of first lepton of this flavor                                                                                         
-                    leptons[tree._gen_lFlavor[g],1,1] = tree._gen_lCharge[g] #set number and charge of first lepton of this flavor                                                                      
-
-
-            else:
-                leptons[tree._gen_lFlavor[g],0,0] = g #set number and charge of first lepton of this flavor                                                                                             
-                leptons[tree._gen_lFlavor[g],0,1] = tree._gen_lCharge[g] #set number and charge of first lepton of this flavor                                                                          
-
-    return leptons
-
-
-
-def calcZMass(tree, leptonList):
-
-    invMass = 0
-
-    for j in range(3):
-        if leptonList[j,1,1]:
-            
-            a = leptonList[j,0,0]
-            b = leptonList[j,1,0]
-
-            vec1 = ROOT.Math.PtEtaPhiEVector()
-            vec2 = ROOT.Math.PtEtaPhiEVector()
-
-            vec1.SetCoordinates(tree._gen_lPt[a], tree._gen_lEta[a], tree._gen_lPhi[a], tree._gen_lE[a])
-            vec2.SetCoordinates(tree._gen_lPt[b], tree._gen_lEta[b], tree._gen_lPhi[b], tree._gen_lE[b])
-
-            vec1 += vec2
-            invMass = vec1.M()
-
-    return invMass # returns 0 if no invMass could be calculated
-
-def passJetCuts(tree, nJets):
-
-    if nJets < 5:
-        
-        return False
-
-    jetIds = []
-    bjetIds = []
-
-    for j in range(nJets):
-        
-        if goodJet(tree, j):
-
-            jetIds.append(j)
-
-            if tree._jetDeepCsv_b[j] > 0.4941:
-
-                bjetIds.append(j)
-
-        if len(jetIds) >= 5 and bjetIds:
-
-            return True
-
-    return False
-
-
-def passEta(tree, _nLight):
-
-    if np.absolute(tree._lEta[_nLight]) > 2.5:
-
-        return False
-
-    if tree._lFlavor[_nLight] == 0:
-
-        # electron case
-
-        if np.absolute(tree._lEta[_nLight]) > 2.4:
-
-            return False
-
-    return True
-
-def passLeptonCuts(tree, _nLight):
-
-#        and tree._lIsPrompt[_nLight]
-    if (tree._leptonMvatZq[_nLight] > 0.4 
-       and tree._lPt[_nLight] > 20
-        and tree._lPOGLoose[_nLight]
-        and passEta(tree, _nLight)
-        ):
-        return True
-    return False
-
-
-def twoPromptLeptons(tree, nLight):
-
-    nPrompt = 0
-    promptIds = []
-    for j in range(nLight):
-
-        if passLeptonCuts(tree, j):
-
-            nPrompt += 1
-            promptIds.append(j)
-
-        if nPrompt > 2:
-            
-            return False
-
-    if nPrompt == 2:
-        
-        # check leading lepton pt requirement
-
-        if tree._lPt[promptIds[0]] > 30:
-            
-            # Check OSSF requirement
-
-            if tree._lFlavor[promptIds[0]] == tree._lFlavor[promptIds[1]] and tree._lCharge[promptIds[0]] == -1 * tree._lCharge[promptIds[1]]:
-
-                #check mll requirement
-                lepton1 = lepton(tree, promptIds[0], checknJets = False) # put other properties in this class as well?              
-                lepton2 = lepton(tree, promptIds[1], checknJets = False)
-
-                if 81 < diLeptonMass(lepton1, lepton2) < 101:
-
-                    #return lepton1, lepton2
-                    return promptIds[0], promptIds[1]
-
-    return False
-
-
 def fillHist(f, xSec, histList, plotList, histZMass, year, seperateZ = False, histListNotZ = None): 
 
     start = time.time()
@@ -178,7 +41,6 @@ def fillHist(f, xSec, histList, plotList, histZMass, year, seperateZ = False, hi
     tree = f.Get("blackJackAndHookers/blackJackAndHookersTree")
     
     count = tree.GetEntries()
-
 
     #progressbar(range(count))
 
@@ -207,58 +69,37 @@ def fillHist(f, xSec, histList, plotList, histZMass, year, seperateZ = False, hi
 
         progress += 1 # To stop testing, just comment this line out. Maybe have it as an argument or so?
 
-        if progress / float(count) > 0.01:
+        if progress / float(count) > 0.05:
             
             break
-
-        # Calculate the Z mass using gen leptons
-        
-        # For now, skip calculation of Z mass using gen leptons
-
-        # leptons = makeLeptonList(tree, gen_nL)  
-        # invMass = calcZMass(tree, leptons)
-
-        # if invMass:
-            
-        #     #index [0] temporary?
-        #     histZMass[0].Fill(invMass, weight * tree._weight)
    
-
-        # maybe put some of this in a seperate function?
-
+        cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "njets", "nbjets", "twoSF", "onZ"]
         leptons = None
+        event = cuts(tree, range(nLight), range(nJets))
 
-        if passJetCuts(tree, nJets):
+        for i in range(len(cutList)):
 
-            leptons = twoPromptLeptons(tree, nLight)
+            # from here on out, nLight is an array with all valid nLight values                                                                                                                           
+   
+            validEvent, nLight, nJets = getattr(cuts, cutList[i])(event)
 
-        if leptons:
-            
-            #lepList = [[], []]
-            #print(tree._lMomPdgId[promptIds[0]] == 23
+            if validEvent:
 
-            #lepton1 = leptons[0] # put other properties in this class as well?
-            #lepton2 = leptons[1] 
+                event = cuts(tree, nLight, nJets)
+                
+                if i == len(cutList) - 1:
 
-            lepton1 = lepton(tree, leptons[0], checknJets = True, calcWmass = True)
-            lepton2 = lepton(tree, leptons[1], checknJets = False)
-
-            for k in range(len(plotList)):
+                    lepton1 = lepton(tree, nLight[0], checknJets = True, calcWmass = True, nJets = nJets)
+                    lepton2 = lepton(tree, nLight[1], checknJets = False)
                     
-                    # if seperateZ:
+                    for k in range(len(plotList)):
 
-                    #     # insert way to differentiate Z and non Z leptons
+                        hist = histList[k]
 
-                    #     if Z:
+                        getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
+            else:
 
-                    #         hist = histList[k]
-
-                    #     else:
-                    #         hist = histListNotZ[k]
-
-                hist = histList[k]
-                    
-                getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
+                break
 
     for hist in histList:
 

@@ -112,6 +112,8 @@ class cuts:
 
         return False, self.nLight, self.nJets
 
+    
+
     def njets(self):
 
         validJets = []
@@ -119,8 +121,24 @@ class cuts:
         for i in self.nJets:
 
             if goodJet(self.tree, i):
+                
+                # Now we implement the last good jet criterion, namely having DeltaR > 0.4 wrt the two prompt leptons
+                
+                for lep in self.nLight:
 
-                validJets.append(i)
+
+                    D_phi = self.tree._jetPhi[i] - self.tree._lPhi[lep]
+                    D_eta = self.tree._jetEta[i] - self.tree._lEta[lep]
+
+                    DeltaR = np.sqrt(D_phi**2 + D_eta**2)
+                    #print(DeltaR)
+                    if DeltaR < 0.4:
+                        
+                        break
+                    
+                    if lep == self.nLight[-1]:
+                        #print(DeltaR)
+                        validJets.append(i)
 
         if len(validJets) >= 5:
 
@@ -142,9 +160,9 @@ class cuts:
 
         if validbjets:
 
-            return True, self.nLight, validbjets
+            return True, self.nLight, self.nJets
 
-        return False, self.nLight, validbjets
+        return False, self.nLight, self.nJets
 
     def justTwoLeptons(self):
 

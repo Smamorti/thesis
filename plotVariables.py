@@ -6,13 +6,14 @@ from  utilities import calculateTopMass as top
 class lepton:
 
 
-    def __init__(self, tree, nLight, checknJets = True, calcWmass = False):
+    def __init__(self, tree, nLight, checknJets = True, calcWmass = False, nJets = []):
         self.tree = tree
         self.nLight = nLight
 
         if checknJets:
 
-            self.goodJets = self.countJets()
+            #self.goodJets = self.countJets()
+            self.goodJets = nJets
 
         if calcWmass:
 
