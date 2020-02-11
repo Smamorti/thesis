@@ -15,9 +15,11 @@ class lepton:
 
         if calcWmass:
 
-            w1, w2 = W.Wmass(self)
+            w1, w2, jetIds, jetVecs = W.Wmass(self)
             self.bestWmass = w1
             self.secondWmass = w2
+            self.jetIds = jetIds
+            self.jetVecs = jetVecs
 
     def countJets(self):
 

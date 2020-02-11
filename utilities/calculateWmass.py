@@ -45,29 +45,51 @@ def Wmass(lepton):
 
     # Loop over all jets, reconstruct invariant mass of every two-jet system
 
+    jetVecs = list()
+
+    for i in range(jetAmount):
+
+        jet = jets[i]
+        vec = ROOT.Math.PtEtaPhiEVector()
+        vec.SetCoordinates(tree._jetPt[jet], tree._jetEta[jet], tree._jetPhi[jet], tree._jetE[jet])
+        jetVecs.append(vec)
+
     for i in range(jetAmount):
 
         for j in range(i+1, jetAmount):
 
-            jet1 = jets[i]
-            jet2 = jets[j]
+            jet1 = jetVecs[i]
+            jet2 = jetVecs[j]
+            
+            jet2 += jet1
 
-            vec1 = ROOT.Math.PtEtaPhiEVector()
-            vec2 = ROOT.Math.PtEtaPhiEVector()
+            masses[i,j] = jet2.M()
 
-            vec1.SetCoordinates(tree._jetPt[jet1], tree._jetEta[jet1], tree._jetPhi[jet1], tree._jetE[jet1])
-            vec2.SetCoordinates(tree._jetPt[jet2], tree._jetEta[jet2], tree._jetPhi[jet2], tree._jetE[jet2])
+    # for i in range(jetAmount):
 
-            vec1 += vec2
+    #     for j in range(i+1, jetAmount):
 
-            masses[i,j] = vec1.M()
+    #         jet1 = jets[i]
+    #         jet2 = jets[j]
+
+    #         vec1 = ROOT.Math.PtEtaPhiEVector()
+    #         vec2 = ROOT.Math.PtEtaPhiEVector()
+
+    #         vec1.SetCoordinates(tree._jetPt[jet1], tree._jetEta[jet1], tree._jetPhi[jet1], tree._jetE[jet1])
+    #         vec2.SetCoordinates(tree._jetPt[jet2], tree._jetEta[jet2], tree._jetPhi[jet2], tree._jetE[jet2])
+
+    #         vec1 += vec2
+
+    #         masses[i,j] = vec1.M()
+    #         vectors[i,j] = vec1
 
     # Choose the two invariant masses which are closest resembling the W mass while originating from two different jet pairs
     # we do this by looping over the mass matrix, selecting the first mass, looping again and selecting the second mass
 
     bestWmass, j1, j2 = selectBest(masses, jetAmount)
-    secondWmass, _, _ = selectBest(masses, jetAmount, skipids = {j1, j2})
-
-    return bestWmass, secondWmass
+    secondWmass, j3, j4 = selectBest(masses, jetAmount, skipids = {j1, j2})
+    # print(j1, j2, j3, j4)
+    # print(masses)
+    return bestWmass, secondWmass, (j1, j2, j3, j4), jetVecs
     
 
