@@ -28,8 +28,8 @@ colorList = colorList.astype(int)
 xSecs = xSecs.astype(float)
 
 
-plotList = ["leading_lPt", "subleading_lPt", "leading_lEta", "subleading_lEta","nJets", "m_ll", "flavComp", "nbJets", "MET", "leading_DeltaR", "leading_DeltaR_b", "subleading_DeltaR", "subleading_DeltaR_b", "leading_leptonMVA", "subleading_leptonMVA", "bestW", "secondW"]#, "lEta", "m_ll", "nJets", "flavComp"] #also: nbjets, pt_Z
-binList = [(20, 0, 200), (20, 0, 200), (10, 0, 2.5), (10, 0, 2.5), (12, 0, 12), (10, 81, 101), (2, 0, 2), (5, 0, 5), (20, 0, 500), (20, 0, 5), (20, 0, 5), (20, 0, 5), (20, 0, 5), (20, -1, 1), (20, -1, 1), (20, 55, 105), (20, 55, 105)]#, (10, 0, 2.5), (20, 0, 500), (20, 0, 19), (3, 0, 2)] #also: nbjets, pt_Z
+plotList = ["leading_lPt", "subleading_lPt", "leading_lEta", "subleading_lEta","nJets", "m_ll", "flavComp", "nbJets", "MET", "leading_DeltaR", "leading_DeltaR_b", "subleading_DeltaR", "subleading_DeltaR_b", "leading_leptonMVA", "subleading_leptonMVA", "bestW", "secondW", "bestTop", "secondTop"]#, "lEta", "m_ll", "nJets", "flavComp"] #also: nbjets, pt_Z
+binList = [(20, 0, 200), (20, 0, 200), (10, 0, 2.5), (10, 0, 2.5), (12, 0, 12), (10, 81, 101), (2, 0, 2), (5, 0, 5), (20, 0, 500), (20, 0, 5), (20, 0, 5), (20, 0, 5), (20, 0, 5), (20, -1, 1), (20, -1, 1), (20, 55, 105), (20, 55, 105), (20, 168, 198), (20, 168, 198)]#, (10, 0, 2.5), (20, 0, 500), (20, 0, 19), (3, 0, 2)] #also: nbjets, pt_Z
 
 histList = makeHists.fillTList(channels_stack, plotList, binList)  
 

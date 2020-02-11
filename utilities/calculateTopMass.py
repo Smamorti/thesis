@@ -4,7 +4,7 @@ from selectionHelpers import countbJets
 
 topMass_known = 172.9
 
-def selectBest(massMatrix, bjetAmount, skipids = {}):
+def selectBest(massMatrix, bjetAmount, skipids = (None, None)):
 
     # This function loops over the mass matrix and selects the best match wrt the top quark mass.
     # For the second best match, some jetIds which should not be considered are also given as an input.
@@ -15,61 +15,69 @@ def selectBest(massMatrix, bjetAmount, skipids = {}):
 
     for i in range(2): # loops over the W masses, there are always two W's reconstructed
 
-        if i not in skipids:
+        if i != skipids[0]:
 
             for j in range(bjetAmount):
 
-                if j not in skipids:
+                if j != skipids[1]:
                     
-                    massDifference = np.abs(massMatrix[i,j] - topMass_known)
+                    # If the mass is zero, no suitable W-bjet pair was found in this instance!
+                    
+                    if int(massMatrix[i,j]) != 0:
 
-                    if massDifference  < diff:
+                        massDifference = np.abs(massMatrix[i,j] - topMass_known)
 
-                        diff = massDifference
+                        if massDifference < diff:
 
-                        W_id = i
-                        bjet_id = j
+                            diff = massDifference
 
+                            W_id = i
+                            bjet_id = j
 
-    return massMatrix[W_id,bjet_id], W_id, bjet_id
+    if W_id != None:
 
+        return massMatrix[W_id,bjet_id], W_id, bjet_id
+
+    return None, None, None
                     
 def topMass(lepton):
 
-    tree = lepton.tree
 
     bjets = countbJets(lepton)
     bjetAmount = len(bjets)
-    
+    jets = lepton.goodJets
+
     masses = np.zeros((2, bjetAmount))
+    
+    # Create a list with the W vectors in it; first W uses first two jets, second W second pair of jets
 
-    W_vecs = ROOT.TList([lepton.w1_vec, lepton.w2_vec])
+    wVecs = [lepton.jetVecs[lepton.WjetIds[0]] + lepton.jetVecs[lepton.WjetIds[1]], lepton.jetVecs[lepton.WjetIds[2]] + lepton.jetVecs[lepton.WjetIds[3]]]
 
-    # Loop over all bjets and W's, reconstruct invariant mass of every twobody system
+    # Loop over all bjets and W's, reconstruct invariant mass of every twobody system    
 
     for i in range(2):
 
         for j in range(bjetAmount):
 
             bjet_id = bjets[j]
+
+            # to pick the right jet, we have to find the according jetId AND make sure that we did not use it in the W mass calculation!
             
-            vec1 = W_vecs[i]
-            #vec1 = ROOT.Math.PtEtaPhiEVector()
-            vec2 = ROOT.Math.PtEtaPhiEVector()
+            jetId = jets.index(bjet_id)
+        
+            if jetId not in lepton.WjetIds:
 
-            #vec1.SetCoordinates(tree._jetPt[W_id], tree._jetEta[W_id], tree._jetPhi[W_id], tree._jetE[W_id])
-            vec2.SetCoordinates(tree._jetPt[bjet_id], tree._jetEta[bjet_id], tree._jetPhi[bjet_id], tree._jetE[bjet_id])
+                vec1 = wVecs[i]
+                vec1 += lepton.jetVecs[jetId]
 
-            vec1 += vec2
+                masses[i,j] = vec1.M()
 
-            masses[i,j] = vec1.M()
-
-    # Choose the two invariant masses which are closest resembling the W mass while originating from two different jet pairs
+    # Choose the (at most) two invariant masses which are closest resembling the top mass while originating from a W and a btagged jet
     # we do this by looping over the mass matrix, selecting the first mass, looping again and selecting the second mass
 
-    bestWmass, j1, j2 = selectBest(masses, jetAmount)
-    secondWmass, _, _ = selectBest(masses, jetAmount, skipids = {j1, j2})
+    bestTopMass, w1, bjet1 = selectBest(masses, bjetAmount)
+    secondTopMass, _, _ = selectBest(masses, bjetAmount, skipids = (w1, bjet1))
 
-    return bestWmass, secondWmass
+    return bestTopMass, secondTopMass
     
 

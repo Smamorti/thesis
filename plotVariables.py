@@ -1,6 +1,7 @@
 import numpy as np
 import ROOT
 from  utilities import calculateWmass as W
+from  utilities import calculateTopMass as top
 
 class lepton:
 
@@ -18,8 +19,12 @@ class lepton:
             w1, w2, jetIds, jetVecs = W.Wmass(self)
             self.bestWmass = w1
             self.secondWmass = w2
-            self.jetIds = jetIds
+            self.WjetIds = jetIds
             self.jetVecs = jetVecs
+
+            top1, top2 = top.topMass(self)
+            self.top1 = top1
+            self.top2 = top2
 
     def countJets(self):
 
@@ -48,6 +53,14 @@ class lepton:
     def secondWmass(self):
 
         return self.secondWmass
+
+    def bestTopMass(self):
+
+        return self.top1
+
+    def secondTopMass(self):
+
+        return self.top2
 
     def lPt(self):
 
@@ -190,7 +203,17 @@ def secondW(l1, l2, hist, totalWeight):
 
     hist.Fill(lepton.secondWmass(l1), totalWeight)
 
-        
+def bestTop(l1, l2, hist, totalWeight):
+
+    if lepton.bestTopMass(l1):
+
+        hist.Fill(lepton.bestTopMass(l1), totalWeight)
+
+def secondTop(l1, l2, hist, totalWeight):
+
+    if lepton.secondTopMass(l1):
+
+        hist.Fill(lepton.secondTopMass(l1), totalWeight)
 
 
 ###########################                                                                                                                                                                                

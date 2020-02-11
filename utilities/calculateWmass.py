@@ -59,37 +59,18 @@ def Wmass(lepton):
         for j in range(i+1, jetAmount):
 
             jet1 = jetVecs[i]
-            jet2 = jetVecs[j]
+            jet1 += jetVecs[j]
             
-            jet2 += jet1
+            # jet2 += jet1
 
-            masses[i,j] = jet2.M()
-
-    # for i in range(jetAmount):
-
-    #     for j in range(i+1, jetAmount):
-
-    #         jet1 = jets[i]
-    #         jet2 = jets[j]
-
-    #         vec1 = ROOT.Math.PtEtaPhiEVector()
-    #         vec2 = ROOT.Math.PtEtaPhiEVector()
-
-    #         vec1.SetCoordinates(tree._jetPt[jet1], tree._jetEta[jet1], tree._jetPhi[jet1], tree._jetE[jet1])
-    #         vec2.SetCoordinates(tree._jetPt[jet2], tree._jetEta[jet2], tree._jetPhi[jet2], tree._jetE[jet2])
-
-    #         vec1 += vec2
-
-    #         masses[i,j] = vec1.M()
-    #         vectors[i,j] = vec1
+            masses[i,j] = jet1.M()
 
     # Choose the two invariant masses which are closest resembling the W mass while originating from two different jet pairs
     # we do this by looping over the mass matrix, selecting the first mass, looping again and selecting the second mass
 
     bestWmass, j1, j2 = selectBest(masses, jetAmount)
     secondWmass, j3, j4 = selectBest(masses, jetAmount, skipids = {j1, j2})
-    # print(j1, j2, j3, j4)
-    # print(masses)
+
     return bestWmass, secondWmass, (j1, j2, j3, j4), jetVecs
     
 
