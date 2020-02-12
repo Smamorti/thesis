@@ -7,6 +7,7 @@
 - `makeHists.py` takes care of the filling of the histograms as well as applying the selection criteria on the events.
 - `leptonPlots.py` can be seen as the main program; It initializes histograms and fills them by calling functions from `makeHist.py`. When the histograms are filled, it calls for the `plot.py` script to make beautiful plots.
 - `cutflow.py` is a script which is made for the sole purpose of creating cutflow tables in a LaTeX format.
+- `cuts.py` defines a class used to apply the selection criteria.
 
 ## Data structure
 
@@ -18,6 +19,9 @@
 
 - Match sources from stack files to the actual root files given by the conf files
 - Work on the naming of programs and functions
+
+## Recently done
+
 - Finish `cutflow.py` script
 - Reconstruct W and top mass
 - Fix the amount of jets: two of the jets are actually the two leptons!
