@@ -6,8 +6,9 @@ import ROOT
 from plotVariables import lepton
 from plotVariables import goodJet
 from plotVariables import diLeptonMass
-# from utilities.selectionHelpers import goodJet, diLeptonMass
 import numpy as np
+
+
 ###########################                                                                                                                                                                              
 ########## CUTS ###########                                                                                                                                                                              
 ###########################                                                                                                                                                                               
@@ -138,7 +139,7 @@ class cuts:
                         break
                     
                     if lep == self.nLight[-1]:
-                        #print(DeltaR)
+
                         validJets.append(i)
 
         if len(validJets) >= 5:
@@ -284,9 +285,6 @@ def cutflow(f, xSec, cutList, year):
     counts = np.insert(counts, 0, tree.GetEntries())
     counts_w = np.insert(counts_w, 0, initialEvents)
 
-    # print(counts)
-    # print(counts_w)
-
     filename.Close()
 
     return counts, counts_w
@@ -308,7 +306,6 @@ channels_conf, files, xSecs = np.loadtxt(conf, comments = "%", unpack = True, dt
 
 xSecs = xSecs.astype(float)
 
-#cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "twoOS", "njets", "nbjets", "justTwoLeptons", "twoSF", "onZ"]
 cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "njets", "nbjets", "twoSF", "onZ"]
 
 

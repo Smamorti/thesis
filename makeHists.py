@@ -1,12 +1,9 @@
 import ROOT
 from plotVariables import lepton, goodJet, diLeptonMass
-#from utilities.selectionHelpers import goodJet, diLeptonMass
 import plotVariables
 import numpy as np
 import time
 from cuts import cuts
-#from progressBar import progressbar
-
 
 def initializeHist(hist, name, nbins, llim, ulim):
 
@@ -32,7 +29,7 @@ def addOverflowbin(hist):
     hist.SetBinContent(nbins, hist.GetBinContent(nbins) + hist.GetBinContent(nbins + 1))
     
 
-def fillHist(f, xSec, histList, plotList, histZMass, year, seperateZ = False, histListNotZ = None): 
+def fillHist(f, xSec, histList, plotList, year, seperateZ = False, histListNotZ = None): 
 
     start = time.time()
 
@@ -46,8 +43,6 @@ def fillHist(f, xSec, histList, plotList, histZMass, year, seperateZ = False, hi
     tree = f.Get("blackJackAndHookers/blackJackAndHookersTree")
     
     count = tree.GetEntries()
-
-    #progressbar(range(count))
 
     print(count)
     progress = 0

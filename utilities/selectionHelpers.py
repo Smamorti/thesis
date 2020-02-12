@@ -1,6 +1,5 @@
 import numpy as np
-import ROOT
-#from leptonClass import lepton
+from ROOT.Math import PtEtaPhiEVector
 
 def goodJet(tree, j):
 
@@ -52,8 +51,8 @@ def calculateDeltaR(l1, lep, b = False):
 
 def diLeptonMass(l1, l2):
 
-    vec1 = ROOT.Math.PtEtaPhiEVector()
-    vec2 = ROOT.Math.PtEtaPhiEVector()
+    vec1 = PtEtaPhiEVector()
+    vec2 = PtEtaPhiEVector()
 
     vec1.SetCoordinates(lepton.lPt(l1), lepton.lEta(l1), lepton.lPhi(l1), lepton.lE(l1))
     vec2.SetCoordinates(lepton.lPt(l2), lepton.lEta(l2), lepton.lPhi(l2), lepton.lE(l2))

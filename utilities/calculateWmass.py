@@ -1,5 +1,5 @@
 import numpy as np
-import ROOT
+from ROOT.Math import PtEtaPhiEVector
 
 
 Wmass_known = 80.379
@@ -50,7 +50,7 @@ def Wmass(lepton):
     for i in range(jetAmount):
 
         jet = jets[i]
-        vec = ROOT.Math.PtEtaPhiEVector()
+        vec = PtEtaPhiEVector()
         vec.SetCoordinates(tree._jetPt[jet], tree._jetEta[jet], tree._jetPhi[jet], tree._jetE[jet])
         jetVecs.append(vec)
 

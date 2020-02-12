@@ -1,8 +1,8 @@
-import ROOT
+from ROOT import TCanvas
 
 def makeCanvas(horizontal, vertical):
     
-    c = ROOT.TCanvas("c", "c", 500 * horizontal, 400 * vertical)
+    c = TCanvas("c", "c", 500 * horizontal, 400 * vertical)
     c.Divide(horizontal, vertical)
 
     return c

@@ -1,5 +1,4 @@
 import numpy as np
-import ROOT
 from selectionHelpers import countbJets
 
 topMass_known = 172.9
