@@ -1,7 +1,6 @@
 import ROOT
-from plotVariables import lepton
-from plotVariables import goodJet
-from plotVariables import diLeptonMass
+from plotVariables import lepton, goodJet, diLeptonMass
+#from utilities.selectionHelpers import goodJet, diLeptonMass
 import plotVariables
 import numpy as np
 import time
@@ -69,7 +68,7 @@ def fillHist(f, xSec, histList, plotList, histZMass, year, seperateZ = False, hi
 
         progress += 1 # To stop testing, just comment this line out. Maybe have it as an argument or so?
 
-        if progress / float(count) > 0.05:
+        if progress / float(count) > 0.01:
             
             break
    
