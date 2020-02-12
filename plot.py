@@ -38,8 +38,13 @@ def plot(plotList, histList, leg,title =  "", logscale = 1, histList_nonZ = None
 
         else: 
             
+            if logscale:
+                scale = "log"
+            else:
+                scale = "linear"
+
             c = makeCanvas(1, 1)
-            filename = "plots/Hist_{}_{}".format(year, plotList[i])
+            filename = "plots/Hist_{}_{}_{}".format(year, plotList[i], scale)
             fillSubCanvas(c, histList[-1][i], plotList[i], leg, title, logscale)
             c.SaveAs(filename + ".pdf")
             c.SaveAs(filename + ".png")

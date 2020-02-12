@@ -88,5 +88,6 @@ leg = makeHists.makeLegend(texList, histList)
 
 plot.plot(plotList, histList, leg, year = year)
 plot.plot(plotList, histList, leg,title =  "No Logscale", logscale = 0, histList_nonZ = histList, titleNotZ = "Logscale", logNotZ = 1, year = year)
+plot.plot(plotList, histList, leg, year = year, logscale = 0)
 
 print("Time elapsed: {} seconds".format((time.time() - start)))
