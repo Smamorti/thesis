@@ -26,6 +26,12 @@ def calcWeight(filename, xSec, lumi = 41.53):
 
     return 1000 * xSec * lumi / totalEvents #times 1000 because cross section is given in picobarn and not in femtobarn!  
 
+def addOverflowbin(hist):
+
+    nbins = hist.GetNbinsX()
+    hist.SetBinContent(nbins, hist.GetBinContent(nbins) + hist.GetBinContent(nbins + 1))
+    
+
 def fillHist(f, xSec, histList, plotList, histZMass, year, seperateZ = False, histListNotZ = None): 
 
     start = time.time()
@@ -101,7 +107,8 @@ def fillHist(f, xSec, histList, plotList, histZMass, year, seperateZ = False, hi
                 break
 
     for hist in histList:
-
+        
+        #addOverflowbin(hist)
         print(hist.GetEntries())
                 
     print("Time elapsed: {} seconds".format((time.time() - start)))
