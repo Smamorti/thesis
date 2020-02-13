@@ -58,7 +58,7 @@ xSecs = xSecs.astype(float)
 plotList = ["leading_lPt", "subleading_lPt", "leading_lEta", "subleading_lEta","nJets", "m_ll", "flavComp", "nbJets", "MET", "leading_DeltaR", "leading_DeltaR_b", "subleading_DeltaR", "subleading_DeltaR_b", "leading_leptonMVA", "subleading_leptonMVA", "bestW", "secondW", "bestTop", "secondTop"]
 binList = [(20, 0, 200), (20, 0, 200), (10, 0, 2.5), (10, 0, 2.5), (12, 0, 12), (10, 81, 101), (2, 0, 2), (5, 0, 5), (20, 0, 500), (12, 0, 4.8), (12, 0, 4.8), (12, 0, 4.8), (12, 0, 4.8), (20, -1, 1), (20, -1, 1), (20, 55, 105), (20, 55, 105), (10, 148, 198), (10, 148, 198)]
 histList = makeHists.fillTList(channels_stack, plotList, binList)  
-xLabelList = ["p_{T}(l_{1}) (GeV)", "p_{T}(l_{2}) (GeV)", "|#eta|(l_{1})", "|#eta|(l_{2})", "nJets", "m(ll) (GeV)", "flavComp", "nbJets", "MET (GeV)", "#DeltaR(l_{1}, j)", "#DeltaR(l_{2}, j)", "#DeltaR(l_{1}, b)", "#DeltaR(l_{2}, b)", "leptonMVA l1", "leptonMVA l2", "m(W1) (GeV)", "m(W2) (GeV)", "m(top1) (GeV)", "m(top2) (GeV)"]
+xLabelList = ["p_{T}(l_{1}) (GeV)", "p_{T}(l_{2}) (GeV)", "|#eta|(l_{1})", "|#eta|(l_{2})", "nJets", "m(ll) (GeV)", "flavComp", "nbJets", "MET (GeV)", "#DeltaR(l_{1}, j)", "#DeltaR(l_{1}, b)", "#DeltaR(l_{2}, j)", "#DeltaR(l_{2}, b)", "leptonMVA l1", "leptonMVA l2", "m(W1) (GeV)", "m(W2) (GeV)", "m(top1) (GeV)", "m(top2) (GeV)"]
 xtypeList = ["GeV", "GeV", "Other", "Other", "Other", "GeV", "Other", "Other", "GeV", "Other", "Other", "Other", "Other", "Other", "Other", "GeV", "GeV","GeV", "GeV"]
 yLabelList = makeYlabels(xtypeList, binList)
 
