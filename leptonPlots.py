@@ -30,6 +30,10 @@ def makeYlabels(xtypeList, binList):
 
                 yLabels.append("Events / GeV")
 
+            elif binWidth == (binList[i][2] - binList[i][1]) // binList[i][0]:
+
+                yLabels.append("Events / {} GeV".format(int(binWidth)))
+
             else:
 
                 yLabels.append("Events / {} GeV".format(binWidth))
