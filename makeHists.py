@@ -9,6 +9,7 @@ from cuts import cuts
 def initializeHist(hist, name, nbins, llim, ulim):
 
     hist = ROOT.TH1F(name," ", nbins, llim, ulim)
+    hist.Sumw2()
     return hist
 
 def initializeStacked(hist, name):
@@ -105,7 +106,17 @@ def fillHist(f, xSec, histList, plotList, year, seperateZ = False, histListNotZ 
     for hist in histList:
         
         #addOverflowbin(hist)
-        print(hist.GetEntries())
+        print("Entries: {}".format(hist.GetEntries()))
+        
+        totalContent = 0
+        
+        nbins = hist.GetNbinsX()
+
+        for bin in range(nbins + 2): #including under- and overflowbin
+        
+            totalContent += hist.GetBinContent(bin)
+
+        print("Total hist content: {}".format(totalContent))
                 
     print("Time elapsed: {} seconds".format((time.time() - start)))
         
