@@ -14,9 +14,17 @@ def fillSubCanvas(subCanvas, hist, xlabel, ylabel, leg, title = None, logscale =
 
         subCanvas.SetTitle(title)
 
+    # hardcoded for now
+
     hist.Draw("HIST")
     hist.GetXaxis().SetTitle(xlabel)
     hist.GetYaxis().SetTitle(ylabel)
+
+    if xlabel == "flavComp":
+
+        hist.GetXaxis().SetBinLabel(1, "ee")
+        hist.GetXaxis().SetBinLabel(2, "#mu#mu")
+
     leg.Draw()
     subCanvas.Update()
     
