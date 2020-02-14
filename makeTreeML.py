@@ -94,10 +94,10 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
                     variables.weight = t._weight * weight
                     variables.lPt1 = t._lPt[nLight[0]]
                     variables.lPt2 = t._lPt[nLight[1]]
-                    variables.Eta1 = t._lEta[nLight[0]]
-                    variables.Eta2 = t._lEta[nLight[1]]
-                    variables.Phi1 = t._lPhi[nLight[0]]
-                    variables.Phi2 = t._lPhi[nLight[1]]
+                    variables.lEta1 = t._lEta[nLight[0]]
+                    variables.lEta2 = t._lEta[nLight[1]]
+                    variables.lPhi1 = t._lPhi[nLight[0]]
+                    variables.lPhi2 = t._lPhi[nLight[1]]
                     variables.njets = len(nJets)
                     
                     nbjets = 0
