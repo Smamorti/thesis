@@ -4,6 +4,8 @@ from cuts import cuts
 from makeHists import calcWeight
 from plotVariables import lepton, calculateDeltaR
 import numpy as np
+import sys
+
 
 def makeTree(inputFile, sampleName, branches, year, xSec):
 
@@ -152,18 +154,22 @@ conf = "samples/tuples_2018_newSkim.conf"
 channels_stack, texList, _, colorList = np.loadtxt(stack, comments = "%", unpack = True, dtype = str)
 channels_conf, files, xSecs = np.loadtxt(conf, comments = "%", unpack = True, dtype = str)
 
+i = np.where(files == sys.argv[1])[0][0]
+print(i)
+
 xSecs = xSecs.astype(float)
 year = stack.split("_")[1].rstrip(".stack")
 print("Using files from " + year)
 
-for i in range(len(files)):
- 
-    f = TFile.Open(files[i])
-    print("Working on file number {}: {}".format(i, channels_stack[i]))
-    # print(files[i])
 
-    makeTree(f, channels_stack[i], branches, year, xSecs[i])
 
-    f.Close()
+# for i in range(len(files)):
+
+f = TFile.Open(files[i])
+print("Working on file number {}: {}".format(i, channels_stack[i]))
+
+makeTree(f, channels_stack[i], branches, year, xSecs[i])
+
+f.Close()
 
 print("Finished!")
