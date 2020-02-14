@@ -141,6 +141,9 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
 
                 break
 
+########
+##MAIN##
+########
             
                     
 branches = ['lPt1/F', 'lPt2/F', 'lEta1/F', 'lEta2/F', 'lPhi1/F', 'lPhi2/F', 'DeltaR_1/F', 'DeltaR_b1/F', 'DeltaR_2/F', 'DeltaR_b2/F']
@@ -154,17 +157,14 @@ conf = "samples/tuples_2018_newSkim.conf"
 channels_stack, texList, _, colorList = np.loadtxt(stack, comments = "%", unpack = True, dtype = str)
 channels_conf, files, xSecs = np.loadtxt(conf, comments = "%", unpack = True, dtype = str)
 
+# find out which file is used (This could be better, for instance through matching channel names 
+#instead of trusting that they are in the same order in the .stack and .conf files!)
+
 i = np.where(files == sys.argv[1])[0][0]
-print(i)
 
 xSecs = xSecs.astype(float)
 year = stack.split("_")[1].rstrip(".stack")
 print("Using files from " + year)
-
-
-
-# for i in range(len(files)):
-
 f = TFile.Open(files[i])
 print("Working on file number {}: {}".format(i, channels_stack[i]))
 
