@@ -21,6 +21,7 @@
 - Work on the naming of programs and functions
 - Maybe: restrict Wmass funtion from using b-tagged jets for W mass calculation, possibly resulting in the inability to reconstruct two W masses for each events due to a lack of light jets
 - Reduce trees for ML training
+- Normalize trees
 - Apply BDT and/or NN to data
 
 ## Recently done
