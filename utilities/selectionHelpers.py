@@ -23,7 +23,6 @@ def countbJets(l1):
 
             nbjets.append(j)
 
-
     return nbjets
 
 def calculateDeltaR(l1, lep, b = False):

@@ -39,20 +39,45 @@ def Wmass(lepton):
     tree = lepton.tree
 
     jets = lepton.goodJets
-    jetAmount = len(jets)
     
+    bjets = list()
+    jetVecs = list()
+    bjetVecs = list()
+    
+    for jet in jets:
+
+        vec = PtEtaPhiEVector()
+        vec.SetCoordinates(tree._jetPt[jet], tree._jetEta[jet], tree._jetPhi[jet], tree._jetE[jet])
+
+        if tree._jetDeepCsv_b[jet] > 0.4941:
+
+            jets.remove(jet)
+            bjets.append(jet)
+            bjetVecs.append(vec)
+
+        else:
+
+            jetVecs.append(vec)
+
+
+    jetAmount = len(jets)    
+
+    if jetAmount < 2:
+
+        return None, None, (None, None, None, None), bjetVecs
+
     masses = np.zeros((jetAmount, jetAmount))
 
     # Loop over all jets, reconstruct invariant mass of every two-jet system
 
-    jetVecs = list()
+    # jetVecs = list()
 
-    for i in range(jetAmount):
+    # for i in range(jetAmount):
 
-        jet = jets[i]
-        vec = PtEtaPhiEVector()
-        vec.SetCoordinates(tree._jetPt[jet], tree._jetEta[jet], tree._jetPhi[jet], tree._jetE[jet])
-        jetVecs.append(vec)
+    #     jet = jets[i]
+    #     vec = PtEtaPhiEVector()
+    #     vec.SetCoordinates(tree._jetPt[jet], tree._jetEta[jet], tree._jetPhi[jet], tree._jetE[jet])
+    #     jetVecs.append(vec)
 
     for i in range(jetAmount):
 
@@ -69,6 +94,13 @@ def Wmass(lepton):
     # we do this by looping over the mass matrix, selecting the first mass, looping again and selecting the second mass
 
     bestWmass, j1, j2 = selectBest(masses, jetAmount)
+
+    if jetAmount < 4:
+
+        return bestWmass, None, (j1, j2, None, None), bjetVecs
+
     secondWmass, j3, j4 = selectBest(masses, jetAmount, skipids = {j1, j2})
 
-    return bestWmass, secondWmass, (j1, j2, j3, j4), jetVecs
+    return bestWmass, secondWmass, (j1, j2, j3, j4), bjetVecs
+    
+
