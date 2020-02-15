@@ -1,3 +1,7 @@
+###
+# Code largely copied from: https://github.com/GhentAnalysis/ttg/blob/RunII/tools/python/makeBranches.py
+###
+
 from ROOT import gROOT, AddressOf
 
 cType = {
