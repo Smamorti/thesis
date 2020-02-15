@@ -15,7 +15,7 @@ def makeTree(inputFile, sampleName, branches, year, xSec):
 
     # create output file and new tree
 
-    outputFile = TFile('newTrees/reducedTrees/tree_' + sampleName + '_' + year + '_.root', 'RECREATE')
+    outputFile = TFile('newTrees/reducedTrees/tree_' + sampleName + '_' + year + '.root', 'RECREATE')
     outputFile.cd()
     newTree = TTree('tree_' + sampleName, sampleName)
 
