@@ -15,7 +15,7 @@ def makeTree(inputFile, sampleName, branches, year, xSec):
 
     # create output file and new tree
 
-    outputFile = TFile('newTrees/tree_' + sampleName + '_' + year + '_.root', 'RECREATE')
+    outputFile = TFile('newTrees/reducedTrees/tree_' + sampleName + '_' + year + '_.root', 'RECREATE')
     outputFile.cd()
     newTree = TTree('tree_' + sampleName, sampleName)
 
@@ -56,7 +56,7 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
     for _ in t:
 
         # to quickly test the program                                                                                                                                                                       
-        progress += 1 # To stop testing, just comment this line out. Maybe have it as an argument or so?                                                                                                    
+#        progress += 1 # To stop testing, just comment this line out. Maybe have it as an argument or so?                                                                                                    
         if progress / float(count) > 0.01:
 
             break
