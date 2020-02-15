@@ -67,8 +67,8 @@ yLabelList = makeYlabels(xtypeList, binList)
 # Fill histograms
 #
 
-for i in range(len(files)):
-#for i in range(1, 2):
+#for i in range(len(files)):
+for i in range(0, 1):
     f = TFile.Open(files[i])
     print("Working on file number {}".format(i))
     print(files[i])

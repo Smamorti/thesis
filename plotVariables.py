@@ -217,6 +217,15 @@ def secondTop(l1, l2, hist, totalWeight):
 
         hist.Fill(lepton.secondTopMass(l1), totalWeight)
 
+def geen2W(l1, l2, hist, totalWeight):
+
+    # to test the amount of cases in which there is 0 or 1 W boson reconstructed instead of 2
+
+    diff = len(l1.goodJets) - len(countbJets(l1))
+
+    if diff < 4:
+
+        print("Uh-oh: no two W bosons! Only {} light jets!".format(diff))
 
 ###########################                                                                                                                                                                                
 ######## UTILITIES ########                                                                                                                                                                                
