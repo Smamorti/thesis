@@ -20,12 +20,18 @@
 - Match sources from stack files to the actual root files given by the conf files
 - Work on the naming of programs and functions
 - Maybe: restrict Wmass funtion from using b-tagged jets for W mass calculation, possibly resulting in the inability to reconstruct two W masses for each events due to a lack of light jets
-- Reduce trees for ML training
-- Normalize trees
 - Apply BDT and/or NN to data
+- Generalize creating a legend in various positions (now hardcoded)
+- Generalize setting the yrange
+- Change for _ in tree
+- Save the histograms in a .pkl format such that they don't have to be remade everytime you want to change the plotting style...
+- Make plotter program just handle the .pkl histos, also call this script when making the histos
+
 
 ## Recently done
 
 - Finish `cutflow.py` script
 - Reconstruct W and top mass
 - Fix the amount of jets: two of the jets are actually the two leptons!
+- Reduce trees for ML training
+- Normalize trees
