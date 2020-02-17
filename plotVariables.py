@@ -132,6 +132,13 @@ def subleading_leptonMVA(l1, l2, hist, totalWeight):
 
     hist.Fill(lepton.leptonMVA(l2), totalWeight)
 
+def leptonMVA(l1, l2, hist, totalWeight):
+
+    # combined leading and subleading lepton MVA
+
+    hist.Fill(lepton.leptonMVA(l1), totalWeight)
+    hist.Fill(lepton.leptonMVA(l2), totalWeight)
+
 def leading_lPt(l1, l2, hist, totalWeight):
 
     hist.Fill(lepton.lPt(l1), totalWeight)
@@ -226,6 +233,8 @@ def geen2W(l1, l2, hist, totalWeight):
     if diff < 4:
 
         print("Uh-oh: no two W bosons! Only {} light jets!".format(diff))
+
+
 
 ###########################                                                                                                                                                                                
 ######## UTILITIES ########                                                                                                                                                                                

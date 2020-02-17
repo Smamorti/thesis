@@ -48,7 +48,7 @@ def fillSubCanvas(subCanvas, hist, xlabel, ylabel, leg, leg2, title = None, logs
 
     # hardcoded for now
     
-    elif xlabel == "leptonMVA l1" or xlabel == "leptonMVA l2":
+    elif xlabel == "leptonMVA l1" or xlabel == "leptonMVA l2" or xlabel == "leptonMVA":
 
         leg2.Draw()
 
