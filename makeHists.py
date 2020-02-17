@@ -140,11 +140,13 @@ def fillColor(histList, colorList):
         
             histList[i][j].SetFillColor(colorList[i])
 
-def makeLegend(nameList, histList):
+def makeLegend(nameList, histList, position = (0.7, 0.7, 0.9, 0.9)):
     
-    leg = ROOT.TLegend(0.7,0.7,0.9,0.9)
+    #x1, y1, x2, y2 = position[0], position[1], position[2], position[3]
+    leg = ROOT.TLegend(position[0], position[1], position[2], position[3])
+    
     for i in range(len(nameList)):
-        
+    
         label = nameList[i]
         leg.AddEntry(histList[i][0], label, "f")
        

@@ -4,7 +4,7 @@ from ROOT import Math, gROOT
 import numpy as np
 import time
 import makeHists, plot
-
+import pickle
 
 # stack = "task1_2018.stack" 
 # conf = "tuples_2018.conf"
@@ -88,10 +88,16 @@ makeHists.fillStacked(histList)
 
 gROOT.SetBatch(True)
 
-leg = makeHists.makeLegend(texList, histList)
+# hardcoded different legend position for now
 
-plot.plot(plotList, histList, xLabelList, yLabelList, leg, year = year)
-plot.plot(plotList, histList, xLabelList, yLabelList, leg,title =  "No Logscale", logscale = 0, histList_nonZ = histList, titleNotZ = "Logscale", logNotZ = 1, year = year)
-plot.plot(plotList, histList, xLabelList, yLabelList, leg, year = year, logscale = 0)
+
+leg = makeHists.makeLegend(texList, histList)
+leg_2 = makeHists.makeLegend(texList, histList, (0.1, 0.7, 0.3, 0.9))
+
+plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, year = year)
+plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, title =  "No Logscale", logscale = 0, histList_nonZ = histList, titleNotZ = "Logscale", logNotZ = 1, year = year)
+plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, year = year, logscale = 0)
 
 print("Time elapsed: {} seconds".format((time.time() - start)))
+
+pickle.dump(histList, file('histograms/histList.pkl', 'w'))
