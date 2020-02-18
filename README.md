@@ -27,6 +27,7 @@
 - Save the histograms in a .pkl format such that they don't have to be remade everytime you want to change the plotting style...
 - Make plotter program just handle the .pkl histos, also call this script when making the histos
 - Make a progressbar
+- Check eta coverage electrons and muons
 
 ## Recently done
 
