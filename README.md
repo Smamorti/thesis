@@ -28,6 +28,7 @@
 - Make plotter program just handle the .pkl histos, also call this script when making the histos
 - Make a progressbar
 - Check eta coverage electrons and muons
+- New top reconstruction script, possibly use Kirills code
 
 ## Recently done
 
