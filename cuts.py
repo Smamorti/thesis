@@ -74,8 +74,8 @@ class cuts:
 
                 validnLight.append(i)
                 
-            elif self.tree._lFlavor[i] == 1 and np.absolute(self.tree._lEta[i]) <= 2.5:
-                # other eta requirement for muons
+            elif self.tree._lFlavor[i] == 0 and np.absolute(self.tree._lEta[i]) <= 2.5:
+                # other eta requirement for electrons
 
                 validnLight.append(i)
                 
