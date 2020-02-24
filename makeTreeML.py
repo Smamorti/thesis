@@ -5,13 +5,19 @@ from makeHists import calcWeight
 from plotVariables import lepton, calculateDeltaR
 import numpy as np
 import sys
+from optparse import OptionParser
 
 
-def makeTree(inputFile, sampleName, branches, year, xSec):
+parser = OptionParser()
+parser.add_option("-c", "--conf", default = "samples/tuples_2018_newSkim.conf", help = "conf file")
+parser.add_option("-p", "--source", default = "signal_2018", help = "signal or bkg?")
+parser.add_option("-y", "--year", default = 2018, help = "year")
+options, args = parser.parse_args(sys.argv[1:])
 
-    # read inputTree
 
-    inputTree = inputFile.Get("blackJackAndHookers/blackJackAndHookersTree")
+def makeTree(inputFiles, sampleName, branches, year, xSecs):
+
+    print("Currently working on the {} samples".format(sampleName))
 
     # create output file and new tree
 
@@ -23,9 +29,19 @@ def makeTree(inputFile, sampleName, branches, year, xSec):
 
     variables = makeBranches(newTree, branches)
 
-    # loop over the events, apply cuts, if all cuts apply: fill tree
+    for i in range(len(inputFiles)):
 
-    fillTree(inputFile, inputTree, newTree, variables, year, xSec)
+        inputFile = TFile.Open(inputFiles[i])
+        print("Working on file number {} out of {}".format(i+1, len(inputFiles)))
+
+        # read inputTree
+        
+        inputTree = inputFile.Get("blackJackAndHookers/blackJackAndHookersTree")
+
+        # loop over the events, apply cuts, if all cuts apply: fill tree
+
+        fillTree(inputFile, inputTree, newTree, variables, year, xSecs[i])
+        inputFile.Close()
 
     # save tree and close file
 
@@ -148,28 +164,18 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
                     
 branches = ['lPt1/F', 'lPt2/F', 'lEta1/F', 'lEta2/F', 'lPhi1/F', 'lPhi2/F', 'DeltaR_1/F', 'DeltaR_b1/F', 'DeltaR_2/F', 'DeltaR_b2/F']
 branches += ['njets/I', 'nbjets/I', 'jetDeepCsv_b1/F']
-branches += ['mW1/F', 'mtop1/F', 'weight/F']
+branches += ['mW1/F', 'mtop1/F']#, 'weight/F']
 
-
-stack = "samples/newSkim_2018.stack"
-conf = "samples/tuples_2018_newSkim.conf"
-
-channels_stack, texList, _, colorList = np.loadtxt(stack, comments = "%", unpack = True, dtype = str)
-channels_conf, files, xSecs = np.loadtxt(conf, comments = "%", unpack = True, dtype = str)
-
-# find out which file is used (This could be better, for instance through matching channel names 
-#instead of trusting that they are in the same order in the .stack and .conf files!)
-
-i = np.where(files == sys.argv[1])[0][0]
-
+channels_conf, files, xSecs = np.loadtxt(options.conf, comments = "%", unpack = True, dtype = str)
 xSecs = xSecs.astype(float)
-year = stack.split("_")[1].rstrip(".stack")
-print("Using files from " + year)
-f = TFile.Open(files[i])
-print("Working on file number {}: {}".format(i, channels_stack[i]))
 
-makeTree(f, channels_stack[i], branches, year, xSecs[i])
+if type(files) == np.string_:
 
-f.Close()
+    # in this case, there is only one sample, however the script requires lists, so we give it lists
+
+    files = [files]
+    xSecs = [xSecs]
+
+makeTree(files, options.source, branches, options.year, xSecs)
 
 print("Finished!")
