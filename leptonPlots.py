@@ -40,8 +40,23 @@ def makeYlabels(xtypeList, binList):
 
     return yLabels
 
+def str2tuple(string):
+
+    # to convert binList strings achieved from reading in *.plot files                                                                                                                                      
+    string = string.lstrip('(').rstrip(')')
+    spl = string.split(',')
+
+    return (int(spl[0]), float(spl[1]), float(spl[2]))
+
+
+
+
 stack = "samples/newSkim_2018.stack"
 conf = "samples/tuples_2018_newSkim.conf"
+plt = "samples/newSkim_2018.plot"
+
+# stack = "samples/ttunder_2018.stack"
+# conf = "samples/ttunder_2018.conf"
 
 year = stack.split("_")[1].rstrip(".stack")
 print("Using files from " + year)
@@ -49,17 +64,11 @@ print("Using files from " + year)
 
 channels_stack, texList, _, colorList = np.loadtxt(stack, comments = "%", unpack = True, dtype = str)
 channels_conf, files, xSecs = np.loadtxt(conf, comments = "%", unpack = True, dtype = str) #different channel list to enable different ordering of events in .stack and .conf files, one can later match the two together
-
-
+plotList, binList, xLabelList, xtypeList = np.loadtxt(plt, comments = "%" ,unpack = True, dtype = str, delimiter='\t')
+binList = [str2tuple(string) for string in binList]
+histList = makeHists.fillTList(channels_stack, plotList, binList)
 colorList = colorList.astype(int)
 xSecs = xSecs.astype(float)
-
-
-plotList = ["leading_lPt", "subleading_lPt", "leading_lEta", "subleading_lEta","nJets", "m_ll", "flavComp", "nbJets", "MET", "leading_DeltaR", "leading_DeltaR_b", "subleading_DeltaR", "subleading_DeltaR_b", "leading_leptonMVA", "subleading_leptonMVA", "bestW", "secondW", "bestTop", "secondTop", "leptonMVA"]
-binList = [(20, 0, 200), (20, 0, 200), (10, 0, 2.5), (10, 0, 2.5), (12, 0, 12), (11, 80, 102), (2, 0, 2), (5, 0, 5), (20, 0, 500), (12, 0, 4.8), (12, 0, 4.8), (12, 0, 4.8), (12, 0, 4.8), (20, -1, 1), (20, -1, 1), (21, 54.05, 106.55), (21, 54.05, 106.55), (11, 145.5, 200.5), (11, 145.5, 200.5), (20, -1, 1)]
-histList = makeHists.fillTList(channels_stack, plotList, binList)  
-xLabelList = ["p_{T}(l_{1}) (GeV)", "p_{T}(l_{2}) (GeV)", "|#eta|(l_{1})", "|#eta|(l_{2})", "nJets", "m(ll) (GeV)", "flavComp", "nbJets", "MET (GeV)", "#DeltaR(l_{1}, j)", "#DeltaR(l_{1}, b)", "#DeltaR(l_{2}, j)", "#DeltaR(l_{2}, b)", "leptonMVA l1", "leptonMVA l2", "m(W1) (GeV)", "m(W2) (GeV)", "m(top1) (GeV)", "m(top2) (GeV)", "leptonMVA"]
-xtypeList = ["GeV", "GeV", "Other", "Other", "Other", "GeV", "Other", "Other", "GeV", "Other", "Other", "Other", "Other", "Other", "Other", "GeV", "GeV","GeV", "GeV", "Other"]
 yLabelList = makeYlabels(xtypeList, binList)
 
 
