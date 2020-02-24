@@ -45,6 +45,7 @@ def fillSubCanvas(subCanvas, hist, xlabel, ylabel, leg, leg2, title = None, logs
 
         hist.GetXaxis().SetBinLabel(1, "ee")
         hist.GetXaxis().SetBinLabel(2, "#mu#mu")
+        leg2.Draw()
 
     # hardcoded for now
     
