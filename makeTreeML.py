@@ -9,8 +9,8 @@ from optparse import OptionParser
 
 
 parser = OptionParser()
-parser.add_option("-c", "--conf", default = "samples/tuples_2018_newSkim.conf", help = "conf file")
-parser.add_option("-p", "--source", default = "signal_2018", help = "signal or bkg?")
+parser.add_option("-c", "--conf", default = "samples/signal_2018.conf", help = "conf file")
+parser.add_option("-s", "--source", default = "signal_2018", help = "signal or background?")
 parser.add_option("-y", "--year", default = 2018, help = "year")
 options, args = parser.parse_args(sys.argv[1:])
 
@@ -19,15 +19,17 @@ def makeTree(inputFiles, sampleName, branches, year, xSecs):
 
     print("Currently working on the {} samples".format(sampleName))
 
-    # create output file and new tree
+    # create output file and new tree                                                                                                                                                                     
 
     outputFile = TFile('newTrees/reducedTrees/tree_' + sampleName + '_' + year + '.root', 'RECREATE')
     outputFile.cd()
     newTree = TTree('tree_' + sampleName, sampleName)
 
     # define all properties each events posesses in the tree
-
+    
     variables = makeBranches(newTree, branches)
+
+    # use all different sign/bkg sources to fill the tree
 
     for i in range(len(inputFiles)):
 
@@ -47,6 +49,7 @@ def makeTree(inputFiles, sampleName, branches, year, xSecs):
 
     newTree.AutoSave()
     outputFile.Close()
+
 
 def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
 
@@ -166,6 +169,7 @@ branches = ['lPt1/F', 'lPt2/F', 'lEta1/F', 'lEta2/F', 'lPhi1/F', 'lPhi2/F', 'Del
 branches += ['njets/I', 'nbjets/I', 'jetDeepCsv_b1/F']
 branches += ['mW1/F', 'mtop1/F']#, 'weight/F']
 
+
 channels_conf, files, xSecs = np.loadtxt(options.conf, comments = "%", unpack = True, dtype = str)
 xSecs = xSecs.astype(float)
 
@@ -176,6 +180,8 @@ if type(files) == np.string_:
     files = [files]
     xSecs = [xSecs]
 
+
 makeTree(files, options.source, branches, options.year, xSecs)
+
 
 print("Finished!")
