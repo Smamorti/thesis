@@ -113,8 +113,10 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
                     variables.weight = t._weight * weight
                     variables.lPt1 = t._lPt[nLight[0]]
                     variables.lPt2 = t._lPt[nLight[1]]
-                    variables.lEta1 = np.absolute(t._lEta[nLight[0]])
-                    variables.lEta2 = np.absolute(t._lEta[nLight[1]])
+                    variables.lEta1 = t._lEta[nLight[0]]
+                    variables.lEta2 = t._lEta[nLight[1]]
+                    # variables.lEta1 = np.absolute(t._lEta[nLight[0]])
+                    # variables.lEta2 = np.absolute(t._lEta[nLight[1]])
                     variables.lPhi1 = t._lPhi[nLight[0]]
                     variables.lPhi2 = t._lPhi[nLight[1]]
                     variables.njets = len(nJets)
@@ -158,23 +160,23 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
                     # add all jet properties
 
                     variables.jetPt1 = t._jetPt[nJets[0]]
-                    variables.jetEta1 = np.absolute(t._jetEta[nJets[0]])
+                    variables.jetEta1 = t._jetEta[nJets[0]]
                     variables.jetPhi1 = t._jetPhi[nJets[0]]
                     
                     variables.jetPt2 = t._jetPt[nJets[1]]
-                    variables.jetEta2 = np.absolute(t._jetEta[nJets[1]])
+                    variables.jetEta2 = t._jetEta[nJets[1]]
                     variables.jetPhi2 = t._jetPhi[nJets[1]]
                     
                     variables.jetPt3 = t._jetPt[nJets[2]]
-                    variables.jetEta3 = np.absolute(t._jetEta[nJets[2]])
+                    variables.jetEta3 = t._jetEta[nJets[2]]
                     variables.jetPhi3 = t._jetPhi[nJets[2]]
                     
                     variables.jetPt4 = t._jetPt[nJets[3]]
-                    variables.jetEta4 = np.absolute(t._jetEta[nJets[3]])
+                    variables.jetEta4 = t._jetEta[nJets[3]]
                     variables.jetPhi4 = t._jetPhi[nJets[3]]
                     
                     variables.jetPt5 = t._jetPt[nJets[4]]
-                    variables.jetEta5 = np.absolute(t._jetEta[nJets[4]])
+                    variables.jetEta5 = t._jetEta[nJets[4]]
                     variables.jetPhi5 = t._jetPhi[nJets[4]]
                     
 
