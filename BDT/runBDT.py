@@ -1,61 +1,7 @@
-from treeToArray import treeToArray
-import numpy as np
-import xgboost as xgb
-import matplotlib.pyplot as plt
 from ROOT import TFile
-from sklearn.utils import shuffle
 from DataCollection import DataCollection
 from Dataset import concatenateAndShuffleDatasets
-#from diagnosticPlotting import computeEfficiency, computeROC, backgroundRejection, plotROC, areaUnderCurve, plotOutputShapeComparison
-from diagnosticPlotting import *
-
-#evaluate a model from its outputs and weights for signal and background 
-def rocAndAUC( signal_dataset, background_dataset, model_name ):
-    
-    #plot ROC curve and compute ROC integral for validation set 
-    eff_signal, eff_background = computeROC(
-            signal_dataset.outputs,
-                signal_dataset.weights,
-                background_dataset.outputs,
-                background_dataset.weights,
-                num_points = 10000
-            )
-    plotROC( eff_signal, eff_background, model_name )
-    auc = areaUnderCurve(eff_signal, eff_background )
-    print('#####################################################')
-    print('validation set ROC integral (AUC) = {:.5f}'.format(auc) )
-    print('#####################################################')
-    
-
-def compareOutputShapes( signal_training_dataset, signal_validation_dataset, background_training_dataset, background_validation_dataset, model_name):
-
-    #compare output shapes 
-    plotOutputShapeComparison( 
-        signal_training_dataset.outputs, signal_training_dataset.weights,
-            background_training_dataset.outputs, background_training_dataset.weights,
-        signal_validation_dataset.outputs, signal_validation_dataset.weights,
-            background_validation_dataset.outputs, background_validation_dataset.weights,
-            model_name
-        )
-
-
-#plot ROC curve, compute AUC and plot shape comparison after adding model predictions to the datasets 
-def plotROCAndShapeComparison(signal_collection, background_collection, model_name ):
-    rocAndAUC( signal_collection.validation_set, background_collection.validation_set, model_name )
-    compareOutputShapes(
-        signal_collection.training_set,
-        signal_collection.validation_set,
-        background_collection.training_set,
-        background_collection.validation_set,
-        model_name
-    )
-
-
-######
-#MAIN#
-######
-
-
+from trainEvalBDT import *
 
 branch_names = [
     'lPt1', 'lPt2',
@@ -70,8 +16,6 @@ branch_names = [
     'jetPt5', 'jetEta5', 'jetPhi5',
     'mW1', 'mtop1'
     ]
-
-
 
 inputFile = TFile("../newTrees/reducedTrees/goodTrees_JetKins/trees_2018.root")
 
@@ -88,66 +32,14 @@ background_collection = DataCollection(bkgTree, branch_names, validation_fractio
 training_data = concatenateAndShuffleDatasets(signal_collection.training_set, background_collection.training_set)
 validation_data = concatenateAndShuffleDatasets(signal_collection.validation_set, background_collection.validation_set)
 
-####
-# model definition
-####
+model_name = 'model_test'
 
-training_matrix = xgb.DMatrix( training_data.samples, weight = training_data.weights, label = training_data.labels, nthread = 1, feature_names = branch_names )
+trainBDT( training_data.samples, training_data.labels, train_weights = training_data.weights, 
+          feature_names = branch_names, model_name = model_name, number_of_trees = 10, learning_rate = 0.1,  
+          max_depth = 2, min_child_weight = 1, subsample = 0.5, 
+          colsample_bytree = 1, gamma = 0, alpha = 0, number_of_threads = 1)
 
-model_parameters = {
-    'learning_rate' : 0.05,
-    'max_depth' : 4,
-    'min_child_weight' : 5,
-    'subsample' : 1,
-    'colsample_bytree' : 0.5,
-    'gamma' : 0,
-    'alpha' : 0,
-    'nthread' : 1
-}
-
-booster = xgb.train( model_parameters, training_matrix, 4000 )
-
-model_name = 'model_jetkins_4000trees'
-booster.save_model( model_name + '.bin' )
-
-#plot feature importance 
-xgb.plot_importance( booster )
-plt.gcf().subplots_adjust( left = 0.22 )
-plt.xlabel( 'Number of splittings', fontsize = 16 )
-plt.ylabel( 'Feature', fontsize = 16 )
-plt.savefig( 'feature_importance_' + model_name + '.pdf' )
-plt.savefig( 'feature_importance_' + model_name + '.png' )
-plt.clf()
-
-#reset the figure margins for future plots
-plt.gcf().subplots_adjust( left = 0.125 )
+evalBDT(model_name, signal_collection, background_collection)
 
 
-###
-# Get some evaluation metrics
-###
 
-model_name = 'model_jetkins_4000trees' 
-number_of_threads = 1
-
-#load trained classifier 
-model = xgb.Booster()
-model.load_model( model_name + '.bin' )
-
-#make xgboost DMatrices for predictions 
-signal_training_matrix = xgb.DMatrix( signal_collection.training_set.samples, label = signal_collection.training_set.labels, nthread = number_of_threads)
-signal_validation_matrix = xgb.DMatrix( signal_collection.validation_set.samples, label = signal_collection.validation_set.labels, nthread = number_of_threads)
-
-background_training_matrix = xgb.DMatrix( background_collection.training_set.samples, label = background_collection.training_set.labels, nthread = number_of_threads)
-background_validation_matrix = xgb.DMatrix( background_collection.validation_set.samples, label = background_collection.validation_set.labels, nthread = number_of_threads)
-
-#make predictions 
-signal_collection.training_set.addOutputs( model.predict( signal_training_matrix ) )
-signal_collection.validation_set.addOutputs( model.predict( signal_validation_matrix ) )
-
-background_collection.training_set.addOutputs( model.predict( background_training_matrix ) )
-background_collection.validation_set.addOutputs( model.predict( background_validation_matrix ) )
-
-# get evaluation metrics
-
-plotROCAndShapeComparison(signal_collection, background_collection, model_name )
