@@ -30,6 +30,7 @@
 - Check eta coverage electrons and muons
 - New top reconstruction script, possibly use Kirills code
 - Maybe: only save seperate histos when making them and stack them at plotting time, with the possibility of determining the order of plotting at that time as well (for instance for mll put ttbar bkg on bottom)
+- Update structure
 
 ## Recently done
 
