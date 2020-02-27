@@ -109,7 +109,8 @@ class lepton:
     def leptonMVA(self):
 
 #        return self.tree._leptonMvatZqTTV[self.nLight]
-        return self.tree._leptonMvatZq[self.nLight]
+#        return self.tree._leptonMvatZq[self.nLight]
+        return self.tree._leptonMvaTTH[self.nLight]
 
     def lMomPdg(self):
 

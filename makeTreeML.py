@@ -62,7 +62,6 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
     elif year == "2018":
         lumi = 59.74
 
-
     t = inputTree
 
     weight = calcWeight(inputFile, xSec, lumi)
@@ -103,13 +102,13 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
             validEvent, nLight, nJets = getattr(cuts, cutList[i])(event)
 
             if validEvent:
-
+                
                 event = cuts(t, nLight, nJets)
                 
                 # if the last cut was succesfull, we want to add the event to the new tree
 
-                if i == len(cutList) - 1:
-                   
+                if i == len(cutList) - 1:                    
+
                     variables.weight = t._weight * weight
                     variables.lPt1 = t._lPt[nLight[0]]
                     variables.lPt2 = t._lPt[nLight[1]]
@@ -184,6 +183,8 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
             else:
 
                 break
+
+    
 
 ########
 ##MAIN##

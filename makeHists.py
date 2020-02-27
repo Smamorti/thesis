@@ -69,16 +69,16 @@ def fillHist(f, xSec, histList, plotList, year, seperateZ = False, histListNotZ 
         
         # to quickly test the program
 
-        progress += 1 # To stop testing, just comment this line out. Maybe have it as an argument or so?
+#        progress += 1 # To stop testing, just comment this line out. Maybe have it as an argument or so?
 
         if progress / float(count) > 0.01:
             
             break
 
 
-        #for MVA plot
 #        cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "twoSF", "onZ"]
-        cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "njets", "nbjets", "twoSF", "onZ"]
+#        cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "njets", "nbjets", "twoSF", "onZ"]
+        cutList = ["lPogLoose", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "njets", "nbjets", "twoSF", "onZ"]
    
         leptons = None
         event = cuts(tree, range(nLight), range(nJets))

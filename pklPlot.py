@@ -1,16 +1,10 @@
-from utilities.pklPlotTools import makeLegend, makeCanvas, fillSubCanvas, plot
+from utilities.pklPlotTools import makeLegend, plot
 from utilities.utils import makeYlabels, str2tuple
-#from makeHists import fillColor, fillStacked
 from ROOT import gROOT
 import pickle
 from optparse import OptionParser
 import sys
 from numpy import loadtxt
-
-# stack = "samples/newSkim_2018.stack"
-# conf = "samples/tuples_2018_newSkim.conf"
-# plt = "samples/newSkim_2018.plot"
-# year = 2018
 
 parser = OptionParser()
 parser.add_option("-f", "--inputFile", default = "histograms/histList.pkl", help = "input pkl file")

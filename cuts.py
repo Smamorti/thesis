@@ -17,7 +17,8 @@ class cuts:
 
         for i in self.nLight:
 
-            if self.tree._leptonMvatZq[i] > 0.4:
+#            if self.tree._leptonMvatZq[i] > 0.4:
+            if self.tree._leptonMvaTTH[i] > 0.4:
 
                 validnLight.append(i)
 
