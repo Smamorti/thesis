@@ -27,7 +27,8 @@ def plotKerasMetricComparison( training_history, model_name, metric, metric_labe
     plt.ylabel( metric_label, fontsize = 16 )
     plt.ticklabel_format( style='sci', axis = 'y', scilimits = ( -2, 2 ) )
     plt.grid( True )
-    plt.savefig( metric + '_' + model_name + '.pdf' )
+    plt.savefig( 'results/' + metric + '_' + model_name + '.pdf' )
+    plt.savefig( 'results/' + metric + '_' + model_name + '.png' )
     
     #clear canvas
     plt.clf()
@@ -88,7 +89,8 @@ def plotROC(sig_eff, bkg_eff, model_name):
     plt.xlabel( 'Signal efficiency', fontsize = 16 )
     plt.ylabel( 'Background rejection', fontsize = 16 )
     plt.grid(True)
-    plt.savefig('roc_' + model_name + '.pdf') 
+    plt.savefig('results/roc_' + model_name + '.pdf') 
+    plt.savefig('results/roc_' + model_name + '.png')
 
     #clear canvas
     plt.clf()
@@ -125,7 +127,8 @@ def plotOutputShapeComparison( outputs_signal_training, weights_signal_training,
 
     bottom, top = plt.ylim()
     plt.ylim( 0,  top*1.2)
-    plt.savefig('shapeComparison_' + model_name + '.pdf')
+    plt.savefig('results/shapeComparison_' + model_name + '.pdf')
+    plt.savefig('results/shapeComparison_' + model_name + '.png')
     plt.clf()
     
 

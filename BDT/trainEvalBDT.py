@@ -19,15 +19,15 @@ def trainBDT( train_data, train_labels, train_weights = None, feature_names = No
 
     booster = xgb.train( model_parameters, training_matrix, number_of_trees )
 
-    booster.save_model( model_name + '.bin' )
+    booster.save_model( 'models/' + model_name + '.bin' )
 
     #plot feature importance                                                                                                                                                                                    
     xgb.plot_importance( booster )
     plt.gcf().subplots_adjust( left = 0.22 )
     plt.xlabel( 'Number of splittings', fontsize = 16 )
     plt.ylabel( 'Feature', fontsize = 16 )
-    plt.savefig( 'feature_importance_' + model_name + '.pdf' )
-    plt.savefig( 'feature_importance_' + model_name + '.png' )
+    plt.savefig( 'results/feature_importance_' + model_name + '.pdf' )
+    plt.savefig( 'results/feature_importance_' + model_name + '.png' )
     plt.clf()
 
     #reset the figure margins for future plots                                                                                                                                                                  
@@ -39,7 +39,7 @@ def evalBDT(model_name, signal_collection, background_collection):
 
     #load trained classifier                                                                                                                                                                                    
     model = xgb.Booster()
-    model.load_model( model_name + '.bin' )
+    model.load_model( 'models/' + model_name + '.bin' )
 
     #make xgboost DMatrices for predictions                                                                                                                                                                     
     signal_training_matrix = xgb.DMatrix( signal_collection.training_set.samples, label = signal_collection.training_set.labels, nthread = number_of_threads)

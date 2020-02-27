@@ -17,10 +17,11 @@ branch_names = [
     'mW1', 'mtop1'
     ]
 
-inputFile = TFile("../newTrees/reducedTrees/goodTrees_JetKins/trees_2018.root")
+#inputFile = TFile("../newTrees/reducedTrees/goodTrees_JetKins/trees_2018.root")
+inputFile = TFile("../newTrees/reducedTrees/goodTreesTotal/trees_total_2018.root")
 
-signalTree = inputFile.Get("tree_signal")
-bkgTree = inputFile.Get("tree_background")
+signalTree = inputFile.Get("tree_signal_total")
+bkgTree = inputFile.Get("tree_background_total")
 
 #validation and test fractions                                                                                                                                                                              
 validation_fraction = 0.4
@@ -32,11 +33,11 @@ background_collection = DataCollection(bkgTree, branch_names, validation_fractio
 training_data = concatenateAndShuffleDatasets(signal_collection.training_set, background_collection.training_set)
 validation_data = concatenateAndShuffleDatasets(signal_collection.validation_set, background_collection.validation_set)
 
-model_name = 'model_test'
+model_name = 'model_test_2'
 
 trainBDT( training_data.samples, training_data.labels, train_weights = training_data.weights, 
-          feature_names = branch_names, model_name = model_name, number_of_trees = 10, learning_rate = 0.1,  
-          max_depth = 2, min_child_weight = 1, subsample = 0.5, 
+          feature_names = branch_names, model_name = model_name, number_of_trees = 100, learning_rate = 0.1,  
+          max_depth = 10, min_child_weight = 1, subsample = 0.5, 
           colsample_bytree = 1, gamma = 0, alpha = 0, number_of_threads = 1)
 
 evalBDT(model_name, signal_collection, background_collection)
