@@ -31,6 +31,9 @@
 - New top reconstruction script, possibly use Kirills code
 - Maybe: only save seperate histos when making them and stack them at plotting time, with the possibility of determining the order of plotting at that time as well (for instance for mll put ttbar bkg on bottom)
 - Update structure
+- Using TTH MVA for now, get back to using tZq MVA (changed in both cuts.py and plotVariables.py)
+- Make programs compatible with submitting jobs to cream02
+- Maybe write script reduceTuple which handles applying the cuts to one bkg/sign source at a time and saves results in a new .root file, special for this bkg/sign source. This makes for easier parallelization.
 
 ## Recently done
 
