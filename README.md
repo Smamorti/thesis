@@ -24,16 +24,16 @@
 - Generalize creating a legend in various positions (now hardcoded)
 - Generalize setting the yrange
 - Change for _ in tree
-- Save the histograms in a .pkl format such that they don't have to be remade everytime you want to change the plotting style...
-- Make plotter program just handle the .pkl histos, also call this script when making the histos
 - Make a progressbar
-- Check eta coverage electrons and muons
 - New top reconstruction script, possibly use Kirills code
 - Maybe: only save seperate histos when making them and stack them at plotting time, with the possibility of determining the order of plotting at that time as well (for instance for mll put ttbar bkg on bottom)
 - Update structure
 - Using TTH MVA for now, get back to using tZq MVA (changed in both cuts.py and plotVariables.py)
 - Make programs compatible with submitting jobs to cream02
 - Maybe write script reduceTuple which handles applying the cuts to one bkg/sign source at a time and saves results in a new .root file, special for this bkg/sign source. This makes for easier parallelization.
+- Remake cutflow table
+- Improve plotter script (now using TList of hists)
+- Make it such that `makeHists.py` is able to assign different bkg/signal source files to one and the same histogram
 
 ## Recently done
 
@@ -42,3 +42,6 @@
 - Fix the amount of jets: two of the jets are actually the two leptons!
 - Reduce trees for ML training
 - Normalize trees
+- Check eta coverage electrons and muons
+- Save the histograms in a .pkl format such that they don't have to be remade everytime you want to change the plotting style...
+- Make plotter program just handle the .pkl histos, also call this script when making the histos
