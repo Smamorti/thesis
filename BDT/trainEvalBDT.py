@@ -44,22 +44,25 @@ def evalBDT(model_name, signal_collection, background_collection):
     #make xgboost DMatrices for predictions                                                                                                                                                                     
     signal_training_matrix = xgb.DMatrix( signal_collection.training_set.samples, label = signal_collection.training_set.labels, nthread = number_of_threads)
     signal_validation_matrix = xgb.DMatrix( signal_collection.validation_set.samples, label = signal_collection.validation_set.labels, nthread = number_of_threads)
+    signal_test_matrix = xgb.DMatrix( signal_collection.test_set.samples, label = signal_collection.test_set.labels, nthread = number_of_threads)
 
     background_training_matrix = xgb.DMatrix( background_collection.training_set.samples, label = background_collection.training_set.labels, nthread = number_of_threads)
     background_validation_matrix = xgb.DMatrix( background_collection.validation_set.samples, label = background_collection.validation_set.labels, nthread = number_of_threads)
+    background_test_matrix = xgb.DMatrix( background_collection.test_set.samples, label = background_collection.test_set.labels, nthread = number_of_threads)
 
     #make predictions                                                                                                                                                                                           
     signal_collection.training_set.addOutputs( model.predict( signal_training_matrix ) )
     signal_collection.validation_set.addOutputs( model.predict( signal_validation_matrix ) )
+    signal_collection.test_set.addOutputs( model.predict( signal_test_matrix ) )
 
     background_collection.training_set.addOutputs( model.predict( background_training_matrix ) )
     background_collection.validation_set.addOutputs( model.predict( background_validation_matrix ) )
+    background_collection.test_set.addOutputs( model.predict( background_test_matrix ) )
 
     # get evaluation metrics                                                                                                                                                                               
 
     plotROCAndShapeComparison(signal_collection, background_collection, model_name )
-
-
+    plotROCAndShapeComparison_test(signal_collection, background_collection, model_name + '_test' )
 
 
 #evaluate a model from its outputs and weights for signal and background                                                                                                                                    
@@ -100,5 +103,15 @@ def plotROCAndShapeComparison(signal_collection, background_collection, model_na
         signal_collection.validation_set,
         background_collection.training_set,
         background_collection.validation_set,
+        model_name
+    )
+
+def plotROCAndShapeComparison_test(signal_collection, background_collection, model_name ):
+    rocAndAUC( signal_collection.test_set, background_collection.test_set, model_name )
+    compareOutputShapes(
+        signal_collection.training_set,
+        signal_collection.test_set,
+        background_collection.training_set,
+        background_collection.test_set,
         model_name
     )

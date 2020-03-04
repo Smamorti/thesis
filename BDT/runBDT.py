@@ -27,20 +27,25 @@ bkgTree = inputFile.Get("tree_background_total")
 validation_fraction = 0.4
 test_fraction = 0.2
 
+# ensure reproducibility
+
+np.random.seed(42)
+
 signal_collection = DataCollection(signalTree, branch_names, validation_fraction, test_fraction, True, 'weight', only_positive_weights = True)
 background_collection = DataCollection(bkgTree, branch_names, validation_fraction, test_fraction, False, 'weight', only_positive_weights = True)
 
 training_data = concatenateAndShuffleDatasets(signal_collection.training_set, background_collection.training_set)
 validation_data = concatenateAndShuffleDatasets(signal_collection.validation_set, background_collection.validation_set)
+test_data = concatenateAndShuffleDatasets(signal_collection.test_set, background_collection.test_set)
 
-model_name = 'model_test_2'
+#print(training_data.weights)
 
+model_name = 'nowWithPython2'
 trainBDT( training_data.samples, training_data.labels, train_weights = training_data.weights, 
-          feature_names = branch_names, model_name = model_name, number_of_trees = 100, learning_rate = 0.1,  
-          max_depth = 10, min_child_weight = 1, subsample = 0.5, 
-          colsample_bytree = 1, gamma = 0, alpha = 0, number_of_threads = 1)
+          feature_names = branch_names, model_name = model_name, number_of_trees = 1000, learning_rate = 0.01,  
+          max_depth = 5, min_child_weight = 10, subsample = 1, 
+          colsample_bytree = 0.5, gamma = 0, alpha = 0, number_of_threads = 1)
 
 evalBDT(model_name, signal_collection, background_collection)
-
 
 
