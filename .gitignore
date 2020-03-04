@@ -5,3 +5,5 @@ test.py
 makeTreeML_signANDbkg.py
 BDT/old*
 old/*
+reduce*
+test*
