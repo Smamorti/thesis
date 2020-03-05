@@ -1,1 +1,5 @@
 1) in modelTraining, try to fix the error with keras.layers
+2) in plotting, change name for genetic xgboost (fixes non-existant directory error)
+   !! for nn, have to change back!
+3) in configuration.activation, the activation class. Also here we have to fix the layers.ReLU error
+4) in plotting: also save .png along with .pdf
