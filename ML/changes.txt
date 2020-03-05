@@ -3,3 +3,6 @@
    !! for nn, have to change back!
 3) in configuration.activation, the activation class. Also here we have to fix the layers.ReLU error
 4) in plotting: also save .png along with .pdf
+5) Added selu activation function 
+6) in the input file for NNs: fixed some typos in hyperparameters section
+7) in plotting: now the plotting script is able to plot booleans (as 0 and 1) and strings on the x-axis as well
