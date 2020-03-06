@@ -1,7 +1,3 @@
-#import keras 
-#import keras.layers.Activation
-from keras.layers import Activation as activ
-#from keras.layers import advanced_activations as adv_activ
 import keras.layers.advanced_activations as adv_activ
 
 class Activation():
@@ -14,11 +10,19 @@ class Activation():
         #     'elu' : keras.layers.ELU
         # }
         activationLayerDict = {
-            'relu' : activ('relu'),
+            'relu' : 'relu',
             'prelu' : adv_activ.PReLU,
             'leakyrelu' : adv_activ.LeakyReLU,
-            'elu' : activ('elu')
+            'elu' : 'elu',
+            'selu' : 'selu'
         }
+        # activationLayerDict = {
+        #     'relu' : activ('relu'),
+        #     'prelu' : adv_activ.PReLU,
+        #     'leakyrelu' : adv_activ.LeakyReLU,
+        #     'elu' : activ('elu'),
+        #     'selu' : activ('selu')
+        # }
        # activationLayerDict = {
        #      'relu' : keras.layers.Activation('relu'),
        #      'prelu' : keras.layers.Activation('prelu'),

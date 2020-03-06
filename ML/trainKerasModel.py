@@ -78,10 +78,14 @@ class KerasClassifierTrainer():
                 model.add( layers.BatchNormalization() )
 
             #activation layer 
-            #model.add( activation_layer() )
-            
-            model.add(Activation('relu'))
 
+            if type(activation_layer) == str:
+
+                model.add(Activation(activation_layer))
+
+            else:
+
+                model.add( activation_layer() )
 
             #add batchnormalization after activation if requested
             if( batchnorm_hidden and not batchnorm_before_activation ):
@@ -121,9 +125,19 @@ class KerasClassifierTrainer():
                 intermediate = layers.BatchNormalization()( intermediate )
         
             #activation layer 
-            # intermediate = activation_layer()( intermediate )
 
-            intermediate = Activation('relu')( intermediate )
+            # THIS MIGHT NOT WORK
+
+            if type(activation_layer) == str:
+
+                intermediate = Activation(activation_layer)( intermediate )
+
+            else:
+
+                intermediate =  activation_layer()( intermediate )
+
+
+            # intermediate = Activation('relu')( intermediate )
 
             #add batchnormalization after activation if requested
             if( batchnorm_hidden and not batchnorm_before_activation ):
