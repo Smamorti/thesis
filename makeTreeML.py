@@ -2,7 +2,7 @@ from ROOT import TFile, TTree
 from utilities.makeBranches import makeBranches
 from cuts import cuts
 from makeHists import calcWeight
-from plotVariables import lepton, calculateDeltaR
+from plotVariables import lepton, calculateDeltaR, H_t
 import numpy as np
 import sys
 from optparse import OptionParser
@@ -114,10 +114,11 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
                     variables.lPt2 = t._lPt[nLight[1]]
                     variables.lEta1 = t._lEta[nLight[0]]
                     variables.lEta2 = t._lEta[nLight[1]]
-                    # variables.lEta1 = np.absolute(t._lEta[nLight[0]])
-                    # variables.lEta2 = np.absolute(t._lEta[nLight[1]])
                     variables.lPhi1 = t._lPhi[nLight[0]]
                     variables.lPhi2 = t._lPhi[nLight[1]]
+                    variables.I_rel1 = t._relIso[nLight[0]]
+                    variables.I_rel2 = t._relIso[nLight[1]]
+                    
                     variables.njets = len(nJets)
                     
                     nbjets = 0
@@ -178,6 +179,13 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
                     variables.jetEta5 = t._jetEta[nJets[4]]
                     variables.jetPhi5 = t._jetPhi[nJets[4]]
                     
+                    # calculate H_t^miss and add it to tree, also add MET
+                    
+                    variables.H_t = H_t(lepton1)
+
+                    variables.MET = t._met
+
+                    # Fill tree
 
                     newTree.Fill()
             else:
@@ -199,7 +207,8 @@ branches += ['jetPt3/F', 'jetEta3/F', 'jetPhi3/F']
 branches += ['jetPt4/F', 'jetEta4/F', 'jetPhi4/F']
 branches += ['jetPt5/F', 'jetEta5/F', 'jetPhi5/F']
 branches += ['mW1/F', 'mtop1/F', 'weight/F']
-
+branches += ['MET/F', 'H_t/F']
+branches += ['I_rel1/F', 'I_rel2/F']
 
 channels_conf, files, xSecs = np.loadtxt(options.conf, comments = "%", unpack = True, dtype = str)
 xSecs = xSecs.astype(float)
