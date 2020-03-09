@@ -34,6 +34,7 @@
 - Remake cutflow table
 - Improve plotter script (now using TList of hists)
 - Make it such that `makeHists.py` is able to assign different bkg/signal source files to one and the same histogram
+- Scatterplots BDT/NN: for learning rate maybe x axis in logscale
 
 ## Recently done
 
