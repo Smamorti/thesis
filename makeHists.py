@@ -5,6 +5,7 @@ import plotVariables
 import numpy as np
 import time
 from cuts import cuts
+import sys
 
 def initializeHist(hist, name, nbins, llim, ulim):
 
@@ -33,6 +34,7 @@ def addOverflowbin(hist):
 
 def fillHist(f, xSec, histList, plotList, year, seperateZ = False, histListNotZ = None): 
 
+
     start = time.time()
 
     if year == "2017":
@@ -40,14 +42,23 @@ def fillHist(f, xSec, histList, plotList, year, seperateZ = False, histListNotZ 
     elif year == "2018":
         lumi = 59.74
 
-    
+
     weight = calcWeight(f, xSec, lumi)
     tree = f.Get("blackJackAndHookers/blackJackAndHookersTree")
     
     count = tree.GetEntries()
 
     print(count)
+
+    # setup progressbar
+
+    toolbar_width = 100
+     
+    sys.stdout.write("Progress: [%s]" % (" " * toolbar_width))
+    sys.stdout.flush()
+    sys.stdout.write("\b" * (toolbar_width+1)) # return to start of line, after '['  
     progress = 0
+    toolbarProgress = 0
 
     for _ in tree:
 
@@ -68,17 +79,27 @@ def fillHist(f, xSec, histList, plotList, year, seperateZ = False, histListNotZ 
             nJets = ord(tree._nJets)
         
         # to quickly test the program
+        
+        progress += 1
 
-        progress += 1 # To stop testing, just comment this line out. Maybe have it as an argument or so?
+        total = count
+
+        # to stop testing, comment the following three lines out
+
+        total = count * 0.01
 
         if progress / float(count) > 0.01:
             
             break
 
+        if progress / total > toolbarProgress / toolbar_width:
+            toolbarProgress += 1
+            sys.stdout.write("-")
+            sys.stdout.flush()
 
 #        cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "twoSF", "onZ"]
 #        cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "njets", "nbjets", "twoSF", "onZ"]
-        cutList = ["lPogLoose", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "njets", "nbjets", "twoSF", "onZ"]
+        cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "njets", "nbjets", "twoSF", "onZ"]
    
         leptons = None
         event = cuts(tree, range(nLight), range(nJets))
@@ -108,6 +129,8 @@ def fillHist(f, xSec, histList, plotList, year, seperateZ = False, histListNotZ 
             else:
 
                 break
+
+    sys.stdout.write("]\n") # this ends the progress bar
 
     for hist in histList:
         
@@ -146,7 +169,6 @@ def fillColor(histList, colorList):
 
 def makeLegend(nameList, histList, position = (0.7, 0.7, 0.9, 0.9)):
     
-    #x1, y1, x2, y2 = position[0], position[1], position[2], position[3]
     leg = ROOT.TLegend(position[0], position[1], position[2], position[3])
     
     for i in range(len(nameList)):
