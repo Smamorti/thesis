@@ -69,7 +69,7 @@ def fillHist(f, xSec, histList, plotList, year, seperateZ = False, histListNotZ 
         
         # to quickly test the program
 
-#        progress += 1 # To stop testing, just comment this line out. Maybe have it as an argument or so?
+        progress += 1 # To stop testing, just comment this line out. Maybe have it as an argument or so?
 
         if progress / float(count) > 0.01:
             

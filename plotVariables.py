@@ -235,7 +235,11 @@ def geen2W(l1, l2, hist, totalWeight):
 
         print("Uh-oh: no two W bosons! Only {} light jets!".format(diff))
 
+def Ht(l1, l2, hist, totalWeight):
 
+       h = H_t(l1)
+
+       hist.Fill(h, totalWeight)
 
 ###########################                                                                                                                                                                                
 ######## UTILITIES ########                                                                                                                                                                                
@@ -300,3 +304,19 @@ def diLeptonMass(l1, l2):
     vec1 += vec2
 
     return vec1.M()
+
+def H_t(lep):
+
+    jets = lep.goodJets
+    
+    h = PtEtaPhiEVector()
+    vec = PtEtaPhiEVector()
+
+    for jet in jets:
+
+       vec.SetCoordinates(lep.tree._jetPt[jet], lep.tree._jetEta[jet], lep.tree._jetPhi[jet], lep.tree._jetE[jet])
+       
+       h += vec
+
+    return h.Pt()
+    

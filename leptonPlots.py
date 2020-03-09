@@ -8,12 +8,12 @@ import pickle
 from utilities.utils import makeYlabels, str2tuple
 
 
-# stack = "samples/newSkim_2018.stack"
-# conf = "samples/tuples_2018_newSkim.conf"
+stack = "samples/newSkim_2018.stack"
+conf = "samples/tuples_2018_newSkim.conf"
 plt = "samples/newSkim_2018.plot"
 
-stack = "samples/2018_v2.stack"
-conf = "samples/2018_v2.conf"
+# stack = "samples/2018_v2.stack"
+# conf = "samples/2018_v2.conf"
 
 # stack = "samples/ttunder_2018.stack"
 # conf = "samples/ttunder_2018.conf"
