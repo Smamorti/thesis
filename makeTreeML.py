@@ -1,3 +1,4 @@
+from __future__ import division
 from ROOT import TFile, TTree
 from utilities.makeBranches import makeBranches
 from cuts import cuts
@@ -69,15 +70,34 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
     count = t.GetEntries()
 
     print(count)
+
+    # setup progressbar                                                                                                                                                                                   
+    toolbar_width = 100
+
+    sys.stdout.write("Progress: [%s]" % (" " * toolbar_width))
+    sys.stdout.flush()
+    sys.stdout.write("\b" * (toolbar_width+1)) # return to start of line, after '['                                                                                                                        
     progress = 0
+    toolbarProgress = 0
 
     for _ in t:
 
-        # to quickly test the program                                                                                                                                                                       
-#        progress += 1 # To stop testing, just comment this line out. Maybe have it as an argument or so?                                                                                                    
+        progress += 1
+        
+        total = count
+
+        # to stop testing, comment the following three lines out                                                                                                                                           
+
+        total = count * 0.01
+
         if progress / float(count) > 0.01:
 
             break
+
+        if progress / total > toolbarProgress / toolbar_width:
+            toolbarProgress += 1
+            sys.stdout.write("-")
+            sys.stdout.flush()
 
         # make script compatible with both 2017 and 2018 files                                                                                                                                              
         if type(t._nL) == int:
@@ -192,7 +212,7 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
 
                 break
 
-    
+    sys.stdout.write("]\n") # this ends the progress bar
 
 ########
 ##MAIN##
