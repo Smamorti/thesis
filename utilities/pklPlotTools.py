@@ -1,4 +1,5 @@
-from ROOT import TCanvas, TLegend, THStack
+from ROOT import TCanvas, TLegend, THStack, TList
+import pickle
 
 def makeLegend(typeList, histList, texDict, position = (0.8, 0.7, 0.9, 0.9)):
 
@@ -57,7 +58,46 @@ def differentOrder(histList, i, hist, order = [2, 0, 1]):
     for j in order:
 
         hist.Add(histList[j][i])
-    
+
+def initializeStacked(hist, name):
+
+    hist = THStack(name," ")
+    return hist
+
+def makeStackedList(plotList):
+
+    temp = TList()
+
+    for i in range(len(plotList)):
+
+        name = "h_" + plotList[i] + "_Stacked"
+        temp.Add(THStack(name, " "))
+
+    return temp
+
+def makeHistList(sources):
+
+    temp = TList()
+
+    for source in sources:
+
+        sourceHists = pickle.load(file(source))
+        
+        temp.Add(sourceHists)
+
+    return temp
+
+def fillStacked(sources, stackedList):
+
+    for source in sources:
+
+        sourceHists = pickle.load(file(source))
+
+        for j in range(len(stackedList)):
+
+            stackedList[j].Add(sourceHists[j])
+
+        del sourceHists
 
 def plot(plotList, histList, xLabelList, yLabelList, leg, leg2, title =  "", logscale = 1, year = "2018"):
 
@@ -70,21 +110,21 @@ def plot(plotList, histList, xLabelList, yLabelList, leg, leg2, title =  "", log
 
         c = makeCanvas(1, 1)
         filename = "plots/Hist_{}_{}_{}".format(year, plotList[i], scale)
-        fillSubCanvas(c, histList[-1][i], xLabelList[i], yLabelList[i], leg, leg2, title, logscale)
+        fillSubCanvas(c, histList[i], xLabelList[i], yLabelList[i], leg, leg2, title, logscale)
         c.SaveAs(filename + ".pdf")
         c.SaveAs(filename + ".png")
         c.Close()
 
-        # hardcoded (for now?)
+        # # hardcoded (for now?)
 
-        if xLabelList[i] == "m(ll) (GeV)":
+        # if xLabelList[i] == "m(ll) (GeV)":
 
-            hist = THStack(xLabelList[i]," ")
-            differentOrder(histList, i, hist, order = [2, 0, 1])
+        #     hist = THStack(xLabelList[i]," ")
+        #     differentOrder(histList, i, hist, order = [2, 0, 1])
 
-            c = makeCanvas(1, 1)
-            filename = "plots/Hist_{}_{}_{}_{}".format(year, plotList[i], scale, "ttunder")
-            fillSubCanvas(c, hist, xLabelList[i], yLabelList[i], leg, leg2, title, logscale)
-            c.SaveAs(filename + ".pdf")
-            c.SaveAs(filename + ".png")
-            c.Close()
+        #     c = makeCanvas(1, 1)
+        #     filename = "plots/Hist_{}_{}_{}_{}".format(year, plotList[i], scale, "ttunder")
+        #     fillSubCanvas(c, hist, xLabelList[i], yLabelList[i], leg, leg2, title, logscale)
+        #     c.SaveAs(filename + ".pdf")
+        #     c.SaveAs(filename + ".png")
+        #     c.Close()
