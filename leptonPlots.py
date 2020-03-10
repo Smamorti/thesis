@@ -45,15 +45,38 @@ yLabelList = makeYlabels(xtypeList, binList)
 # Fill histograms
 #
 
-for i in range(len(files)):
-#for i in range(0, 1):
-    f = TFile.Open(files[i])
+for i in range(len(channels_stack)):
+
     print("Working on file number {}".format(i))
-    print(files[i])
-    print(channels_stack[i])
+
+    channel = channels_stack[i]
+    index = np.where(channels_conf == channel)
+
+    if len(index[0]) == 0:
+
+        raise ValueError("This source ({}) is not specified in the .conf file".format(channel))
+
+    elif len(index[0]) > 1:
+
+        raise ValueError("This source ({}) appears multiple times in the .conf file".format(channel))
+
+    print(channels_conf[index[0][0]])
+    f = TFile.Open(files[index[0][0]])
     makeHists.fillHist(f, xSecs[i], histList[i], plotList, year = year)
     
     f.Close()
+
+
+
+# for i in range(len(files)):
+# #for i in range(0, 1):
+#     f = TFile.Open(files[i])
+#     print("Working on file number {}".format(i))
+#     print(files[i])
+#     print(channels_stack[i])
+#     makeHists.fillHist(f, xSecs[i], histList[i], plotList, year = year)
+    
+#     f.Close()
 
 start = time.time()
 
@@ -77,5 +100,7 @@ plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, title =  "No L
 plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, year = year, logscale = 0)
 
 print("Time elapsed: {} seconds".format((time.time() - start)))
+
+# maybe save each histList seperately as well? as in per source (ttZ, ttW, other, DY, ....)
 
 pickle.dump(histList, file('histograms/histList.pkl', 'w'))
