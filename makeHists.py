@@ -1,26 +1,26 @@
 from __future__ import division
-import ROOT
 from plotVariables import lepton, goodJet, diLeptonMass
 import plotVariables
 import numpy as np
 import time
 from cuts import cuts
 import sys
+from ROOT import TFile, TH1F, THStack, TLegend, TList
 
 def initializeHist(hist, name, nbins, llim, ulim):
 
-    hist = ROOT.TH1F(name," ", nbins, llim, ulim)
+    hist = TH1F(name," ", nbins, llim, ulim)
     hist.Sumw2()
     return hist
 
 def initializeStacked(hist, name):
 
-    hist = ROOT.THStack(name," ")
+    hist = THStack(name," ")
     return hist
 
-def calcWeight(filename, xSec, lumi = 41.53):
+def calcWeight(filename, xSec, lumi = 59.74):
 
-    hCounter = ROOT.TH1F("hCounter","Events Counter",1 ,0 ,1 )
+    hCounter = TH1F("hCounter","Events Counter",1 ,0 ,1 )
     hCounter = filename.Get("blackJackAndHookers/hCounter")
     totalEvents = hCounter.GetBinContent(1)
 
@@ -30,126 +30,130 @@ def addOverflowbin(hist):
 
     nbins = hist.GetNbinsX()
     hist.SetBinContent(nbins, hist.GetBinContent(nbins) + hist.GetBinContent(nbins + 1))
-    
 
-def fillHist(f, xSec, histList, plotList, year, seperateZ = False, histListNotZ = None): 
+def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists):
 
-
-    start = time.time()
 
     if year == "2017":
         lumi = 41.53
     elif year == "2018":
         lumi = 59.74
 
+    for k in range(len(channels)):
 
-    weight = calcWeight(f, xSec, lumi)
-    tree = f.Get("blackJackAndHookers/blackJackAndHookersTree")
-    
-    count = tree.GetEntries()
+        start = time.time()
 
-    print(count)
+        channel = channels[k]
 
-    # setup progressbar
+        f = TFile.Open(locationDict[channel])
 
-    toolbar_width = 100
-     
-    sys.stdout.write("Progress: [%s]" % (" " * toolbar_width))
-    sys.stdout.flush()
-    sys.stdout.write("\b" * (toolbar_width+1)) # return to start of line, after '['  
-    progress = 0
-    toolbarProgress = 0
+        weight = calcWeight(f, xSecDict[channel], lumi)
+        tree = f.Get("blackJackAndHookers/blackJackAndHookersTree")
 
-    for _ in tree:
+        count = tree.GetEntries()
 
-        # make script compatible with both 2017 and 2018 files
+        print(count)
 
-        if type(tree._nL) == int:
+        # setup progressbar
 
-            nL = tree._nL
-            gen_nL = tree._gen_nL
-            nLight = tree._nLight
-            nJets = tree._nJets
-            
-        else:
+        toolbar_width = 100
 
-            nL = ord(tree._nL)
-            gen_nL = ord(tree._gen_nL)
-            nLight = ord(tree._nLight)
-            nJets = ord(tree._nJets)
-        
-        # to quickly test the program
-        
-        progress += 1
+        sys.stdout.write("File %d/%d. Progress: [%s]" % (k+1, len(channels), " " * toolbar_width))
+        sys.stdout.flush()
+        sys.stdout.write("\b" * (toolbar_width+1)) # return to start of line, after '['  
+        progress = 0
+        toolbarProgress = 0
 
         total = count
 
-        # to stop testing, comment the following three lines out
+        if testing == 'yes':
 
-        total = count * 0.01
+            total *= 0.01
 
-        if progress / float(count) > 0.01:
-            
-            break
+        for _ in tree:
 
-        if progress / total > toolbarProgress / toolbar_width:
-            toolbarProgress += 1
-            sys.stdout.write("-")
-            sys.stdout.flush()
+            # make script compatible with both 2017 and 2018 files
 
-#        cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "twoSF", "onZ"]
-#        cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "njets", "nbjets", "twoSF", "onZ"]
-        cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "njets", "nbjets", "twoSF", "onZ"]
-   
-        leptons = None
-        event = cuts(tree, range(nLight), range(nJets))
+            if type(tree._nL) == int:
 
-        for i in range(len(cutList)):
+                nL = tree._nL
+                gen_nL = tree._gen_nL
+                nLight = tree._nLight
+                nJets = tree._nJets
 
-            # from here on out, nLight is an array with all valid nLight values                                                                                                                           
-   
-            validEvent, nLight, nJets = getattr(cuts, cutList[i])(event)
-
-            if validEvent:
-
-                event = cuts(tree, nLight, nJets)
-                
-                if i == len(cutList) - 1:
-
-                    lepton1 = lepton(tree, nLight[0], checknJets = True, calcWmass = True, nJets = nJets)
-                    lepton2 = lepton(tree, nLight[1], checknJets = False)
-                    
-                    for k in range(len(plotList)):
-
-                        hist = histList[k]
-
-                        getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
-                        
-                    #getattr(plotVariables, "geen2W")(lepton1, lepton2, hist, tree._weight * weight)
             else:
+
+                nL = ord(tree._nL)
+                gen_nL = ord(tree._gen_nL)
+                nLight = ord(tree._nLight)
+                nJets = ord(tree._nJets)
+
+            progress += 1
+
+            if progress / float(count) > 0.01 and testing == 'yes':
 
                 break
 
-    sys.stdout.write("]\n") # this ends the progress bar
+            if progress / total > toolbarProgress / toolbar_width:
+                toolbarProgress += 1
+                sys.stdout.write("-")
+                sys.stdout.flush()
 
-    for hist in histList:
-        
-        #addOverflowbin(hist)
-        print("Entries: {}".format(hist.GetEntries()))
-        
-        totalContent = 0
-        
-        nbins = hist.GetNbinsX()
+            cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "njets", "nbjets", "twoSF", "onZ"]
 
-        for bin in range(nbins + 2): #including under- and overflowbin
-        
-            totalContent += hist.GetBinContent(bin)
+            leptons = None
+            event = cuts(tree, range(nLight), range(nJets))
 
-        print("Total hist content: {}".format(totalContent))
+            for i in range(len(cutList)):
+
+                # from here on out, nLight is an array with all valid nLight values                                                                                          
+
+                validEvent, nLight, nJets = getattr(cuts, cutList[i])(event)
+
+                if validEvent:
+
+                    event = cuts(tree, nLight, nJets)
+
+                    if i == len(cutList) - 1:
+
+                        lepton1 = lepton(tree, nLight[0], checknJets = True, calcWmass = True, nJets = nJets)
+                        lepton2 = lepton(tree, nLight[1], checknJets = False)
+
+                        for k in range(len(plotList)):
+
+                            hist = histList[k]
+
+                            getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
+
+                        #getattr(plotVariables, "geen2W")(lepton1, lepton2, hist, tree._weight * weight)
+                else:
+
+                    break
+
+        sys.stdout.write("]\n") # this ends the progress bar
+
+        f.Close()
+
+        print("Time elapsed: {} seconds".format((time.time() - start)))
+
+    if printHists == 'yes':
+
+        for hist in histList:
+
+            #addOverflowbin(hist)
+            print("Entries: {}".format(hist.GetEntries()))
+
+            totalContent = 0
+
+            nbins = hist.GetNbinsX()
+
+            for bin in range(nbins + 2): #including under- and overflowbin
+
+                totalContent += hist.GetBinContent(bin)
+
+            print("Total hist content: {}".format(totalContent))
                 
-    print("Time elapsed: {} seconds".format((time.time() - start)))
-        
-
+    
 def fillStacked( histList):
     
     for i in range(len(histList) - 1):
@@ -158,25 +162,31 @@ def fillStacked( histList):
                     
             histList[-1][j].Add(histList[i][j])
 
-def fillColor(histList, colorList):
+def fillColor(histList, colorDict, typeList): 
 
- 
-    for i in range(len(colorList)): # loop over different sources
+    for i in range(len(typeList)): # loop over different sources
         
+        source = typeList[i]
+
         for j in range(len(histList[i])): # loop over different histograms
         
-            histList[i][j].SetFillColor(colorList[i])
+            histList[i][j].SetFillColor(colorDict[source])
 
-def makeLegend(nameList, histList, position = (0.7, 0.7, 0.9, 0.9)):
+
+def makeLegend(typeList, histList, texDict, position = (0.8, 0.7, 0.9, 0.9)):
     
-    leg = ROOT.TLegend(position[0], position[1], position[2], position[3])
+    leg = TLegend(position[0], position[1], position[2], position[3])
     
-    for i in range(len(nameList)):
+    for i in range(len(typeList)):
     
-        label = nameList[i]
+        source = typeList[i]
+        label = texDict[source]
+
         leg.AddEntry(histList[i][0], label, "f")
        
     return leg
+
+
 
 def fillTList(channels, plotList, binList, extra = ""):
 
@@ -188,12 +198,11 @@ def fillTList(channels, plotList, binList, extra = ""):
     # The extra string is there to for instance choose wether you want an extra part to the name or not (such as Z or notZ)
     #
 
-    tlist = ROOT.TList()
+    tlist = TList()
 
     for channel in channels:
 
-        temp = ROOT.TList()
-        
+        temp = TList()
 
         for i in range(len(plotList)):
 
@@ -203,12 +212,12 @@ def fillTList(channels, plotList, binList, extra = ""):
 
         tlist.Add(temp)
     
-    temp = ROOT.TList()
+    temp = TList()
         
     for i in range(len(plotList)):
         
         name = "h_" + plotList[i] + "_Stacked" + extra
-        temp.Add(ROOT.THStack(name, " "))
+        temp.Add(THStack(name, " "))
 
     tlist.Add(temp)
 

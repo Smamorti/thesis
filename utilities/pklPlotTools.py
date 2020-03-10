@@ -1,15 +1,18 @@
 from ROOT import TCanvas, TLegend, THStack
 
-def makeLegend(texList, histList, position = (0.7, 0.7, 0.9, 0.9)):
+def makeLegend(typeList, histList, texDict, position = (0.8, 0.7, 0.9, 0.9)):
 
     leg = TLegend(position[0], position[1], position[2], position[3])
 
-    for i in range(len(texList)):
+    for i in range(len(typeList)):
 
-        label = texList[i]
+        source = typeList[i]
+        label = texDict[source]
+
         leg.AddEntry(histList[i][0], label, "f")
 
     return leg
+
 
 def makeCanvas(horizontal, vertical):
 
