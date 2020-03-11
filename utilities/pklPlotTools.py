@@ -1,9 +1,13 @@
-from ROOT import TCanvas, TLegend, THStack, TList
+from ROOT import TCanvas, TLegend, THStack, TList, TPaveText
+import ROOT.gStyle as gStyle
+import ROOT.gPad as gPad
 import pickle
 
-def makeLegend(typeList, histList, texDict, position = (0.8, 0.7, 0.9, 0.9)):
+def makeLegend(typeList, histList, texDict, position = (0.8, 0.7, 0.89, 0.89)):
 
-    leg = TLegend(position[0], position[1], position[2], position[3])
+    leg = TLegend(position[0], position[1], position[2], position[3], '', 'NBNDC')
+
+    leg.SetBorderSize(0)
 
     for i in range(len(typeList)):
 
@@ -111,6 +115,46 @@ def plot(plotList, histList, xLabelList, yLabelList, leg, leg2, title =  "", log
         c = makeCanvas(1, 1)
         filename = "plots/Hist_{}_{}_{}".format(year, plotList[i], scale)
         fillSubCanvas(c, histList[i], xLabelList[i], yLabelList[i], leg, leg2, title, logscale)
+
+        # TO DO: Add option to customize text!
+
+        text1 = "CMS Preliminary"
+        label1 = TPaveText()
+        label1.SetX1NDC(gStyle.GetPadLeftMargin()-0.043)
+        label1.SetY1NDC(1.0-gStyle.GetPadTopMargin())
+        label1.SetX2NDC(1.0-gStyle.GetPadRightMargin())
+        label1.SetY2NDC(1.0)
+
+        #label1.SetTextFont(42)
+        label1.AddText(text1)
+        label1.SetFillStyle(0)
+        label1.SetBorderSize(0)
+        label1.SetTextSize(0.04)
+        label1.SetTextAlign(13)
+        label1.Draw()
+
+        text2 = " %2.1f fb^{-1} (#sqrt{s} = %2.f TeV)" % (59.74, 13)
+        label2 = TPaveText()
+        label2.SetX1NDC(gStyle.GetPadLeftMargin())
+        label2.SetY1NDC(1.0-gStyle.GetPadTopMargin())
+        label2.SetX2NDC(1.0-gStyle.GetPadRightMargin() + 0.043)
+        label2.SetY2NDC(1.0)
+
+        label2.SetTextFont(42)
+        label2.AddText(text2)
+        label2.SetFillStyle(0)
+        label2.SetBorderSize(0)
+        label2.SetTextSize(0.04)
+        label2.SetTextAlign(33)
+        label2.Draw()
+
+        c.Update()
+        
+        gPad.SetTickx()
+        gPad.SetTicky()
+        
+        c.Update()
+
         c.SaveAs(filename + ".pdf")
         c.SaveAs(filename + ".png")
         c.Close()

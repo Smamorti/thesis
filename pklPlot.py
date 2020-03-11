@@ -49,7 +49,7 @@ else:
 gROOT.SetBatch(True)
 
 leg = makeLegend(typeList, histList, texDict)
-leg_2 = makeLegend(typeList, histList, texDict, (0.1, 0.7, 0.2, 0.9))
+leg_2 = makeLegend(typeList, histList, texDict, (0.11, 0.7, 0.2, 0.89))
 
 plot(plotList, stackedList, xLabelList, yLabelList, leg, leg_2, year = options.year)
 plot(plotList, stackedList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0)
