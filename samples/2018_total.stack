@@ -18,8 +18,6 @@ ttX	t#bar{t}X	fillStyle	594
 +Sing_t(s)
 ttW	t#bar{t}W	fillStyle	618
 +TTWjets-Lnu
-tt	t#bar{t}	fillStyle	432
-+ttjets-ll
 other	Other	fillStyle	409
 +WZ-lllnu
 +ZZ-llll
@@ -38,5 +36,7 @@ other	Other	fillStyle	409
 +WZZ
 +ZZZ
 +Wjets-lnu
+tt	t#bar{t}	fillStyle	432
++ttjets-ll
 DY	DY	fillStyle	797
 +DY
