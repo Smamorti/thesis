@@ -33,6 +33,8 @@
 - Improve plotter script (now using TList of hists)
 - Scatterplots BDT/NN: for learning rate maybe x axis in logscale
 - Make it such that the cutflow script can handle multiple files for the same bkg/signal source and then re-run it
+- Optimize BDT working point
+- Maybe: try implement a parameter which quantifies the overfitting of a certain BDT, to have two measures to decide best BDTs (AUC and overfit)
 
 ## Recently done
 
