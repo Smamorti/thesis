@@ -62,7 +62,7 @@ def evalBDT(model_name, signal_collection, background_collection):
     # get evaluation metrics                                                                                                                                                                               
 
     plotROCAndShapeComparison(signal_collection, background_collection, model_name )
-    plotROCAndShapeComparison_test(signal_collection, background_collection, model_name + '_test' )
+#    plotROCAndShapeComparison_test(signal_collection, background_collection, model_name + '_test' )
 
 
 #evaluate a model from its outputs and weights for signal and background                                                                                                                                    

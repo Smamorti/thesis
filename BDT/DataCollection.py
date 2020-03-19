@@ -59,6 +59,10 @@ class DataCollection:
             self.__training_set.scaleWeights( weight_scale_factor )
             self.__validation_set.scaleWeights( weight_scale_factor )
 
+            # Added the test set as well
+
+            self.__test_set.scaleWeights( weight_scale_factor )
+            
 
     @property
     def training_set( self ):
