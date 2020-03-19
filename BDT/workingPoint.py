@@ -1,4 +1,4 @@
-from wpHelpers import makeOutput, plotOutputShapeComparison
+from wpHelpers import makeOutput, plotOutputShapeComparison, plotSearchWP
 from ROOT import TFile
 from DataCollection import DataCollection
 from Dataset import concatenateAndShuffleDatasets
@@ -64,3 +64,12 @@ plotOutputShapeComparison(
     background_collection.validation_set.outputs, background_collection.validation_set.weights,
     model_name
     )
+
+plotSearchWP(
+    signal_collection.training_set.outputs, signal_collection.training_set.weights,
+    background_collection.training_set.outputs, background_collection.training_set.weights,
+    signal_collection.validation_set.outputs, signal_collection.validation_set.weights,
+    background_collection.validation_set.outputs, background_collection.validation_set.weights,
+    model_name
+    )
+
