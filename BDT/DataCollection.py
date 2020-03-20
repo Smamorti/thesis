@@ -17,7 +17,7 @@ from treeToArray import treeToArray
 
 class DataCollection:
 
-    def __init__( self, tree, branch_names, validation_fraction, test_fraction, is_signal, weight_name = None, only_positive_weights = True, parameter_names = None ):
+    def __init__( self, tree, branch_names, validation_fraction, test_fraction, is_signal, weight_name = None, only_positive_weights = True, parameter_names = None, wp = False ):
 
         #test if sensible input is given
         if ( validation_fraction + test_fraction ) >= 1:
@@ -51,8 +51,8 @@ class DataCollection:
         self.__validation_set = total_dataset[max_index_training:max_index_validation]
         self.__test_set = total_dataset[max_index_validation:]
 
-        #avoid large numerical scales in the weights during training
-        if weight_name is not None :
+        #avoid large numerical scales in the weights during training, but keep large weights for optimizing the WP
+        if weight_name is not None and not wp:
 
             #scaling is strictly only necessary for training set, HOWEVER it is better to also scale the validation set to have losses of the same scale
             weight_scale_factor = 1. / np.mean( self.__training_set.weights )

@@ -138,3 +138,87 @@ def errors( data, weights, num_bins, min_bin, max_bin ):
     scale = np.sum(weights)
     bin_errors /= scale
     return bin_errors 
+
+def purityAndEfficiency(model_name, signal_collection, background_collection):
+
+    signal_outputs = signal_collection.training_set.outputs
+    signal_weights = signal_collection.training_set.weights
+    background_outputs = background_collection.training_set.outputs
+    background_weights = background_collection.training_set.weights
+
+    min_output = min( np.min(signal_outputs), np.min(background_outputs) )
+    max_output = max( np.max(signal_outputs), np.max(background_outputs) )
+
+    n_all_sign = np.sum(signal_weights)
+
+    purity = []
+    efficiency = []
+
+    # loop over a set number of points within the range of min and max BDT output to make purity and efficiency curves
+
+    model_outputs = np.linspace(min_output, max_output, 10000)
+
+    for model_output in model_outputs[:-1]: #skip last value, would be division by zero
+
+        # for this given model output value, calculate purity and efficiency
+
+        signal_selected = (signal_outputs > model_output)
+        background_selected = (background_outputs > model_output)
+
+        n_sel_sign = np.sum(signal_weights[signal_selected])
+        n_sel_bkg = np.sum(background_weights[background_selected])
+
+        p = n_sel_sign / (n_sel_sign + n_sel_bkg)
+        purity.append(p)
+
+        eps = n_sel_sign / n_all_sign
+        efficiency.append(eps)
+
+    # add values for maximum value of model output --> 0
+
+    purity.append(0)
+    efficiency.append(0)
+
+    # plot purity and efficiency, as well as their product
+
+    purity = np.array(purity)
+    efficiency = np.array(efficiency)
+
+    # purity
+
+    plt.plot(model_outputs, purity, 'b', lw=2)
+    plt.ylabel('Purity')
+    plt.xlabel('Model Output')
+
+    plt.grid(True)
+
+    plt.savefig('results/purity_' + model_name + '.pdf')
+    plt.savefig('results/purity_' + model_name + '.png')
+
+    plt.clf()
+
+    # efficiency
+
+    plt.plot(model_outputs, efficiency, 'b', lw=2)
+    plt.ylabel('Efficiency')
+    plt.xlabel('Model Output')
+
+    plt.grid(True)
+
+    plt.savefig('results/efficiency_' + model_name + '.pdf')
+    plt.savefig('results/efficiency_' + model_name + '.png')
+    
+    plt.clf()
+
+    # purity * efficiency
+
+    plt.plot(model_outputs, purity*efficiency, 'b', lw=2)
+    plt.ylabel('Purity*Efficiency')
+    plt.xlabel('Model Output')
+
+    plt.grid(True)
+
+    plt.savefig('results/purityXefficiency_' + model_name + '.pdf')
+    plt.savefig('results/purityXefficiency_' + model_name + '.png')
+    
+    plt.clf()

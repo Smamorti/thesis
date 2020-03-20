@@ -1,4 +1,4 @@
-from wpHelpers import makeOutput, plotOutputShapeComparison, plotSearchWP
+from wpHelpers import makeOutput, plotOutputShapeComparison, plotSearchWP, purityAndEfficiency
 from ROOT import TFile
 from DataCollection import DataCollection
 from Dataset import concatenateAndShuffleDatasets
@@ -35,8 +35,8 @@ test_fraction = 0.0
 
 np.random.seed(42)
 
-signal_collection = DataCollection(signalTree, branch_names, validation_fraction, test_fraction, True, 'weight', only_positive_weights = True)
-background_collection = DataCollection(bkgTree, branch_names, validation_fraction, test_fraction, False, 'weight', only_positive_weights = True)
+signal_collection = DataCollection(signalTree, branch_names, validation_fraction, test_fraction, True, 'weight', only_positive_weights = True, wp = True)
+background_collection = DataCollection(bkgTree, branch_names, validation_fraction, test_fraction, False, 'weight', only_positive_weights = True, wp = True)
 
 #np.random.seed()
 
@@ -47,7 +47,10 @@ test_data = concatenateAndShuffleDatasets(signal_collection.test_set, background
 #print(training_data.weights)
 
 #model_name = 'alpha=0p556325710785_colsampleBytree=0p870766472573_gamma=0p488195039022_learningRate=0p0087743285049_maxDepth=3_minChildWeight=10p0575232606_numberOfTrees=3240_subsample=0p5327601619'
-model_name = 'isThisTheSame'
+#model_name = 'isThisTheSame'
+
+model_name = 'fullData'
+
 # trainBDT( training_data.samples, training_data.labels, train_weights = training_data.weights, 
 #           feature_names = branch_names, model_name = model_name, number_of_trees = 1000, learning_rate = 0.01,  
 #           max_depth = 5, min_child_weight = 10, subsample = 1, 
@@ -57,19 +60,24 @@ model_name = 'isThisTheSame'
 
 makeOutput(model_name, signal_collection, background_collection)
 
-plotOutputShapeComparison(
-    signal_collection.training_set.outputs, signal_collection.training_set.weights,
-    background_collection.training_set.outputs, background_collection.training_set.weights,
-    signal_collection.validation_set.outputs, signal_collection.validation_set.weights,
-    background_collection.validation_set.outputs, background_collection.validation_set.weights,
-    model_name
-    )
+purityAndEfficiency(model_name, signal_collection, background_collection)
 
-plotSearchWP(
-    signal_collection.training_set.outputs, signal_collection.training_set.weights,
-    background_collection.training_set.outputs, background_collection.training_set.weights,
-    signal_collection.validation_set.outputs, signal_collection.validation_set.weights,
-    background_collection.validation_set.outputs, background_collection.validation_set.weights,
-    model_name
-    )
+## TO DO: signal?sart(bkg) plotten --> how to calc this ratio? 
+
+
+# plotOutputShapeComparison(
+#     signal_collection.training_set.outputs, signal_collection.training_set.weights,
+#     background_collection.training_set.outputs, background_collection.training_set.weights,
+#     signal_collection.validation_set.outputs, signal_collection.validation_set.weights,
+#     background_collection.validation_set.outputs, background_collection.validation_set.weights,
+#     model_name
+#     )
+
+# plotSearchWP(
+#     signal_collection.training_set.outputs, signal_collection.training_set.weights,
+#     background_collection.training_set.outputs, background_collection.training_set.weights,
+#     signal_collection.validation_set.outputs, signal_collection.validation_set.weights,
+#     background_collection.validation_set.outputs, background_collection.validation_set.weights,
+#     model_name
+#     )
 

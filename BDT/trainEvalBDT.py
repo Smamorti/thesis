@@ -65,6 +65,27 @@ def evalBDT(model_name, signal_collection, background_collection):
 #    plotROCAndShapeComparison_test(signal_collection, background_collection, model_name + '_test' )
 
 
+def evalBDT_fullData(model_name, signal_collection, background_collection):
+
+    number_of_threads = 1
+
+    #load trained classifier                                                                                                                                                                                                               
+
+    model = xgb.Booster()
+    model.load_model( 'models/' + model_name + '.bin' )
+
+    #make xgboost DMatrices for predictions                                                                                                                                                                                                 
+    signal_training_matrix = xgb.DMatrix( signal_collection.training_set.samples, label = signal_collection.training_set.labels, nthread = number_of_threads)
+    background_training_matrix = xgb.DMatrix( background_collection.training_set.samples, label = background_collection.training_set.labels, nthread = number_of_threads)
+
+    #make predictions                                                                                                                                                                                                                       
+    signal_collection.training_set.addOutputs( model.predict( signal_training_matrix ) )
+    background_collection.training_set.addOutputs( model.predict( background_training_matrix ) )
+
+    # get evaluation metrics                                                                                                                                       
+
+    plotROCAndShapeComparison_full(signal_collection, background_collection, model_name )
+
 #evaluate a model from its outputs and weights for signal and background                                                                                                                                    
 def rocAndAUC( signal_dataset, background_dataset, model_name ):
 
@@ -113,5 +134,15 @@ def plotROCAndShapeComparison_test(signal_collection, background_collection, mod
         signal_collection.test_set,
         background_collection.training_set,
         background_collection.test_set,
+        model_name
+    )
+
+def plotROCAndShapeComparison_full(signal_collection, background_collection, model_name ):
+    rocAndAUC( signal_collection.training_set, background_collection.training_set, model_name )
+    compareOutputShapes(
+        signal_collection.training_set,
+        signal_collection.training_set,
+        background_collection.training_set,
+        background_collection.training_set,
         model_name
     )
