@@ -153,7 +153,10 @@ def purityAndEfficiency(model_name, signal_collection, background_collection):
 
     purity = []
     efficiency = []
-
+    sbr = []
+    ssbr = []
+    purXeff_sbr = []
+    sOsqrtSB = []
     # loop over a set number of points within the range of min and max BDT output to make purity and efficiency curves
 
     model_outputs = np.linspace(min_output, max_output, 10000)
@@ -164,9 +167,11 @@ def purityAndEfficiency(model_name, signal_collection, background_collection):
 
         signal_selected = (signal_outputs > model_output)
         background_selected = (background_outputs > model_output)
+        background_notSelected = np.invert(background_selected)
 
         n_sel_sign = np.sum(signal_weights[signal_selected])
         n_sel_bkg = np.sum(background_weights[background_selected])
+        n_notSel_bkg = np.sum(background_weights[background_notSelected])
 
         p = n_sel_sign / (n_sel_sign + n_sel_bkg)
         purity.append(p)
@@ -174,10 +179,36 @@ def purityAndEfficiency(model_name, signal_collection, background_collection):
         eps = n_sel_sign / n_all_sign
         efficiency.append(eps)
 
+        temp = n_sel_sign / np.sqrt((n_sel_sign + n_sel_bkg))
+        sOsqrtSB.append(temp)
+
+        # if n_notSel_bkg == 0:
+
+        #     print(0)
+        #     print(np.where(model_outputs == model_output))
+        # elif model_output > 0:
+
+        #     ratio = n_sel_sign / np.sqrt(n_notSel_bkg)
+        #     sbr.append(ratio)
+
+        if n_sel_bkg != 0:
+
+            ratio = n_sel_sign / np.sqrt(n_sel_bkg)
+            sbr.append(ratio)
+
+            purXeff_sbr.append(p*eps+ratio)
+
+        if n_sel_bkg + n_sel_sign != 0:
+
+            ratio = n_sel_sign / np.sqrt(n_sel_bkg + n_sel_sign)
+            ssbr.append(ratio)
+
     # add values for maximum value of model output --> 0
 
     purity.append(0)
     efficiency.append(0)
+    sbr.append(0)
+    sOsqrtSB.append(0)
 
     # plot purity and efficiency, as well as their product
 
@@ -221,4 +252,111 @@ def purityAndEfficiency(model_name, signal_collection, background_collection):
     plt.savefig('results/purityXefficiency_' + model_name + '.pdf')
     plt.savefig('results/purityXefficiency_' + model_name + '.png')
     
+    plt.clf()
+
+    # signal / sqrt(bkg)
+    
+    plt.plot(model_outputs[:len(sbr)], sbr, 'b', lw=2)
+    plt.ylabel('Signal / Sqrt(Background)')
+    plt.xlabel('Model Output')
+    plt.grid(True)
+
+    plt.savefig('results/signalSqrtBkgRatio_' + model_name + '.pdf')
+    plt.savefig('results/signalSqrtBkgRatio_' + model_name + '.png')
+
+    plt.clf()
+
+    # signal / sqrt(bkg + signal)                                                                                                                                                                                                                    
+    plt.plot(model_outputs[:len(ssbr)], ssbr, 'b', lw=2)
+    plt.ylabel('Signal / Sqrt(Background + Signal)')
+    plt.xlabel('Model Output')
+ 
+    plt.grid(True)
+
+    plt.savefig('results/signalSqrtBkg+SignRatio_' + model_name + '.pdf')
+    plt.savefig('results/signalSqrtBkg+SignRatio_' + model_name + '.png')
+
+    plt.clf()
+
+    # purity + signal / sqrt(bkg)                                                                                                                                                                                                         
+                                  
+    maximum_index = np.argmax(purXeff_sbr)
+
+    plt.axvline(model_outputs[maximum_index], color = 'red', label = 'Maximal for model output {}'.format(model_outputs[maximum_index]))
+                                                                                                                                                                                                       
+    plt.plot(model_outputs[:len(purXeff_sbr)], purXeff_sbr, 'b', lw=2)
+    plt.ylabel('Purity*Efficiency + Signal/sqrt(bkg)')
+    plt.xlabel('Model Output')
+    plt.legend(loc = 'lower left')
+    plt.grid(True)
+
+    plt.savefig('results/purXeff_sbr_' + model_name + '.pdf')
+    plt.savefig('results/purXeff_sbr_' + model_name + '.png')
+
+    plt.clf()
+
+
+
+    # purityXeff and sign/sqrt(bkg)
+
+    plt.plot(model_outputs[:len(sbr)], sbr, 'b', lw=2, label = 'Signal/sqrt(bkg)')
+    plt.plot(model_outputs, purity*efficiency, 'red', lw=2, label = 'PurityXEfficiency')
+#plt.ylabel('')
+    plt.xlabel('Model Output')
+    plt.legend()
+    plt.grid(True)
+
+    plt.savefig('results/purANDsbr_' + model_name + '.pdf')
+    plt.savefig('results/purANDsbr_' + model_name + '.png')
+
+    plt.clf()
+
+
+    # purityXeff and sign/sqrt(bkg) (scaled)                                                                                                                                                                                                      
+    print(np.amax(purity*efficiency) / np.amax(sbr))
+    scaling = np.amax(purity*efficiency) / np.amax(sbr)
+    new = np.multiply(sbr, scaling)
+    plt.plot(model_outputs[:len(sbr)], new, 'b', lw=2, label = 'Signal/sqrt(bkg)')
+    plt.plot(model_outputs, purity*efficiency, 'red', lw=2, label = 'PurityXEfficiency')
+
+    plt.xlabel('Model Output')
+    plt.legend(loc = 'lower left')
+    plt.grid(True)
+
+    plt.savefig('results/purANDsbr_Scaled_' + model_name + '.pdf')
+    plt.savefig('results/purANDsbr_Scaled_' + model_name + '.png')
+
+    plt.clf()
+
+    # purity + signal / sqrt(bkg)  (scaled)                                                                                                                                                                                                    
+    summed = new + (purity*efficiency)[:len(new)]
+
+    maximum_index = np.argmax(summed)
+
+    plt.axvline(model_outputs[maximum_index], color = 'red', label = 'Maximal for model output {}'.format(model_outputs[maximum_index]))
+    
+    plt.title(r'Purity*Efficiency + Signal/$\sqrt{bkg}$ (scaled)')
+
+    plt.plot(model_outputs[:len(summed)], summed, 'b', lw=2)
+    plt.ylabel(r'Purity*Efficiency + Signal/$\sqrt{bkg}$')
+    plt.xlabel('Model Output')
+    plt.legend(loc = 'lower left')
+    plt.grid(True)
+
+    plt.savefig('results/purXeff_sbr_Scaled' + model_name + '.pdf')
+    plt.savefig('results/purXeff_sbr_Scaled' + model_name + '.png')
+
+    plt.clf()
+
+    # signal / sqrt(signal+bkg)                                                                                                                                                                                                                               
+
+    plt.plot(model_outputs, sOsqrtSB, 'b', lw=2)
+    plt.ylabel(r'Signal/$\sqrt{(signal+bkg)}$')
+    plt.xlabel('Model Output')
+
+    plt.grid(True)
+
+    plt.savefig('results/sOsqrtSB_' + model_name + '.pdf')
+    plt.savefig('results/sOsqrtSB_' + model_name + '.png')
+
     plt.clf()
