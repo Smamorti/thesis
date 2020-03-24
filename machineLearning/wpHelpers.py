@@ -8,7 +8,7 @@ import numpy as np
 import xgboost as xgb
 
     
-def makeOutput(model_name, signal_collection, background_collection):
+def makeOutputBDT(model_name, signal_collection, background_collection):
 
     number_of_threads = 1
 
@@ -36,6 +36,21 @@ def makeOutput(model_name, signal_collection, background_collection):
     background_collection.training_set.addOutputs( model.predict( background_training_matrix ) )
     background_collection.validation_set.addOutputs( model.predict( background_validation_matrix ) )
     background_collection.test_set.addOutputs( model.predict( background_test_matrix ) )
+
+def makeOutputNN(model_name, signal_collection, background_collection):
+
+    #load trained classifier                                                                                                                                                   \                                                            
+    model.load_model( 'models/' + model_name + '.bin' )
+
+    #make predictions                                                                                                                                                          \                                                            
+    signal_collection.training_set.addOutputs( model.predict( signal_training_matrix ) )
+    signal_collection.validation_set.addOutputs( model.predict( signal_validation_matrix ) )
+    signal_collection.test_set.addOutputs( model.predict( signal_test_matrix ) )
+
+    background_collection.training_set.addOutputs( model.predict( background_training_matrix ) )
+    background_collection.validation_set.addOutputs( model.predict( background_validation_matrix ) )
+    background_collection.test_set.addOutputs( model.predict( background_test_matrix ) )
+
 
 
 def plotOutputShapeComparison( outputs_signal_training, weights_signal_training, 

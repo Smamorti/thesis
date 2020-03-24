@@ -38,13 +38,9 @@ np.random.seed(42)
 signal_collection = DataCollection(signalTree, branch_names, validation_fraction, test_fraction, True, 'weight', only_positive_weights = True, wp = True)
 background_collection = DataCollection(bkgTree, branch_names, validation_fraction, test_fraction, False, 'weight', only_positive_weights = True, wp = True)
 
-#np.random.seed()
-
 training_data = concatenateAndShuffleDatasets(signal_collection.training_set, background_collection.training_set)
 validation_data = concatenateAndShuffleDatasets(signal_collection.validation_set, background_collection.validation_set)
 test_data = concatenateAndShuffleDatasets(signal_collection.test_set, background_collection.test_set)
-
-#print(training_data.weights)
 
 #model_name = 'alpha=0p556325710785_colsampleBytree=0p870766472573_gamma=0p488195039022_learningRate=0p0087743285049_maxDepth=3_minChildWeight=10p0575232606_numberOfTrees=3240_subsample=0p5327601619'
 #model_name = 'isThisTheSame'
@@ -58,7 +54,7 @@ model_name = 'fullData'
 
 #evalBDT(model_name, signal_collection, background_collection)
 
-makeOutput(model_name, signal_collection, background_collection)
+makeOutputBDT(model_name, signal_collection, background_collection)
 
 purityAndEfficiency(model_name, signal_collection, background_collection)
 
