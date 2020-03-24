@@ -32,7 +32,7 @@ validation_fraction = 0.2
 test_fraction = 0.0
 
 # ensure reproducibility
-#test
+
 np.random.seed(42)
 
 signal_collection = DataCollection(signalTree, branch_names, validation_fraction, test_fraction, True, 'weight', only_positive_weights = True, wp = True)
