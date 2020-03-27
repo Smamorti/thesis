@@ -1,4 +1,4 @@
-from wpHelpers import makeOutput, plotOutputShapeComparison, plotSearchWP, purityAndEfficiency
+from wpHelpers import makeOutputBDT, plotOutputShapeComparison, plotSearchWP, purityAndEfficiency
 from ROOT import TFile
 from DataCollection import DataCollection
 from Dataset import concatenateAndShuffleDatasets

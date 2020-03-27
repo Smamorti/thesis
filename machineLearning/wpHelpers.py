@@ -6,7 +6,23 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import xgboost as xgb
+from keras.models import load_model
 
+def makeOutputNN(model_name, signal_collection, background_collection):
+
+    #load trained classifier                                                                                                                                                   \                                                            
+    model = load_model( 'models/' + model_name + '.h5' )
+#    model.summary()
+
+    #make predictions                                                                                                                                                          \                                                            
+    signal_collection.training_set.addOutputs( model.predict( signal_collection.training_set.samples ) )
+ #   print(signal_collection.training_set.outputs)
+    signal_collection.validation_set.addOutputs( model.predict( signal_collection.validation_set.samples ) )
+    signal_collection.test_set.addOutputs( model.predict( signal_collection.test_set.samples ) )
+
+    background_collection.training_set.addOutputs( model.predict( background_collection.training_set.samples ) )
+    background_collection.validation_set.addOutputs( model.predict( background_collection.validation_set.samples ) )
+    background_collection.test_set.addOutputs( model.predict( background_collection.test_set.samples ) )
     
 def makeOutputBDT(model_name, signal_collection, background_collection):
 
@@ -36,21 +52,6 @@ def makeOutputBDT(model_name, signal_collection, background_collection):
     background_collection.training_set.addOutputs( model.predict( background_training_matrix ) )
     background_collection.validation_set.addOutputs( model.predict( background_validation_matrix ) )
     background_collection.test_set.addOutputs( model.predict( background_test_matrix ) )
-
-def makeOutputNN(model_name, signal_collection, background_collection):
-
-    #load trained classifier                                                                                                                                                   \                                                            
-    model.load_model( 'models/' + model_name + '.bin' )
-
-    #make predictions                                                                                                                                                          \                                                            
-    signal_collection.training_set.addOutputs( model.predict( signal_training_matrix ) )
-    signal_collection.validation_set.addOutputs( model.predict( signal_validation_matrix ) )
-    signal_collection.test_set.addOutputs( model.predict( signal_test_matrix ) )
-
-    background_collection.training_set.addOutputs( model.predict( background_training_matrix ) )
-    background_collection.validation_set.addOutputs( model.predict( background_validation_matrix ) )
-    background_collection.test_set.addOutputs( model.predict( background_test_matrix ) )
-
 
 
 def plotOutputShapeComparison( outputs_signal_training, weights_signal_training, 
@@ -164,6 +165,7 @@ def purityAndEfficiency(model_name, signal_collection, background_collection):
     min_output = min( np.min(signal_outputs), np.min(background_outputs) )
     max_output = max( np.max(signal_outputs), np.max(background_outputs) )
 
+
     n_all_sign = np.sum(signal_weights)
 
     purity = []
@@ -180,13 +182,31 @@ def purityAndEfficiency(model_name, signal_collection, background_collection):
 
         # for this given model output value, calculate purity and efficiency
 
-        signal_selected = (signal_outputs > model_output)
+        #signal_selected = (signal_outputs > model_output)
+        signal_selected = signal_outputs > model_output
         background_selected = (background_outputs > model_output)
         background_notSelected = np.invert(background_selected)
 
-        n_sel_sign = np.sum(signal_weights[signal_selected])
-        n_sel_bkg = np.sum(background_weights[background_selected])
-        n_notSel_bkg = np.sum(background_weights[background_notSelected])
+        # print(signal_selected)
+        # print(signal_selected.shape)
+
+        try:
+
+            n_sel_sign = np.sum(signal_weights[signal_selected])
+            n_sel_bkg = np.sum(background_weights[background_selected])
+            n_notSel_bkg = np.sum(background_weights[background_notSelected])
+
+        except IndexError:
+
+            
+            signal_selected = np.reshape(signal_selected, (signal_selected.shape[0],))
+            background_selected = np.reshape(background_selected, (background_selected.shape[0],))
+            background_notSelected = np.reshape(background_notSelected, (background_notSelected.shape[0],))
+            
+            n_sel_sign = np.sum(signal_weights[signal_selected])
+            n_sel_bkg = np.sum(background_weights[background_selected])
+            n_notSel_bkg = np.sum(background_weights[background_notSelected])
+            
 
         p = n_sel_sign / (n_sel_sign + n_sel_bkg)
         purity.append(p)
@@ -230,56 +250,6 @@ def purityAndEfficiency(model_name, signal_collection, background_collection):
     purity = np.array(purity)
     efficiency = np.array(efficiency)
 
-    # purity
-
-    plt.plot(model_outputs, purity, 'b', lw=2)
-    plt.ylabel('Purity')
-    plt.xlabel('Model Output')
-
-    plt.grid(True)
-
-    plt.savefig('results/purity_' + model_name + '.pdf')
-    plt.savefig('results/purity_' + model_name + '.png')
-
-    plt.clf()
-
-    # efficiency
-
-    plt.plot(model_outputs, efficiency, 'b', lw=2)
-    plt.ylabel('Efficiency')
-    plt.xlabel('Model Output')
-
-    plt.grid(True)
-
-    plt.savefig('results/efficiency_' + model_name + '.pdf')
-    plt.savefig('results/efficiency_' + model_name + '.png')
-    
-    plt.clf()
-
-    # purity * efficiency
-
-    plt.plot(model_outputs, purity*efficiency, 'b', lw=2)
-    plt.ylabel('Purity*Efficiency')
-    plt.xlabel('Model Output')
-
-    plt.grid(True)
-
-    plt.savefig('results/purityXefficiency_' + model_name + '.pdf')
-    plt.savefig('results/purityXefficiency_' + model_name + '.png')
-    
-    plt.clf()
-
-    # signal / sqrt(bkg)
-    
-    plt.plot(model_outputs[:len(sbr)], sbr, 'b', lw=2)
-    plt.ylabel('Signal / Sqrt(Background)')
-    plt.xlabel('Model Output')
-    plt.grid(True)
-
-    plt.savefig('results/signalSqrtBkgRatio_' + model_name + '.pdf')
-    plt.savefig('results/signalSqrtBkgRatio_' + model_name + '.png')
-
-    plt.clf()
 
     # signal / sqrt(bkg + signal)                                                                                                                                                                                                                    
     plt.plot(model_outputs[:len(ssbr)], ssbr, 'b', lw=2)
@@ -328,9 +298,17 @@ def purityAndEfficiency(model_name, signal_collection, background_collection):
 
 
     # purityXeff and sign/sqrt(bkg) (scaled)                                                                                                                                                                                                      
-    print(np.amax(purity*efficiency) / np.amax(sbr))
     scaling = np.amax(purity*efficiency) / np.amax(sbr)
     new = np.multiply(sbr, scaling)
+
+
+    summed = new + (purity*efficiency)[:len(new)]
+
+    maximum_index = np.argmax(summed)
+
+    plt.axvline(model_outputs[maximum_index], color = 'red', label = 'Maximal for model output {}'.format(model_outputs[maximum_index]))
+
+
     plt.plot(model_outputs[:len(sbr)], new, 'b', lw=2, label = 'Signal/sqrt(bkg)')
     plt.plot(model_outputs, purity*efficiency, 'red', lw=2, label = 'PurityXEfficiency')
 
@@ -373,5 +351,65 @@ def purityAndEfficiency(model_name, signal_collection, background_collection):
 
     plt.savefig('results/sOsqrtSB_' + model_name + '.pdf')
     plt.savefig('results/sOsqrtSB_' + model_name + '.png')
+
+    plt.clf()
+
+
+    # purity
+
+    plt.axvline(model_outputs[maximum_index], color = 'red', label = 'Maximal for model output {}'.format(model_outputs[maximum_index]))
+    plt.plot(model_outputs, purity, 'b', lw=2)
+    plt.ylabel('Purity')
+    plt.xlabel('Model Output')
+
+    plt.grid(True)
+
+    plt.savefig('results/purity_' + model_name + '.pdf')
+    plt.savefig('results/purity_' + model_name + '.png')
+
+    plt.clf()
+
+    # efficiency
+
+    plt.axvline(model_outputs[maximum_index], color = 'red', label = 'Maximal for model output {}'.format(model_outputs[maximum_index]))
+
+    plt.plot(model_outputs, efficiency, 'b', lw=2)
+    plt.ylabel('Efficiency')
+    plt.xlabel('Model Output')
+
+    plt.grid(True)
+
+    plt.savefig('results/efficiency_' + model_name + '.pdf')
+    plt.savefig('results/efficiency_' + model_name + '.png')
+    
+    plt.clf()
+
+    # purity * efficiency
+
+    plt.axvline(model_outputs[maximum_index], color = 'red', label = 'Maximal for model output {}'.format(model_outputs[maximum_index]))
+
+    
+    plt.plot(model_outputs, purity*efficiency, 'b', lw=2)
+    plt.ylabel('Purity*Efficiency')
+    plt.xlabel('Model Output')
+
+    plt.grid(True)
+
+    plt.savefig('results/purityXefficiency_' + model_name + '.pdf')
+    plt.savefig('results/purityXefficiency_' + model_name + '.png')
+    
+    plt.clf()
+
+    # signal / sqrt(bkg)
+
+    plt.axvline(model_outputs[maximum_index], color = 'red', label = 'Maximal for model output {}'.format(model_outputs[maximum_index]))
+    
+    plt.plot(model_outputs[:len(sbr)], sbr, 'b', lw=2)
+    plt.ylabel('Signal / Sqrt(Background)')
+    plt.xlabel('Model Output')
+    plt.grid(True)
+
+    plt.savefig('results/signalSqrtBkgRatio_' + model_name + '.pdf')
+    plt.savefig('results/signalSqrtBkgRatio_' + model_name + '.png')
 
     plt.clf()
