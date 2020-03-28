@@ -91,9 +91,26 @@ def rocAndAUC( signal_dataset, background_dataset, model_name ):
 
     #plot ROC curve and compute ROC integral for validation set                                                                                                                                             
     eff_signal, eff_background = computeROC(
-            signal_dataset.outputs,
+        signal_dataset.outputs,
+        signal_dataset.weights,
+        background_dataset.outputs,
+        background_dataset.weights,
+        num_points = 10000
+            )
+    plotROC( eff_signal, eff_background, model_name )
+    auc = areaUnderCurve(eff_signal, eff_background )
+    print('#####################################################')
+    print('validation set ROC integral (AUC) = {:.5f}'.format(auc) )
+    print('#####################################################')
+
+def rocAndAUC_NN( signal_dataset, background_dataset, model_name ):
+
+    #plot ROC curve and compute ROC integral for validation set                                                                                                      
+                                                                                                                                                                   
+    eff_signal, eff_background = computeROC(
+            np.resize(signal_dataset.outputs, (signal_dataset.outputs.shape[0], )),
                 signal_dataset.weights,
-                background_dataset.outputs,
+             np.resize(background_dataset.outputs, (background_dataset.outputs.shape[0], )),
                 background_dataset.weights,
                 num_points = 10000
             )
@@ -127,8 +144,18 @@ def plotROCAndShapeComparison(signal_collection, background_collection, model_na
         model_name
     )
 
+def plotROCAndShapeComparison_NN(signal_collection, background_collection, model_name ):
+    rocAndAUC( signal_collection.validation_set, background_collection.validation_set, model_name )
+    compareOutputShapes(
+        signal_collection.training_set,
+        signal_collection.validation_set,
+        background_collection.training_set,
+        background_collection.validation_set,
+        model_name
+    )
+
 def plotROCAndShapeComparison_test(signal_collection, background_collection, model_name ):
-    rocAndAUC( signal_collection.test_set, background_collection.test_set, model_name )
+    rocAndAUC_NN( signal_collection.test_set, background_collection.test_set, model_name )
     compareOutputShapes(
         signal_collection.training_set,
         signal_collection.test_set,

@@ -5,9 +5,9 @@ from Activation import Activation
 # from Dataset import concatenateAndShuffleDatasets
 # from DataCollection import DataCollection
 from trainKerasModel import KerasClassifierTrainer
+from keras.models import load_model
 
-
-def trainNN(model_name, configuration, training_data, validation_data, test_data, val_frac):
+def trainNN(model_name, configuration, training_data, validation_data, test_data, val_frac, signal_collection, background_collection):
 
     #make keras optimizer object 
     keras_optimizer = Optimizer( configuration['optimizer'], configuration['learning_rate'], configuration['learning_rate_decay'] ).kerasOptimizer()
@@ -58,3 +58,13 @@ def trainNN(model_name, configuration, training_data, validation_data, test_data
             batch_size = configuration['batch_size'],
             number_of_threads = configuration['number_of_threads']
         )
+
+    model = load_model( model_name + '.h5' )
+
+    signal_collection.training_set.addOutputs( model.predict( signal_collection.training_set.samples ) )
+    signal_collection.validation_set.addOutputs( model.predict( signal_collection.validation_set.samples ) )
+
+    background_collection.training_set.addOutputs( model.predict( background_collection.training_set.samples ) )
+    background_collection.validation_set.addOutputs( model.predict( background_collection.validation_set.samples ) )
+
+    print(signal_collection.training_set.outputs)

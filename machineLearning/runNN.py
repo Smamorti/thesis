@@ -3,6 +3,7 @@ from DataCollection import DataCollection
 from Dataset import concatenateAndShuffleDatasets
 from trainNN import trainNN
 import numpy as np
+from trainEvalBDT import plotROCAndShapeComparison_NN
 
 branch_names = [
     'lPt1', 'lPt2',
@@ -20,21 +21,22 @@ branch_names = [
     'I_rel1', 'I_rel2'
     ]
 
+
 configuration = {
-        'number_of_hidden_layers' : 2,
-        'units_per_layer' : 16,
+        'number_of_hidden_layers' : 3,
+        'units_per_layer' : 354,
         'optimizer' : 'Nadam',
         'activation' : 'leakyrelu',
-        'learning_rate' : 0.1,
-        'learning_rate_decay' : 1,
-        'dropout_first' : True,
+        'learning_rate' : 0.556728228483710,
+        'learning_rate_decay' : 0.9488145160366209,
+        'dropout_first' : False,
         'dropout_all' : True,
-        'dropout_rate' : 0.3,
+        'dropout_rate' : 0.15754818663394754,
         'batchnorm_first' : True,
         'batchnorm_hidden' : True,
         'batchnorm_before_activation' : True,
-        'number_of_epochs' : 2,#200,
-        'batch_size' : 256,
+        'number_of_epochs' : 200,#200,
+        'batch_size' : 223,
         'input_shape' : ( len(branch_names), ),
         'number_of_threads' : 1 
     }
@@ -46,7 +48,7 @@ signalTree = inputFile.Get("tree_signal_total")
 bkgTree = inputFile.Get("tree_background_total")
 
 #validation and test fractions                                                                                                                                                                              
-validation_fraction = 0.0
+validation_fraction = 0.2
 test_fraction = 0.0
 
 # ensure reproducibility
@@ -60,6 +62,7 @@ training_data = concatenateAndShuffleDatasets(signal_collection.training_set, ba
 validation_data = concatenateAndShuffleDatasets(signal_collection.validation_set, background_collection.validation_set)
 test_data = concatenateAndShuffleDatasets(signal_collection.test_set, background_collection.test_set)
 
-model_name = 'testNN'
+model_name = 'testNN_20epochs'
 
-trainNN(model_name, configuration, training_data, validation_data, test_data, validation_fraction)
+trainNN(model_name, configuration, training_data, validation_data, test_data, validation_fraction, signal_collection, background_collection)
+plotROCAndShapeComparison(signal_collection, background_collection, model_name )
