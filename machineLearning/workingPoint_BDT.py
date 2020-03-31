@@ -56,7 +56,7 @@ model_name = 'fullData'
 
 makeOutputBDT(model_name, signal_collection, background_collection)
 
-wpMetrics(model_name, signal_collection, background_collection)
+wpMetrics(model_name, signal_collection, background_collection, 'BDT')
 
 ## TO DO: signal?sart(bkg) plotten --> how to calc this ratio? 
 

@@ -60,7 +60,7 @@ makeOutputNN(model_name, signal_collection, background_collection)
 print(signal_collection.training_set.outputs)
 plotROCAndShapeComparison(signal_collection, background_collection, model_name )
 
-NN  = wpMetrics(model_name, signal_collection, background_collection)
+NN  = wpMetrics(model_name, signal_collection, background_collection, 'NN')
 
 BDTandNN(1, NN)
 

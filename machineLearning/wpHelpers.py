@@ -155,7 +155,7 @@ def errors( data, weights, num_bins, min_bin, max_bin ):
     bin_errors /= scale
     return bin_errors 
 
-def wpMetrics(model_name, signal_collection, background_collection):
+def wpMetrics(model_name, signal_collection, background_collection, algo):
 
     signal_outputs = signal_collection.training_set.outputs
     signal_weights = signal_collection.training_set.weights
@@ -236,15 +236,13 @@ def wpMetrics(model_name, signal_collection, background_collection):
     sbr.append(0)
     sOsqrtSB.append(0)
 
-    # plot purity and efficiency, as well as their product
+    # prepare arrays for plotting
 
     purity = np.array(purity)
     efficiency = np.array(efficiency)
 
-                                                                            
     scaling = np.amax(purity*efficiency) / np.amax(sbr)
     new = np.multiply(sbr, scaling)
-
 
     summed = new + (purity*efficiency)[:len(new)]
 
@@ -252,12 +250,14 @@ def wpMetrics(model_name, signal_collection, background_collection):
 
     # purityXeff and sign/sqrt(bkg) (scaled) and sum        
 
-    plt.axvline(model_outputs[maximum_index], color = 'gold', label = 'Maximum at {}'.format(str(model_outputs[maximum_index])[:4]))
+    # plt.axvline(model_outputs[maximum_index], color = 'gold', label = 'Maximum at {}'.format(str(model_outputs[maximum_index])[:4]))
 
+    # plt.plot(model_outputs[:len(sbr)], new, 'b', lw=2, label = r'Signal/$\sqrt{bkg}$')
+    # plt.plot(model_outputs, purity*efficiency, 'red', lw=2, label = r'Purity$\cdot$Efficiency')
+    # plt.plot(model_outputs[:len(summed)], summed, 'green', lw=2, label = r'Sum')
 
-    plt.plot(model_outputs[:len(sbr)], new, 'b', lw=2, label = r'Signal/$\sqrt{bkg}$')
-    plt.plot(model_outputs, purity*efficiency, 'red', lw=2, label = r'Purity$\cdot$Efficiency')
-    plt.plot(model_outputs[:len(summed)], summed, 'green', lw=2, label = r'Sum')
+    plotTotal(model_outputs, maximum_index, purity, efficiency, summed, sbr, new, algo)
+
     plt.xlabel('Model Output')
     plt.legend(loc = 'best', prop={'size': 10})
     plt.grid(True)
@@ -269,8 +269,11 @@ def wpMetrics(model_name, signal_collection, background_collection):
 
     # purity
 
-    plt.axvline(model_outputs[maximum_index], color = 'red', label = 'Maximum at {}'.format(model_outputs[maximum_index]))
-    plt.plot(model_outputs, purity, 'b', lw=2)
+    # plt.axvline(model_outputs[maximum_index], color = 'red', label = 'Maximum at {}'.format(model_outputs[maximum_index]))
+    # plt.plot(model_outputs, purity, 'b', lw=2)
+
+    plotPurity(model_outputs, maximum_index, purity, algo, color = 'red')
+
     plt.ylabel('Purity')
     plt.xlabel('Model Output')
 
@@ -283,9 +286,11 @@ def wpMetrics(model_name, signal_collection, background_collection):
 
     # efficiency
 
-    plt.axvline(model_outputs[maximum_index], color = 'red', label = 'Maximum at {}'.format(model_outputs[maximum_index]))
+    # plt.axvline(model_outputs[maximum_index], color = 'red', label = 'Maximum at {}'.format(model_outputs[maximum_index]))
+    # plt.plot(model_outputs, efficiency, 'b', lw=2)
 
-    plt.plot(model_outputs, efficiency, 'b', lw=2)
+    plotEfficiency(model_outputs, maximum_index, efficiency, algo, color = 'red')
+
     plt.ylabel('Efficiency')
     plt.xlabel('Model Output')
 
@@ -298,9 +303,11 @@ def wpMetrics(model_name, signal_collection, background_collection):
 
     # signal / sqrt(bkg)
 
-    plt.axvline(model_outputs[maximum_index], color = 'red', label = 'Maximum at {}'.format(model_outputs[maximum_index]))
-    
-    plt.plot(model_outputs[:len(sbr)], sbr, 'b', lw=2)
+    # plt.axvline(model_outputs[maximum_index], color = 'red', label = 'Maximum at {}'.format(model_outputs[maximum_index]))
+    # plt.plot(model_outputs[:len(sbr)], sbr, 'b', lw=2)
+
+    plotSbr(model_outputs, maximum_index, sbr, algo, color = 'red')
+
     plt.ylabel('Signal / Sqrt(Background)')
     plt.xlabel('Model Output')
     plt.grid(True)
@@ -312,8 +319,24 @@ def wpMetrics(model_name, signal_collection, background_collection):
 
     return {'purity': purity, 'efficiency': efficiency, 'sbr': sbr, 'summed' : summed, 'model_outputs': model_outputs, 'maximum_index' : maximum_index, 'sbr_scaled' : new}
 
-def plotTotal(model_outputs, maximum_index, purity, efficiency, summed, sbr, sbr_scaled, algo, style):
-    print('got here')
+def plotEfficiency(model_outputs, maximum_index, efficiency, algo, color = 'red'):
+
+    plt.axvline(str(model_outputs[maximum_index])[:4], color = 'red', label = '{} Maximum at {}'.format(algo, str(model_outputs[maximum_index])[:4]))
+    plt.plot(model_outputs, efficiency, color = color, lw=2)
+
+def plotPurity(model_outputs, maximum_index, purity, algo, color = 'red'):
+
+    plt.axvline(str(model_outputs[maximum_index])[:4], color = color, label = '{} Maximum at {}'.format(algo, str(model_outputs[maximum_index])[:4]))
+    plt.plot(model_outputs, purity, color = color, lw=2)
+
+def plotSbr(model_outputs, maximum_index, sbr, algo, color = 'red'):
+
+    plt.axvline(str(model_outputs[maximum_index])[:4], color = color, label = '{} Maximum at {}'.format(algo, str(model_outputs[maximum_index])[:4]))
+    plt.plot(model_outputs[:len(sbr)], sbr, color = color, lw=2)
+
+
+def plotTotal(model_outputs, maximum_index, purity, efficiency, summed, sbr, sbr_scaled, algo, style = '-'):
+
     plt.axvline(model_outputs[maximum_index], color = 'gold' , linestyle = style, label = '{} Maximum at {}'.format(algo, str(model_outputs[maximum_index])[:4]))
     plt.plot(model_outputs[:len(sbr)], sbr_scaled, 'b', linestyle = style,  lw=2, label = r'Signal/$\sqrt{bkg}$'+' ({})'.format(algo)) 
     plt.plot(model_outputs, purity*efficiency, 'red', linestyle = style, lw=2, label = r'Purity$\cdot$Efficiency ({})'.format(algo))
@@ -324,15 +347,56 @@ def BDTandNN(BDT, NN):
 
     # purity plot
 
+    plotPurity(NN['model_outputs'], NN['maximum_index'], NN['purity'], 'NN', color = 'b')
+#    plotPurity(BDT['model_outputs'], BDT['maximum_index'], BDT['purity'], 'BDT', color = 'green')
+    
+    plt.ylabel('Purity')
+    plt.xlabel('Model Output')
+
+    plt.grid(True)
+
+    plt.savefig('results/purity_comparison.pdf')
+    plt.savefig('results/purity_comparison.png')
+
+    plt.clf()
+
     # efficiency plot
 
+    plotEfficiency(NN['model_outputs'], NN['maximum_index'], NN['efficiency'], 'NN', color = 'b')
+ #   plotEfficiency(BDT['model_outputs'], BDT['maximum_index'], BDT['efficiency'], 'BDT', color = 'green')
+    
+    plt.ylabel('Efficiency')
+    plt.xlabel('Model Output')
+
+    plt.grid(True)
+
+    plt.savefig('results/efficiency_comparison.pdf')
+    plt.savefig('results/efficiency_comparison.png')
+
+    plt.clf()
+
+
     # sbr plot
+
+    plotSbr(NN['model_outputs'], NN['maximum_index'], NN['sbr'], 'NN', color = 'b')
+#    plotSbr(BDT['model_outputs'], BDT['maximum_index'], BDT['sbr'], 'BDT', color = 'green')
+   
+    plt.ylabel('Signal / Sqrt(Background)')
+    plt.xlabel('Model Output')
+
+    plt.grid(True)
+
+    plt.savefig('results/sbr_comparison.pdf')
+    plt.savefig('results/sbr_comparison.png')
+
+    plt.clf()
+
 
     # total plot
     
     plotTotal(NN['model_outputs'], NN['maximum_index'], NN['purity'], NN['efficiency'], NN['summed'], NN['sbr'], NN['sbr_scaled'], 'NN', '--')
+#    plotTotal(BDT['model_outputs'], BDT['maximum_index'], BDT['purity'], BDT['efficiency'], BDT['summed'], BDT['sbr'], BDT['sbr_scaled'], 'BDT', '-')
     
-    print('got here')
     plt.xlabel('Model Output')
     plt.legend(loc = 'best', prop={'size': 10})
     plt.grid(True)
