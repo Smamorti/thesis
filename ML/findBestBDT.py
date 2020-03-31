@@ -1,6 +1,6 @@
 import os
 
-rootdir = 'bestModels_nn_newHyper'
+rootdir = 'bestModels_xgboost_extraParams'
 
 bestFive = [0,0,0,0,0,0,0,0,0,0]
 bestFiveDirecs = ['','','','','','','','','','']
