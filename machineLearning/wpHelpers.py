@@ -321,6 +321,25 @@ def purityAndEfficiency(model_name, signal_collection, background_collection):
 
     plt.clf()
 
+    # purityXeff and sign/sqrt(bkg) (scaled) and sum        
+
+    plt.axvline(model_outputs[maximum_index], color = 'gold', label = 'Maximal for model output {}'.format(str(model_outputs[maximum_index])[:4]))
+
+
+    plt.plot(model_outputs[:len(sbr)], new, 'b', lw=2, label = 'Signal/sqrt(bkg)')
+    plt.plot(model_outputs, purity*efficiency, 'red', lw=2, label = 'PurityXEfficiency')
+    plt.plot(model_outputs[:len(summed)], summed, 'green', lw=2, label = 'Sum')
+    plt.xlabel('Model Output')
+    plt.legend(loc = 'lower left')
+    plt.grid(True)
+
+    plt.savefig('results/total_' + model_name + '.pdf')
+    plt.savefig('results/total_' + model_name + '.png')
+
+    plt.clf()
+
+
+
     # purity + signal / sqrt(bkg)  (scaled)                                                                                                                                                                                                    
     summed = new + (purity*efficiency)[:len(new)]
 

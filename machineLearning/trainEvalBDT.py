@@ -145,7 +145,7 @@ def plotROCAndShapeComparison(signal_collection, background_collection, model_na
     )
 
 def plotROCAndShapeComparison_NN(signal_collection, background_collection, model_name ):
-    rocAndAUC( signal_collection.validation_set, background_collection.validation_set, model_name )
+    rocAndAUC_NN( signal_collection.validation_set, background_collection.validation_set, model_name )
     compareOutputShapes(
         signal_collection.training_set,
         signal_collection.validation_set,
