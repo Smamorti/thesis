@@ -1,4 +1,4 @@
-from wpHelpers import makeOutputBDT, plotOutputShapeComparison, plotSearchWP, purityAndEfficiency
+from wpHelpers import makeOutputBDT, plotOutputShapeComparison, plotSearchWP, wpMetrics
 from ROOT import TFile
 from DataCollection import DataCollection
 from Dataset import concatenateAndShuffleDatasets
@@ -28,7 +28,7 @@ signalTree = inputFile.Get("tree_signal_total")
 bkgTree = inputFile.Get("tree_background_total")
 
 #validation and test fractions                                                                                                                                                                              
-validation_fraction = 0.2
+validation_fraction = 0.0
 test_fraction = 0.0
 
 # ensure reproducibility
@@ -56,7 +56,7 @@ model_name = 'fullData'
 
 makeOutputBDT(model_name, signal_collection, background_collection)
 
-purityAndEfficiency(model_name, signal_collection, background_collection)
+wpMetrics(model_name, signal_collection, background_collection)
 
 ## TO DO: signal?sart(bkg) plotten --> how to calc this ratio? 
 

@@ -1,6 +1,6 @@
 #import sys
 #from diagnosticPlotting import *
-from wpHelpers import makeOutputNN, plotOutputShapeComparison, plotSearchWP, purityAndEfficiency
+from wpHelpers import makeOutputNN, plotOutputShapeComparison, plotSearchWP, wpMetrics, BDTandNN
 from ROOT import TFile
 from DataCollection import DataCollection
 from Dataset import concatenateAndShuffleDatasets, Dataset
@@ -60,16 +60,26 @@ makeOutputNN(model_name, signal_collection, background_collection)
 print(signal_collection.training_set.outputs)
 plotROCAndShapeComparison(signal_collection, background_collection, model_name )
 
-purityAndEfficiency(model_name, signal_collection, background_collection)
+NN  = wpMetrics(model_name, signal_collection, background_collection)
+
+BDTandNN(1, NN)
+
+# plotOutputShapeComparison(
+#     signal_collection.training_set.outputs, signal_collection.training_set.weights,
+#     background_collection.training_set.outputs, background_collection.training_set.weights,
+#     signal_collection.validation_set.outputs, signal_collection.validation_set.weights,
+#     background_collection.validation_set.outputs, background_collection.validation_set.weights,
+#     model_name
+#     )
 
 
-plotOutputShapeComparison(
-    signal_collection.training_set.outputs, signal_collection.training_set.weights,
-    background_collection.training_set.outputs, background_collection.training_set.weights,
-    signal_collection.validation_set.outputs, signal_collection.validation_set.weights,
-    background_collection.validation_set.outputs, background_collection.validation_set.weights,
-    model_name
-    )
+
+
+
+
+
+
+
 
 # plotSearchWP(
 #     signal_collection.training_set.outputs, signal_collection.training_set.weights,
