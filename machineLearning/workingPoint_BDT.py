@@ -2,9 +2,7 @@ from wpHelpers import makeOutputBDT, plotOutputShapeComparison, plotSearchWP, wp
 from ROOT import TFile
 from DataCollection import DataCollection
 from Dataset import concatenateAndShuffleDatasets
-#from trainEvalBDT import *
 import numpy as np
-
 
 branch_names = [
     'lPt1', 'lPt2',
@@ -42,38 +40,11 @@ training_data = concatenateAndShuffleDatasets(signal_collection.training_set, ba
 validation_data = concatenateAndShuffleDatasets(signal_collection.validation_set, background_collection.validation_set)
 test_data = concatenateAndShuffleDatasets(signal_collection.test_set, background_collection.test_set)
 
-#model_name = 'alpha=0p556325710785_colsampleBytree=0p870766472573_gamma=0p488195039022_learningRate=0p0087743285049_maxDepth=3_minChildWeight=10p0575232606_numberOfTrees=3240_subsample=0p5327601619'
-#model_name = 'isThisTheSame'
-
-model_name = 'fullData'
-
-# trainBDT( training_data.samples, training_data.labels, train_weights = training_data.weights, 
-#           feature_names = branch_names, model_name = model_name, number_of_trees = 1000, learning_rate = 0.01,  
-#           max_depth = 5, min_child_weight = 10, subsample = 1, 
-#           colsample_bytree = 0.5, gamma = 0, alpha = 0, number_of_threads = 1)
+model_name = 'BDT_final_fullData'
 
 #evalBDT(model_name, signal_collection, background_collection)
 
 makeOutputBDT(model_name, signal_collection, background_collection)
 
 wpMetrics(model_name, signal_collection, background_collection, 'BDT')
-
-## TO DO: signal?sart(bkg) plotten --> how to calc this ratio? 
-
-
-# plotOutputShapeComparison(
-#     signal_collection.training_set.outputs, signal_collection.training_set.weights,
-#     background_collection.training_set.outputs, background_collection.training_set.weights,
-#     signal_collection.validation_set.outputs, signal_collection.validation_set.weights,
-#     background_collection.validation_set.outputs, background_collection.validation_set.weights,
-#     model_name
-#     )
-
-# plotSearchWP(
-#     signal_collection.training_set.outputs, signal_collection.training_set.weights,
-#     background_collection.training_set.outputs, background_collection.training_set.weights,
-#     signal_collection.validation_set.outputs, signal_collection.validation_set.weights,
-#     background_collection.validation_set.outputs, background_collection.validation_set.weights,
-#     model_name
-#     )
 

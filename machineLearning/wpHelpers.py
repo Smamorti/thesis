@@ -165,7 +165,6 @@ def wpMetrics(model_name, signal_collection, background_collection, algo):
     min_output = min( np.min(signal_outputs), np.min(background_outputs) )
     max_output = max( np.max(signal_outputs), np.max(background_outputs) )
 
-
     n_all_sign = np.sum(signal_weights)
 
     purity = []
@@ -173,7 +172,7 @@ def wpMetrics(model_name, signal_collection, background_collection, algo):
     sbr = []
     ssbr = []
     purXeff_sbr = []
-    sOsqrtSB = []
+
     # loop over a set number of points within the range of min and max BDT output to make purity and efficiency curves
 
     model_outputs = np.linspace(min_output, max_output, 10000)
@@ -182,13 +181,9 @@ def wpMetrics(model_name, signal_collection, background_collection, algo):
 
         # for this given model output value, calculate purity and efficiency
 
-        #signal_selected = (signal_outputs > model_output)
         signal_selected = signal_outputs > model_output
         background_selected = (background_outputs > model_output)
         background_notSelected = np.invert(background_selected)
-
-        # print(signal_selected)
-        # print(signal_selected.shape)
 
         try:
 
@@ -214,9 +209,6 @@ def wpMetrics(model_name, signal_collection, background_collection, algo):
         eps = n_sel_sign / n_all_sign
         efficiency.append(eps)
 
-        temp = n_sel_sign / np.sqrt((n_sel_sign + n_sel_bkg))
-        sOsqrtSB.append(temp)
-
         if n_sel_bkg != 0:
 
             ratio = n_sel_sign / np.sqrt(n_sel_bkg)
@@ -234,7 +226,6 @@ def wpMetrics(model_name, signal_collection, background_collection, algo):
     purity.append(0)
     efficiency.append(0)
     sbr.append(0)
-    sOsqrtSB.append(0)
 
     # prepare arrays for plotting
 
@@ -333,11 +324,11 @@ def BDTandNN(BDT, NN):
     # purity plot
 
     plotPurity(NN['model_outputs'], NN['maximum_index'], NN['purity'], 'NN', color = 'b')
-#    plotPurity(BDT['model_outputs'], BDT['maximum_index'], BDT['purity'], 'BDT', color = 'green')
+    plotPurity(BDT['model_outputs'], BDT['maximum_index'], BDT['purity'], 'BDT', color = 'green', vlineColor = 'gold')
     
     plt.ylabel('Purity')
     plt.xlabel('Model Output')
-
+    plt.legend(loc = 'best', prop={'size': 10})
     plt.grid(True)
 
     plt.savefig('results/purity_comparison.pdf')
@@ -348,11 +339,11 @@ def BDTandNN(BDT, NN):
     # efficiency plot
 
     plotEfficiency(NN['model_outputs'], NN['maximum_index'], NN['efficiency'], 'NN', color = 'b')
- #   plotEfficiency(BDT['model_outputs'], BDT['maximum_index'], BDT['efficiency'], 'BDT', color = 'green')
+    plotEfficiency(BDT['model_outputs'], BDT['maximum_index'], BDT['efficiency'], 'BDT', color = 'green', vlineColor = 'gold')
     
     plt.ylabel('Efficiency')
     plt.xlabel('Model Output')
-
+    plt.legend(loc = 'best', prop={'size': 10})
     plt.grid(True)
 
     plt.savefig('results/efficiency_comparison.pdf')
@@ -364,11 +355,11 @@ def BDTandNN(BDT, NN):
     # sbr plot
 
     plotSbr(NN['model_outputs'], NN['maximum_index'], NN['sbr'], 'NN', color = 'b')
-#    plotSbr(BDT['model_outputs'], BDT['maximum_index'], BDT['sbr'], 'BDT', color = 'green')
+    plotSbr(BDT['model_outputs'], BDT['maximum_index'], BDT['sbr'], 'BDT', color = 'green', vlineColor = 'gold')
    
     plt.ylabel('Signal / Sqrt(Background)')
     plt.xlabel('Model Output')
-
+    plt.legend(loc = 'best', prop={'size': 10})
     plt.grid(True)
 
     plt.savefig('results/sbr_comparison.pdf')
@@ -380,13 +371,13 @@ def BDTandNN(BDT, NN):
     # total plot
     
     plotTotal(NN['model_outputs'], NN['maximum_index'], NN['purity'], NN['efficiency'], NN['summed'], NN['sbr'], NN['sbr_scaled'], 'NN', '--')
-#    plotTotal(BDT['model_outputs'], BDT['maximum_index'], BDT['purity'], BDT['efficiency'], BDT['summed'], BDT['sbr'], BDT['sbr_scaled'], 'BDT', '-')
+    plotTotal(BDT['model_outputs'], BDT['maximum_index'], BDT['purity'], BDT['efficiency'], BDT['summed'], BDT['sbr'], BDT['sbr_scaled'], 'BDT', '-')
     
     plt.xlabel('Model Output')
     plt.legend(loc = 'best', prop={'size': 10})
     plt.grid(True)
 
-    plt.savefig('results/test_total_'  + '.pdf')
-    plt.savefig('results/test_total_'  + '.png')
+    plt.savefig('results/total_comparison'  + '.pdf')
+    plt.savefig('results/total_comparison'  + '.png')
 
     plt.clf()
