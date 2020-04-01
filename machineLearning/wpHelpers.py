@@ -250,12 +250,6 @@ def wpMetrics(model_name, signal_collection, background_collection, algo):
 
     # purityXeff and sign/sqrt(bkg) (scaled) and sum        
 
-    # plt.axvline(model_outputs[maximum_index], color = 'gold', label = 'Maximum at {}'.format(str(model_outputs[maximum_index])[:4]))
-
-    # plt.plot(model_outputs[:len(sbr)], new, 'b', lw=2, label = r'Signal/$\sqrt{bkg}$')
-    # plt.plot(model_outputs, purity*efficiency, 'red', lw=2, label = r'Purity$\cdot$Efficiency')
-    # plt.plot(model_outputs[:len(summed)], summed, 'green', lw=2, label = r'Sum')
-
     plotTotal(model_outputs, maximum_index, purity, efficiency, summed, sbr, new, algo)
 
     plt.xlabel('Model Output')
@@ -269,10 +263,7 @@ def wpMetrics(model_name, signal_collection, background_collection, algo):
 
     # purity
 
-    # plt.axvline(model_outputs[maximum_index], color = 'red', label = 'Maximum at {}'.format(model_outputs[maximum_index]))
-    # plt.plot(model_outputs, purity, 'b', lw=2)
-
-    plotPurity(model_outputs, maximum_index, purity, algo, color = 'red')
+    plotPurity(model_outputs, maximum_index, purity, algo)
 
     plt.ylabel('Purity')
     plt.xlabel('Model Output')
@@ -286,10 +277,7 @@ def wpMetrics(model_name, signal_collection, background_collection, algo):
 
     # efficiency
 
-    # plt.axvline(model_outputs[maximum_index], color = 'red', label = 'Maximum at {}'.format(model_outputs[maximum_index]))
-    # plt.plot(model_outputs, efficiency, 'b', lw=2)
-
-    plotEfficiency(model_outputs, maximum_index, efficiency, algo, color = 'red')
+    plotEfficiency(model_outputs, maximum_index, efficiency, algo)
 
     plt.ylabel('Efficiency')
     plt.xlabel('Model Output')
@@ -303,10 +291,7 @@ def wpMetrics(model_name, signal_collection, background_collection, algo):
 
     # signal / sqrt(bkg)
 
-    # plt.axvline(model_outputs[maximum_index], color = 'red', label = 'Maximum at {}'.format(model_outputs[maximum_index]))
-    # plt.plot(model_outputs[:len(sbr)], sbr, 'b', lw=2)
-
-    plotSbr(model_outputs, maximum_index, sbr, algo, color = 'red')
+    plotSbr(model_outputs, maximum_index, sbr, algo)
 
     plt.ylabel('Signal / Sqrt(Background)')
     plt.xlabel('Model Output')
@@ -319,19 +304,19 @@ def wpMetrics(model_name, signal_collection, background_collection, algo):
 
     return {'purity': purity, 'efficiency': efficiency, 'sbr': sbr, 'summed' : summed, 'model_outputs': model_outputs, 'maximum_index' : maximum_index, 'sbr_scaled' : new}
 
-def plotEfficiency(model_outputs, maximum_index, efficiency, algo, color = 'red'):
+def plotEfficiency(model_outputs, maximum_index, efficiency, algo, color = 'b', vlineColor = 'red'):
 
-    plt.axvline(str(model_outputs[maximum_index])[:4], color = 'red', label = '{} Maximum at {}'.format(algo, str(model_outputs[maximum_index])[:4]))
+    plt.axvline(str(model_outputs[maximum_index])[:4], color = vlineColor, label = '{} Maximum at {}'.format(algo, str(model_outputs[maximum_index])[:4]))
     plt.plot(model_outputs, efficiency, color = color, lw=2)
 
-def plotPurity(model_outputs, maximum_index, purity, algo, color = 'red'):
+def plotPurity(model_outputs, maximum_index, purity, algo, color = 'b', vlineColor = 'red'):
 
-    plt.axvline(str(model_outputs[maximum_index])[:4], color = color, label = '{} Maximum at {}'.format(algo, str(model_outputs[maximum_index])[:4]))
+    plt.axvline(str(model_outputs[maximum_index])[:4], color = vlineColor, label = '{} Maximum at {}'.format(algo, str(model_outputs[maximum_index])[:4]))
     plt.plot(model_outputs, purity, color = color, lw=2)
 
-def plotSbr(model_outputs, maximum_index, sbr, algo, color = 'red'):
+def plotSbr(model_outputs, maximum_index, sbr, algo, color = 'b', vlineColor = 'red'):
 
-    plt.axvline(str(model_outputs[maximum_index])[:4], color = color, label = '{} Maximum at {}'.format(algo, str(model_outputs[maximum_index])[:4]))
+    plt.axvline(str(model_outputs[maximum_index])[:4], color = vlineColor, label = '{} Maximum at {}'.format(algo, str(model_outputs[maximum_index])[:4]))
     plt.plot(model_outputs[:len(sbr)], sbr, color = color, lw=2)
 
 
