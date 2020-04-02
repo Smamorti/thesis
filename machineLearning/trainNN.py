@@ -34,10 +34,7 @@ def trainNN(model_name, configuration, training_data, validation_data, test_data
         model_builder.trainModelArraysFullData(
             train_data = training_data.samples,
             train_labels = training_data.labels,
-            validation_data = validation_data.samples,
-            validation_labels = validation_data.labels,
             train_weights = training_data.weights,
-            validation_weights = validation_data.weights,
             optimizer = keras_optimizer,
             number_of_epochs = configuration['number_of_epochs'],
             batch_size = configuration['batch_size'],

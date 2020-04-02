@@ -149,7 +149,7 @@ class KerasClassifierTrainer():
         plotModelTrainingHistory( training_history, self.__model_name )
 	
 
-    def trainModelArraysFullData( self, train_data, train_labels, validation_data, validation_labels, train_weights = None, validation_weights = None, optimizer = optimizers.Nadam(), number_of_epochs = 20, batch_size = 512, number_of_threads = 1 ):
+    def trainModelArraysFullData( self, train_data, train_labels, train_weights = None, optimizer = optimizers.Nadam(), number_of_epochs = 20, batch_size = 512, number_of_threads = 1 ):
 
         self.__compileModel( optimizer )
 
@@ -168,7 +168,7 @@ class KerasClassifierTrainer():
 
 #        cleanModelFile( self.__model_name + '.h5' )                                                                                                                   
 
- #       plotModelTrainingHistory( training_history, self.__model_name )
+        plotModelTrainingHistory( training_history, self.__model_name )
 
 
 
