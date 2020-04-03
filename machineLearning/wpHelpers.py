@@ -160,8 +160,7 @@ def decideWPs(purity, efficiency, sbr, summed, model_outputs, maximum_index, alg
     if algo == 'NN':
 
         # TO DO: find other way of deciding which WPs to use except for the max of purXeff + sbr
-        print(type(model_outputs[maximum_index]))
-        print(type(NN_dev))
+
         print('Working points which will be used in the analysis for the NN:')
         print('1) (wp2 - %f): %f' % (NN_dev, model_outputs[maximum_index] - NN_dev))
         print('2) (Maximum of pur*eff + sbr): %f' % (model_outputs[maximum_index]))
@@ -177,7 +176,6 @@ def decideWPs(purity, efficiency, sbr, summed, model_outputs, maximum_index, alg
         wp5 = wp4 + (wp4 - wp3)
 
         print('Working points which will be used in the analysis for the BDT:')
-        
         print('1) (wp2 - (wp3 - wp2)): %f' % wp1)
         print('2) (Maximum of pur*eff): %f' % wp2)
         print('3) (Maximum of pur*eff + sbr): %f' % wp3)
