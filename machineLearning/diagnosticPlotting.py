@@ -12,16 +12,21 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def plotKerasMetricComparison( training_history, model_name, metric, metric_label ):
+def plotKerasMetricComparison( training_history, model_name, metric, metric_label, fullData = False ):
 
     #extract history of the metric 
     training_metric = training_history.history[metric]
-    validation_metric = training_history.history['val_' + metric]
+
+    if not fullData:
+        validation_metric = training_history.history['val_' + metric]
 
     #plot metric as a function of the training epoch
     epochs = range( 1, len(training_metric) + 1 )
     plt.plot(epochs, training_metric, 'b', label = 'training ' + metric_label.lower(), lw = 2 )
-    plt.plot(epochs, validation_metric, 'r', label = 'validation ' + metric_label.lower(), lw = 2 )
+
+    if not fullData:
+        plt.plot(epochs, validation_metric, 'r', label = 'validation ' + metric_label.lower(), lw = 2 )
+    
     plt.legend( loc = 'best' )
     plt.xlabel( 'Epoch', fontsize = 16 )
     plt.ylabel( metric_label, fontsize = 16 )
@@ -34,12 +39,12 @@ def plotKerasMetricComparison( training_history, model_name, metric, metric_labe
     plt.clf()
     
 
-def plotAccuracyComparison( training_history, model_name ):
-    return plotKerasMetricComparison(training_history, model_name, 'acc', 'Accuracy')
+def plotAccuracyComparison( training_history, model_name, fullData = False ):
+    return plotKerasMetricComparison(training_history, model_name, 'acc', 'Accuracy', fullData)
 
 
-def plotLossComparison( training_history, model_name ):
-    return plotKerasMetricComparison(training_history, model_name, 'loss', 'Loss')
+def plotLossComparison( training_history, model_name, fullData = False ):
+    return plotKerasMetricComparison(training_history, model_name, 'loss', 'Loss', fullData)
 
 
 def computeEfficiency( outputs, weights, min_output, max_output, num_points ):

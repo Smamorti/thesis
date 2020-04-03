@@ -47,7 +47,7 @@ model_name_BDT = 'BDT_final_fullData'
 
 
 makeOutputBDT(model_name_BDT, signal_collection_BDT, background_collection_BDT)
-plotROCAndShapeComparison(signal_collection_BDT, background_collection_BDT, model_name_BDT )
+# plotROCAndShapeComparison(signal_collection_BDT, background_collection_BDT, model_name_BDT )
 
 BDT  = wpMetrics(model_name_BDT, signal_collection_BDT, background_collection_BDT, 'BDT')
 
@@ -61,8 +61,7 @@ background_collection_NN = DataCollection(bkgTree, branch_names, validation_frac
 # test_data = concatenateAndShuffleDatasets(signal_collection_NN.test_set, background_collection_NN.test_set)
 
 #model_name_NN = 'testNN80-20'
-model_name_NN = 'testNN_newBest'
-
+model_name_NN = 'NN_Best_FullData_18epochs'
 
 makeOutputNN(model_name_NN, signal_collection_NN, background_collection_NN)
 # plotROCAndShapeComparison(signal_collection_NN, background_collection_NN, model_name_NN )

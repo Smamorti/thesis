@@ -298,17 +298,17 @@ def wpMetrics(model_name, signal_collection, background_collection, algo):
 def plotEfficiency(model_outputs, maximum_index, efficiency, algo, color = 'b', vlineColor = 'red'):
 
     plt.axvline(str(model_outputs[maximum_index])[:4], color = vlineColor, label = '{} Maximum at {}'.format(algo, str(model_outputs[maximum_index])[:4]))
-    plt.plot(model_outputs, efficiency, color = color, lw=2)
+    plt.plot(model_outputs, efficiency, color = color, lw=2, label = algo)
 
 def plotPurity(model_outputs, maximum_index, purity, algo, color = 'b', vlineColor = 'red'):
 
     plt.axvline(str(model_outputs[maximum_index])[:4], color = vlineColor, label = '{} Maximum at {}'.format(algo, str(model_outputs[maximum_index])[:4]))
-    plt.plot(model_outputs, purity, color = color, lw=2)
+    plt.plot(model_outputs, purity, color = color, lw=2, label = algo)
 
 def plotSbr(model_outputs, maximum_index, sbr, algo, color = 'b', vlineColor = 'red'):
 
     plt.axvline(str(model_outputs[maximum_index])[:4], color = vlineColor, label = '{} Maximum at {}'.format(algo, str(model_outputs[maximum_index])[:4]))
-    plt.plot(model_outputs[:len(sbr)], sbr, color = color, lw=2)
+    plt.plot(model_outputs[:len(sbr)], sbr, color = color, lw=2, label = algo)
 
 
 def plotTotal(model_outputs, maximum_index, purity, efficiency, summed, sbr, sbr_scaled, algo, style = '-'):

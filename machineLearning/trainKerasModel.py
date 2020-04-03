@@ -29,11 +29,11 @@ def cleanModelFile( model_file_name ):
     trained_model_file.close()
 
 
-def plotModelTrainingHistory( training_history, model_name ):
+def plotModelTrainingHistory( training_history, model_name, fullData = False ):
 
     #plot loss and accuracy as a function of epochs
-    plotAccuracyComparison( training_history, model_name )
-    plotLossComparison( training_history, model_name )
+    plotAccuracyComparison( training_history, model_name, fullData)
+    plotLossComparison( training_history, model_name, fullData )
 
     #to avoid random tensorflow crashes
     K.clear_session()
@@ -145,7 +145,7 @@ class KerasClassifierTrainer():
             verbose = 2
         )
         
-#        cleanModelFile( self.__model_name + '.h5' )
+        cleanModelFile( self.__model_name + '.h5' )
         plotModelTrainingHistory( training_history, self.__model_name )
 	
 
@@ -165,10 +165,9 @@ class KerasClassifierTrainer():
             batch_size = batch_size,
             verbose = 2
         )
-
-#        cleanModelFile( self.__model_name + '.h5' )                                                                                                                   
-
-        plotModelTrainingHistory( training_history, self.__model_name )
+        self.__model.save(self.__model_name + '.h5')
+        cleanModelFile( self.__model_name + '.h5' )                                                                                                                  
+        plotModelTrainingHistory( training_history, self.__model_name, fullData = True )
 
 
 

@@ -58,7 +58,7 @@ training_data = concatenateAndShuffleDatasets(signal_collection.training_set, ba
 validation_data = concatenateAndShuffleDatasets(signal_collection.validation_set, background_collection.validation_set)
 test_data = concatenateAndShuffleDatasets(signal_collection.test_set, background_collection.test_set)
 
-model_name = 'NN_Best_FullData'
+model_name = 'NN_Best_FullData_18epochs'
 
 trainNN(model_name, configuration, training_data, validation_data, test_data, validation_fraction, signal_collection, background_collection)
-plotROCAndShapeComparison_NN(signal_collection, background_collection, model_name )
+plotROCAndShapeComparison_NN(signal_collection, background_collection, model_name, validation_fraction+test_fraction )
