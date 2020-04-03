@@ -155,6 +155,37 @@ def errors( data, weights, num_bins, min_bin, max_bin ):
     bin_errors /= scale
     return bin_errors 
 
+def decideWPs(purity, efficiency, sbr, summed, model_outputs, maximum_index, algo, NN_dev = np.float(0.05)):
+
+    if algo == 'NN':
+
+        # TO DO: find other way of deciding which WPs to use except for the max of purXeff + sbr
+        print(type(model_outputs[maximum_index]))
+        print(type(NN_dev))
+        print('Working points which will be used in the analysis for the NN:')
+        print('1) (wp2 - %f): %f' % (NN_dev, model_outputs[maximum_index] - NN_dev))
+        print('2) (Maximum of pur*eff + sbr): %f' % (model_outputs[maximum_index]))
+        print('3) (wp2 + %f): %f' % (NN_dev, model_outputs[maximum_index] + NN_dev))
+
+    else:
+         
+        wp2 = model_outputs[np.argmax(purity*efficiency)]
+        wp3 = model_outputs[maximum_index]
+        wp4 = model_outputs[np.argmax(sbr)]
+
+        wp1 = wp2 - (wp3 - wp2)
+        wp5 = wp4 + (wp4 - wp3)
+
+        print('Working points which will be used in the analysis for the BDT:')
+        
+        print('1) (wp2 - (wp3 - wp2)): %f' % wp1)
+        print('2) (Maximum of pur*eff): %f' % wp2)
+        print('3) (Maximum of pur*eff + sbr): %f' % wp3)
+        print('4) (Maximum of sbr): %f' % wp4)
+        print('5) (wp4 + (wp4 - wp3)): %f' % wp5)
+        
+        
+
 def wpMetrics(model_name, signal_collection, background_collection, algo):
 
     signal_outputs = signal_collection.training_set.outputs
@@ -292,6 +323,10 @@ def wpMetrics(model_name, signal_collection, background_collection, algo):
     plt.savefig('results/signalSqrtBkgRatio_' + model_name + '.png')
 
     plt.clf()
+
+    # determine the working points we will be using
+
+    decideWPs(purity, efficiency, sbr, summed, model_outputs, maximum_index, algo)
 
     return {'purity': purity, 'efficiency': efficiency, 'sbr': sbr, 'summed' : summed, 'model_outputs': model_outputs, 'maximum_index' : maximum_index, 'sbr_scaled' : new}
 
