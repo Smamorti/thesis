@@ -60,14 +60,24 @@ def fillSubCanvas(subCanvas, hist, xlabel, ylabel, leg, leg2, title = None, logs
     subCanvas.Update()
     
 
-def plot(plotList, histList, xLabelList, yLabelList, leg, leg2, title =  "", logscale = 1, histList_nonZ = None, titleNotZ = None, logNotZ = 1, year = "2018"):
+def plot(plotList, histList, xLabelList, yLabelList, leg, leg2, title =  "", logscale = 1, histList_nonZ = None, titleNotZ = None, logNotZ = 1, year = "2018", MLalgo = "no"):
+
+    if MLalgo != "no":
+
+        model = "_" + MLalgo.replace(".h5", "").replace(".bin","").replace("machineLearning/models/", "")
+
+    else:
+
+        model = ""
+
 
     for i in range(len(plotList)):
         
         if titleNotZ:
 
             c = makeCanvas(2, 1)
-            filename = "plots/Hist_comp_{}_{}".format(year, plotList[i])
+
+            filename = "plots/Hist_comp_{}_{}{}".format(year, plotList[i], model)
             p1 = c.cd(1)
             fillSubCanvas(p1, histList[-1][i], xLabelList[i], yLabelList[i], leg, leg2, title, logscale)
             p2 = c.cd(2)
@@ -83,7 +93,7 @@ def plot(plotList, histList, xLabelList, yLabelList, leg, leg2, title =  "", log
                 scale = "linear"
 
             c = makeCanvas(1, 1)
-            filename = "plots/Hist_{}_{}_{}".format(year, plotList[i], scale)
+            filename = "plots/Hist_{}_{}{}_{}".format(year, plotList[i], model, scale)
             fillSubCanvas(c, histList[-1][i], xLabelList[i], yLabelList[i], leg, leg2, title, logscale)
             c.SaveAs(filename + ".pdf")
             c.SaveAs(filename + ".png")

@@ -88,11 +88,11 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
 
         # to stop testing, comment the following three lines out                                                                                                                                           
 
-        total = count * 0.01
+        # total = count * 0.01
 
-        if progress / float(count) > 0.01:
+        # if progress / float(count) > 0.01:
 
-            break
+        #     break
 
         if progress / total > toolbarProgress / toolbar_width:
             toolbarProgress += 1

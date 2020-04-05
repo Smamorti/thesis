@@ -46,6 +46,7 @@ else:
     histList = pickle.load(file(options.inputFile))[:-1]
     stackedList = pickle.load(file(options.inputFile))[-1]
 
+print(histList)
 gROOT.SetBatch(True)
 
 leg = makeLegend(typeList, histList, texDict)

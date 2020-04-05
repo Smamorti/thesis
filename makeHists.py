@@ -6,6 +6,7 @@ import time
 from cuts import cuts
 import sys
 from ROOT import TFile, TH1F, THStack, TLegend, TList
+from utilities.makeParamArray import makeParamArray
 
 def initializeHist(hist, name, nbins, llim, ulim):
 
@@ -31,7 +32,7 @@ def addOverflowbin(hist):
     nbins = hist.GetNbinsX()
     hist.SetBinContent(nbins, hist.GetBinContent(nbins) + hist.GetBinContent(nbins + 1))
 
-def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists):
+def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists, model, algo, workingPoint):
 
 
     if year == "2017":
@@ -116,14 +117,47 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
                     if i == len(cutList) - 1:
 
-                        lepton1 = lepton(tree, nLight[0], checknJets = True, calcWmass = True, nJets = nJets)
-                        lepton2 = lepton(tree, nLight[1], checknJets = False)
+                        # if we want to use a ML algo, check if it classifies the event as signal using a specific working point
 
-                        for k in range(len(plotList)):
+                        if model:
 
-                            hist = histList[k]
+                            # make array of used parameters in model training
 
-                            getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
+                            if '.h5' in algo:
+
+                                output = model.predict(makeParamArray(tree, nLight, nJets))[0][0]
+
+                            else:
+
+                                from xgboost import DMatrix
+                                              
+                                matrix = DMatrix(makeParamArray(tree, nLight, nJets))
+                                output = model.predict(matrix)
+
+                                
+                            if output >= float(workingPoint):
+
+                                lepton1 = lepton(tree, nLight[0], checknJets = True, calcWmass = True, nJets = nJets)
+                                lepton2 = lepton(tree, nLight[1], checknJets = False)
+
+                                for k in range(len(plotList)):
+
+                                    hist = histList[k]
+
+                                    getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
+
+                        else: # no model is used and event passed all cuts --> fill hists
+
+                            
+                            lepton1 = lepton(tree, nLight[0], checknJets = True, calcWmass = True, nJets = nJets)
+                            lepton2 = lepton(tree, nLight[1], checknJets = False)
+
+                            for k in range(len(plotList)):
+
+                                hist = histList[k]
+
+                                getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
+
 
                         #getattr(plotVariables, "geen2W")(lepton1, lepton2, hist, tree._weight * weight)
                 else:

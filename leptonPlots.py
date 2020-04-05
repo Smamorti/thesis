@@ -16,9 +16,11 @@ parser.add_option("-c", "--conf", default = "samples/2018_total.conf", help = "c
 parser.add_option("-s", "--stack", default = "samples/2018_total.stack", help = "stack file")
 parser.add_option("-p", "--plot", default = "samples/newSkim_2018.plot", help = "plot file")
 parser.add_option("-o", "--output", default = None, help = "Output file for Histlist?")
-parser.add_option("-y", "--year", default = 2018, help = "year")
-parser.add_option("-t", "--testing", default = 'no', help = "Run in test mode (1% of the data) or not?")
-parser.add_option("-x", "--printHist", default = 'no', help = "Print out hist content or not?")
+parser.add_option("-y", "--year", default = "2018", help = "year")
+parser.add_option("-t", "--testing", default = "no", help = "Run in test mode (1% of the data) or not?")
+parser.add_option("-x", "--printHist", default = "no", help = "Print out hist content or not?")
+parser.add_option("-m", "--MLalgo", default = "no", help = "Use ML algo?")
+parser.add_option("-w", "--workingPoint", default = 0.5, help = "Working point?")
 options, args = parser.parse_args(sys.argv[1:])
 
 if options.testing not in ['yes', 'no'] or options.printHist not in ['yes', 'no']:
@@ -27,13 +29,20 @@ if options.testing not in ['yes', 'no'] or options.printHist not in ['yes', 'no'
 
 if not options.output:
 
-    output = "histograms/histList_{}.pkl".format(options.stack.replace("samples/", "").replace(".stack", ""))
+    if options.MLalgo:
+
+        output = "histograms/histList_{}_{}.pkl".format(options.stack.replace("samples/", "").replace(".stack", ""), options.MLalgo.replace(".h5", "").replace(".bin","").replace("machineLearning/models/", ""))
+    
+    else:
+
+        output = "histograms/histList_{}.pkl".format(options.stack.replace("samples/", "").replace(".stack", ""))
+
 
 else:
 
     output = options.output
 
-print("Using files from " + options.year)
+print("Using files from {}".format(options.year))
 
 # get all info on the data we want to plot
 
@@ -48,6 +57,25 @@ binList = [str2tuple(string) for string in binList]
 histList = makeHists.fillTList(typeList, plotList, binList)
 yLabelList = makeYlabels(xtypeList, binList)
 
+# load the ML model if we supplied one
+
+if '.h5' in options.MLalgo:
+
+    from keras.models import load_model
+
+    model = load_model(options.MLalgo)
+
+elif '.bin' in options.MLalgo:
+
+    import xgboost as xgb
+
+    model = xgb.Booster()
+    model.load_model(options.MLalgo)
+
+else:
+
+    model = None
+
 # Fill histograms
 
 for i in range(len(typeList)):
@@ -58,7 +86,7 @@ for i in range(len(typeList)):
 
     channels = sourceDict[source]
     print(channels)
-    makeHists.fillHist(channels, xSecDict, locationDict, histList[i], plotList, year = options.year, testing = options.testing, printHists = options.printHist)
+    makeHists.fillHist(channels, xSecDict, locationDict, histList[i], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint)
 
 
 # Plotting
@@ -80,9 +108,9 @@ gROOT.SetBatch(True)
 leg = makeHists.makeLegend(typeList, histList, texDict)
 leg_2 = makeHists.makeLegend(typeList, histList, texDict, (0.1, 0.7, 0.2, 0.9))
 
-plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, year = options.year)
-plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, title =  "No Logscale", logscale = 0, histList_nonZ = histList, titleNotZ = "Logscale", logNotZ = 1, year = options.year)
-plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0)
+plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, year = options.year, MLalgo = options.MLalgo)
+plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, title =  "No Logscale", logscale = 0, histList_nonZ = histList, titleNotZ = "Logscale", logNotZ = 1, year = options.year, MLalgo = options.MLalgo)
+plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, MLalgo = options.MLalgo)
 
 print("Time elapsed: {} seconds".format((time.time() - start)))
 
