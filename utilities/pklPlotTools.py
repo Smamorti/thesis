@@ -58,6 +58,14 @@ def fillSubCanvas(subCanvas, hist, xlabel, ylabel, leg, leg2, title = None, logs
         hist.GetXaxis().SetBinLabel(2, "#mu#mu")
         leg2.Draw()
 
+    elif xlabel== "SR":
+
+        hist.GetXaxis().SetBinLabel(1, "=5 jets,=1 bjets")
+        hist.GetXaxis().SetBinLabel(2, "=5 jets,>=2 bjets")
+        hist.GetXaxis().SetBinLabel(3, ">=6 jets,=1 bjets")
+        hist.GetXaxis().SetBinLabel(4, ">=6 jets,>=2 bjets")
+
+        leg2.Draw()
     # hardcoded for now                                                                                                                                                                                     
     elif xlabel == "leptonMVA l1" or xlabel == "leptonMVA l2" or xlabel == "leptonMVA":
 

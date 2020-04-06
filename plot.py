@@ -41,13 +41,19 @@ def fillSubCanvas(subCanvas, hist, xlabel, ylabel, leg, leg2, title = None, logs
     hist.GetYaxis().SetTitle(ylabel)
 
     # hardcoded for now
-
     if xlabel == "flavComp":
 
         hist.GetXaxis().SetBinLabel(1, "ee")
         hist.GetXaxis().SetBinLabel(2, "#mu#mu")
         leg2.Draw()
 
+    elif xlabel == "SR":
+
+        hist.GetXaxis().SetBinLabel(1, "=5 jets,=1 bjets")
+        hist.GetXaxis().SetBinLabel(2, "=5 jets,>=2 bjets")
+        hist.GetXaxis().SetBinLabel(3, ">=6 jets,=1 bjets")
+        hist.GetXaxis().SetBinLabel(4, ">=6 jets,>=2 bjets")
+        leg2.Draw()
     # hardcoded for now
     
     elif xlabel == "leptonMVA l1" or xlabel == "leptonMVA l2" or xlabel == "leptonMVA":
@@ -80,7 +86,6 @@ def plot(plotList, histList, xLabelList, yLabelList, leg, leg2, title =  "", log
         if titleNotZ:
 
             c = makeCanvas(2, 1)
-
             filename = "plots/{}/Hist_comp_{}_{}".format(model, year, plotList[i])
             p1 = c.cd(1)
             fillSubCanvas(p1, histList[-1][i], xLabelList[i], yLabelList[i], leg, leg2, title, logscale)
@@ -95,7 +100,6 @@ def plot(plotList, histList, xLabelList, yLabelList, leg, leg2, title =  "", log
                 scale = "log"
             else:
                 scale = "linear"
-
             c = makeCanvas(1, 1)
             filename = "plots/{}/Hist_{}_{}_{}".format(model, year, plotList[i], scale)
             fillSubCanvas(c, histList[-1][i], xLabelList[i], yLabelList[i], leg, leg2, title, logscale)

@@ -241,7 +241,28 @@ def Ht(l1, l2, hist, totalWeight):
 
        hist.Fill(h, totalWeight)
 
-###########################                                                                                                                                                                                
+def SR(l1, l2, hist, totalWeight):
+
+    njets = len(l1.goodJets)
+    nbjets = len(countbJets(l1))
+
+    if njets == 5 and nbjets == 1:
+        
+        hist.Fill(0, totalWeight)
+
+    elif njets == 5 and nbjets > 1:
+
+        hist.Fill(1, totalWeight)
+
+    elif njets > 5 and nbjets == 1:
+
+        hist.Fill(2, totalWeight)
+
+    elif njets > 5 and nbjets > 1:
+
+        hist.Fill(3, totalWeight)
+                 
+###########################                                                                                                                                                                          
 ######## UTILITIES ########                                                                                                                                                                                
 ########################### 
 

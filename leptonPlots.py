@@ -15,7 +15,7 @@ import os
 parser = OptionParser()
 parser.add_option("-c", "--conf", default = "samples/2018_total.conf", help = "conf file")
 parser.add_option("-s", "--stack", default = "samples/2018_total.stack", help = "stack file")
-parser.add_option("-p", "--plot", default = "samples/newSkim_2018.plot", help = "plot file")
+parser.add_option("-p", "--plot", default = "samples/2018_total.plot", help = "plot file")
 parser.add_option("-o", "--output", default = None, help = "Output file for Histlist?")
 parser.add_option("-y", "--year", default = "2018", help = "year")
 parser.add_option("-t", "--testing", default = "no", help = "Run in test mode (1% of the data) or not?")
@@ -57,7 +57,8 @@ locationDict, xSecDict = readConf(options.conf)
 # the variables we want to plot
 
 plotList, binList, xLabelList, xtypeList = np.loadtxt(options.plot, comments = "%" ,unpack = True, dtype = str, delimiter='\t')
-
+print(xtypeList)
+print(xLabelList)
 binList = [str2tuple(string) for string in binList]
 histList = makeHists.fillTList(typeList, plotList, binList)
 yLabelList = makeYlabels(xtypeList, binList)
