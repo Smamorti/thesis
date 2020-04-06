@@ -3,6 +3,18 @@ import ROOT.gStyle as gStyle
 import ROOT.gPad as gPad
 import pickle
 
+def makePath(histListPath):
+
+    if not 'wp' in histListPath:
+
+        return 'plots'
+
+    else:
+        
+        algo = histListPath.split('/')[1]
+
+        return 'plots/{}'.format(algo)
+
 def makeLegend(typeList, histList, texDict, position = (0.8, 0.7, 0.89, 0.89)):
 
     leg = TLegend(position[0], position[1], position[2], position[3], '', 'NBNDC')
@@ -103,7 +115,7 @@ def fillStacked(sources, stackedList):
 
         del sourceHists
 
-def plot(plotList, histList, xLabelList, yLabelList, leg, leg2, title =  "", logscale = 1, year = "2018"):
+def plot(plotList, histList, xLabelList, yLabelList, leg, leg2, title =  "", logscale = 1, year = "2018", folder = 'plots/'):
 
     for i in range(len(plotList)):
         
@@ -113,7 +125,7 @@ def plot(plotList, histList, xLabelList, yLabelList, leg, leg2, title =  "", log
             scale = "linear"
 
         c = makeCanvas(1, 1)
-        filename = "plots/Hist_{}_{}_{}".format(year, plotList[i], scale)
+        filename = "{}/Hist_{}_{}_{}".format(folder, year, plotList[i], scale)
         fillSubCanvas(c, histList[i], xLabelList[i], yLabelList[i], leg, leg2, title, logscale)
 
         # TO DO: Add option to customize text!

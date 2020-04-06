@@ -53,4 +53,5 @@ def runCommandAsJob( command, script_name, wall_time = '24:00:00', num_threads =
     submitQsubJob( script_name, wall_time, num_threads, high_memory )
 
 #runCommandAsJob('./main data/samples/samples_ttZ_npDD.txt runFullSelection selection:ttZ ', 'submision.sh')
-runCommandAsJob('python testJob.py' , 'submision.sh') 
+#runCommandAsJob('python testJob.py' , 'submision.sh') 
+runCommandAsJob('python leptonPlots.py -t yes -m machineLearning/models/BDT_final_fullData.bin -w 0.759173 -x yes', 'submission_testPlots.sh')

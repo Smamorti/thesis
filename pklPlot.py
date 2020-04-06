@@ -1,4 +1,4 @@
-from utilities.pklPlotTools import makeLegend, plot, makeStackedList, fillStacked, makeHistList
+from utilities.pklPlotTools import makeLegend, plot, makeStackedList, fillStacked, makeHistList, makePath
 from utilities.utils import makeYlabels, str2tuple
 from utilities.inputParser import readStack
 from ROOT import gROOT, THStack
@@ -6,7 +6,7 @@ import pickle
 from optparse import OptionParser
 import sys
 from numpy import loadtxt
-
+import os
 
 parser = OptionParser()
 parser.add_option("-f", "--inputFile", default = "histograms/histList_2018_total.pkl", help = "input pkl file")
@@ -40,11 +40,23 @@ if ',' in options.inputFile:
     fillStacked(sources, stackedList)
     histList = makeHistList(sources)
     
+    folder = makePath(sources[0])
+
 
 else:
 
     histList = pickle.load(file(options.inputFile))[:-1]
     stackedList = pickle.load(file(options.inputFile))[-1]
+
+    folder = makePath(options.inputFile)
+
+print(folder)
+
+if not os.path.exists(folder):
+    os.makedirs(folder)
+
+
+
 
 print(histList)
 gROOT.SetBatch(True)
@@ -52,6 +64,6 @@ gROOT.SetBatch(True)
 leg = makeLegend(typeList, histList, texDict)
 leg_2 = makeLegend(typeList, histList, texDict, (0.11, 0.7, 0.2, 0.89))
 
-plot(plotList, stackedList, xLabelList, yLabelList, leg, leg_2, year = options.year)
-plot(plotList, stackedList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0)
+plot(plotList, stackedList, xLabelList, yLabelList, leg, leg_2, year = options.year, folder = folder)
+plot(plotList, stackedList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, folder = folder)
 

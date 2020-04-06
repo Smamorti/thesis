@@ -9,6 +9,7 @@ from utilities.inputParser import readStack, readConf
 from utilities.saveHistList import saveHistList
 import sys
 from optparse import OptionParser
+import os
 
 
 parser = OptionParser()
@@ -31,7 +32,11 @@ if not options.output:
 
     if options.MLalgo:
 
-        output = "histograms/histList_{}_{}.pkl".format(options.stack.replace("samples/", "").replace(".stack", ""), options.MLalgo.replace(".h5", "").replace(".bin","").replace("machineLearning/models/", ""))
+        if not os.path.exists("histograms/{}_wp={}".format(options.MLalgo.replace(".h5", "").replace(".bin","").replace("machineLearning/models/", ""), options.workingPoint)):
+
+            os.makedirs("histograms/{}_wp={}".format(options.MLalgo.replace(".h5", "").replace(".bin","").replace("machineLearning/models/", ""), options.workingPoint))
+
+        output = "histograms/{}_wp={}/histList_{}.pkl".format(options.MLalgo.replace(".h5", "").replace(".bin","").replace("machineLearning/models/", ""), options.workingPoint ,options.stack.replace("samples/", "").replace(".stack", ""))
     
     else:
 
@@ -108,9 +113,9 @@ gROOT.SetBatch(True)
 leg = makeHists.makeLegend(typeList, histList, texDict)
 leg_2 = makeHists.makeLegend(typeList, histList, texDict, (0.1, 0.7, 0.2, 0.9))
 
-plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, year = options.year, MLalgo = options.MLalgo)
-plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, title =  "No Logscale", logscale = 0, histList_nonZ = histList, titleNotZ = "Logscale", logNotZ = 1, year = options.year, MLalgo = options.MLalgo)
-plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, MLalgo = options.MLalgo)
+plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, year = options.year, MLalgo = options.MLalgo, workingPoint = options.workingPoint)
+plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, title =  "No Logscale", logscale = 0, histList_nonZ = histList, titleNotZ = "Logscale", logNotZ = 1, year = options.year, MLalgo = options.MLalgo, workingPoint = options.workingPoint)
+plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, MLalgo = options.MLalgo, workingPoint = options.workingPoint)
 
 print("Time elapsed: {} seconds".format((time.time() - start)))
 
