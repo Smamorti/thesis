@@ -13,7 +13,7 @@ parser.add_option("-f", "--inputFile", default = "histograms/histList_2018_total
 parser.add_option("-y", "--year", default = 2018, help = "year")
 parser.add_option("-c", "--conf", default = "samples/2018_total.conf", help = "conf file")
 parser.add_option("-s", "--stack", default = "samples/2018_total.stack", help = "stack file")
-parser.add_option("-p", "--plot", default = "samples/newSkim_2018.plot", help = "plot file")
+parser.add_option("-p", "--plot", default = "samples/2018_total.plot", help = "plot file")
 parser.add_option("-t", "--typeList", default = None, help = "typeList")
 options, args = parser.parse_args(sys.argv[1:])
 
