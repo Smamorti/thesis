@@ -1,4 +1,4 @@
-from utilities.pklPlotTools import makeLegend, plot, makeStackedList, fillStacked, makeHistList, makePath
+from utilities.pklPlotTools import makeLegend, plot, makeStackedList, fillStacked, makeHistList, makePath, countSignal
 from utilities.utils import makeYlabels, str2tuple
 from utilities.inputParser import readStack
 from ROOT import gROOT, THStack
@@ -15,6 +15,7 @@ parser.add_option("-c", "--conf", default = "samples/2018_total.conf", help = "c
 parser.add_option("-s", "--stack", default = "samples/2018_total.stack", help = "stack file")
 parser.add_option("-p", "--plot", default = "samples/2018_total.plot", help = "plot file")
 parser.add_option("-t", "--typeList", default = None, help = "typeList")
+parser.add_option("-o", "--onlyCount", default = "no", help = "Only count signal events, no plotting?")
 options, args = parser.parse_args(sys.argv[1:])
 
 
@@ -28,6 +29,8 @@ plotList, binList, xLabelList, xtypeList = loadtxt(options.plot, comments = "%" 
 
 binList = [str2tuple(string) for string in binList]
 yLabelList = makeYlabels(xtypeList, binList)
+
+
 
 # also make the plotter able to use seperate source files and then stack the hists together itself
 
@@ -50,20 +53,19 @@ else:
 
     folder = makePath(options.inputFile)
 
-print(folder)
+    countSignal(options.inputFile, histList, typeList, xLabelList)
+
 
 if not os.path.exists(folder):
     os.makedirs(folder)
 
 
+if options.onlyCount == "no":
 
+    gROOT.SetBatch(True)
 
-print(histList)
-gROOT.SetBatch(True)
+    leg = makeLegend(typeList, histList, texDict)
+    leg_2 = makeLegend(typeList, histList, texDict, (0.11, 0.7, 0.2, 0.89))
 
-leg = makeLegend(typeList, histList, texDict)
-leg_2 = makeLegend(typeList, histList, texDict, (0.11, 0.7, 0.2, 0.89))
-
-plot(plotList, stackedList, xLabelList, yLabelList, leg, leg_2, year = options.year, folder = folder)
-plot(plotList, stackedList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, folder = folder)
-
+    plot(plotList, stackedList, xLabelList, yLabelList, leg, leg_2, year = options.year, folder = folder)
+    plot(plotList, stackedList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, folder = folder)

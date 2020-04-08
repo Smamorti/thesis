@@ -2,6 +2,31 @@ from ROOT import TCanvas, TLegend, THStack, TList, TPaveText
 import ROOT.gStyle as gStyle
 import ROOT.gPad as gPad
 import pickle
+import numpy as np
+
+def countSignal(inputFile, histList, typeList, xLabelList):
+    
+    index_signal = typeList.index('ttZ')
+    index_SR = np.where(xLabelList == 'SR')[0][0]
+
+    inputName = inputFile.split('/')[1]
+
+    hist = histList[index_signal][index_SR]
+
+
+    print('----------------------------------------------------------------------')
+
+    print('Amount of signal events for {}:'.format(inputName))
+
+    print('=5 jets, =1 bjet: {}'.format(np.around(hist.GetBinContent(1), 2)))
+    print('=5 jets, >=2 bjets: {}'.format(np.around(hist.GetBinContent(2), 2)))
+    print('>=6 jets, =1 bjet: {}'.format(np.around(hist.GetBinContent(3), 2)))
+    print('>=6 jets, >=2 bjets: {}'.format(np.around(hist.GetBinContent(4), 2)))
+
+    print('Total amount of signal events: {}'.format(np.around(hist.GetBinContent(1) + hist.GetBinContent(2) + hist.GetBinContent(3) + hist.GetBinContent(4), 2)))
+
+    print('----------------------------------------------------------------------')
+
 
 def makePath(histListPath):
 

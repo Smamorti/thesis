@@ -8,3 +8,5 @@ old/*
 reduce*
 test*
 backup/*
+jobSubmission.py*
+txtfiles/*
