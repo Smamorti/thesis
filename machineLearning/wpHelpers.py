@@ -53,10 +53,6 @@ def makeOutputBDT(model_name, signal_collection, background_collection):
     background_collection.validation_set.addOutputs( model.predict( background_validation_matrix ) )
     background_collection.test_set.addOutputs( model.predict( background_test_matrix ) )
 
-    print(signal_collection.validation_set.outputs.shape)
-    print(signal_collection.validation_set.outputs)
-    print(background_collection.validation_set.outputs)
-
 
 def plotOutputShapeComparison( outputs_signal_training, weights_signal_training, 
     outputs_background_training, weights_background_training, 

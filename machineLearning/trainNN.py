@@ -6,6 +6,9 @@ from Activation import Activation
 # from DataCollection import DataCollection
 from trainKerasModel import KerasClassifierTrainer
 from keras.models import load_model
+from tensorflow import set_random_seed
+set_random_seed(2)
+
 
 def trainNN(model_name, configuration, training_data, validation_data, test_data, val_frac, signal_collection, background_collection):
 

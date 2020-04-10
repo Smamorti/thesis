@@ -8,6 +8,7 @@ from wpHelpers import makeOutputNN, makeOutputBDT
 from ROOT import TFile
 from DataCollection import DataCollection
 from Dataset import concatenateAndShuffleDatasets
+from utils import plotSignalBkgWRTwp
 
 branch_names = [
     'lPt1', 'lPt2',
@@ -39,13 +40,13 @@ test_fraction = 0.2
 
 np.random.seed(42)
 
-signal_collection_BDT = DataCollection(signalTree, branch_names, validation_fraction, test_fraction, True, 'weight', only_positive_weights = True)
-background_collection_BDT = DataCollection(bkgTree, branch_names, validation_fraction, test_fraction, False, 'weight', only_positive_weights = True)
+signal_collection_BDT = DataCollection(signalTree, branch_names, validation_fraction, test_fraction, True, 'weight', only_positive_weights = True, wp = True)
+background_collection_BDT = DataCollection(bkgTree, branch_names, validation_fraction, test_fraction, False, 'weight', only_positive_weights = True, wp = True)
 
 np.random.seed(42) # needed to reset the seed!!!
 
-signal_collection_NN = DataCollection(signalTree, branch_names, validation_fraction, test_fraction, True, 'weight', only_positive_weights = True)
-background_collection_NN = DataCollection(bkgTree, branch_names, validation_fraction, test_fraction, False, 'weight', only_positive_weights = True)
+signal_collection_NN = DataCollection(signalTree, branch_names, validation_fraction, test_fraction, True, 'weight', only_positive_weights = True, wp = True)
+background_collection_NN = DataCollection(bkgTree, branch_names, validation_fraction, test_fraction, False, 'weight', only_positive_weights = True, wp = True)
 
 
 
@@ -58,6 +59,18 @@ BDT_model = 'BDT_final_602020'
 
 makeOutputNN(NN_model, signal_collection_NN, background_collection_NN)
 makeOutputBDT(BDT_model, signal_collection_BDT, background_collection_BDT)
+
+print(signal_collection_NN.validation_set.outputs.shape)
+print(background_collection_NN.validation_set.outputs.shape)
+print(signal_collection_BDT.validation_set.outputs.shape)
+print(background_collection_BDT.validation_set.outputs.shape)
+
+print(np.sum(signal_collection_NN.validation_set.weights))
+print(np.sum(background_collection_NN.validation_set.weights))
+print(np.sum(signal_collection_BDT.validation_set.weights))
+print(np.sum(background_collection_BDT.validation_set.weights))
+
+
 
 # compute ROCs
 
@@ -77,9 +90,6 @@ eff_signal_BDT, eff_background_BDT = computeROC(
         num_points = 10000
             )
 
-print(eff_signal_BDT[7550:7600])
-print(eff_background_BDT[7550:7600])
-
 AUC_NN = areaUnderCurve(eff_signal_NN, eff_background_NN)
 AUC_BDT = areaUnderCurve(eff_signal_BDT, eff_background_BDT)
 
@@ -98,3 +108,18 @@ plt.legend(prop={"size":8})
 plt.grid(True)
 plt.savefig('results/roc_comparison.pdf')
 plt.savefig('results/roc_comparison.png')
+
+plt.clf()
+
+
+
+plotSignalBkgWRTwp(
+    signal_collection_NN.validation_set.outputs, 
+    signal_collection_NN.validation_set.weights,
+    background_collection_NN.validation_set.outputs,
+    background_collection_NN.validation_set.weights,
+    signal_collection_BDT.validation_set.outputs,
+    signal_collection_BDT.validation_set.weights,
+    background_collection_BDT.validation_set.outputs,
+    background_collection_BDT.validation_set.weights
+    )
