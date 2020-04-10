@@ -51,13 +51,14 @@ def plotSignalBkgWRTwp(NN_signal_output, NN_signal_weight, NN_background_output,
         
         bdt_sel_signal = BDT_signal_output > wp_bdt[i]
         bdt_sel_background = BDT_background_output > wp_bdt[i]
-        
+
+    
         signal_nn.append(np.sum(NN_signal_weight[nn_sel_signal]))
         background_nn.append(np.sum(NN_background_weight[nn_sel_background]))
 
         signal_bdt.append(np.sum(BDT_signal_weight[bdt_sel_signal]))
         background_bdt.append(np.sum(BDT_background_weight[bdt_sel_background]))
-
+            
     # plotting
 
     plot('BDT', 'dashdot', wp_bdt, signal_bdt, background_bdt)
