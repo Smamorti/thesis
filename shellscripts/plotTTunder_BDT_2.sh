@@ -1,0 +1,3 @@
+cd ..
+python pklPlot.py -f histograms/withBDT/histList_2018_total_BDT_final_fullData_tt.pkl,histograms/withBDT/histList_2018_total_BDT_final_fullData_ttZ.pkl,histograms/withBDT/histList_2018_total_BDT_final_fullData_ttX.pkl,histograms/withBDT/histList_2018_total_BDT_final_fullData_ttW.pkl,histograms/withBDT/histList_2018_total_BDT_final_fullData_other.pkl,histograms/withBDT/histList_2018_total_BDT_final_fullData_DY.pkl -t tt,ttZ,ttX,ttW,other,DY
+

@@ -28,6 +28,29 @@ def countSignal(inputFile, histList, typeList, xLabelList):
     print('----------------------------------------------------------------------')
 
 
+def countSignBkg(inputFile, histList, typeList, xLabelList):
+
+    wp = inputFile.split('/')[1].split('_')[-1].replace('wp=', '')
+    index_SR = np.where(xLabelList == 'SR')[0][0]
+
+    index_signal = typeList.index('ttZ')
+
+    hist = histList[index_signal][index_SR]
+
+    totSign = hist.GetBinContent(1) + hist.GetBinContent(2) + hist.GetBinContent(3) + hist.GetBinContent(4)
+
+    totEvents = 0
+
+    for i in range((len(histList))):
+
+
+        tempHist = histList[i][index_SR]
+        totEvents += tempHist.GetBinContent(1) + tempHist.GetBinContent(2) + tempHist.GetBinContent(3) + tempHist.GetBinContent(4) 
+
+    bkgEvents = totEvents - totSign
+
+    print('{}\t{}\t{}\t{}\t{}'.format(wp, totSign, bkgEvents, totSign/bkgEvents, totEvents))
+
 def makePath(histListPath):
 
     if not 'wp' in histListPath:
@@ -89,7 +112,6 @@ def fillSubCanvas(subCanvas, hist, xlabel, ylabel, leg, leg2, title = None, logs
         hist.GetXaxis().SetBinLabel(2, "=5 jets,>=2 bjets")
         hist.GetXaxis().SetBinLabel(3, ">=6 jets,=1 bjets")
         hist.GetXaxis().SetBinLabel(4, ">=6 jets,>=2 bjets")
-
         leg.Draw()
     # hardcoded for now                                                                                                                                                                                     
     elif xlabel == "leptonMVA l1" or xlabel == "leptonMVA l2" or xlabel == "leptonMVA":
@@ -160,6 +182,13 @@ def plot(plotList, histList, xLabelList, yLabelList, leg, leg2, title =  "", log
         c = makeCanvas(1, 1)
         filename = "{}/Hist_{}_{}_{}".format(folder, year, plotList[i], scale)
         fillSubCanvas(c, histList[i], xLabelList[i], yLabelList[i], leg, leg2, title, logscale)
+
+        # workingPoint = "0.50"
+        # wp = TPaveText()
+        # wp.SetX1NDC(0.25)
+        # wp.SetY1NDC()
+        # wp.SetX2NDC()
+        # wp.SetY2NDC()
 
         # TO DO: Add option to customize text!
 

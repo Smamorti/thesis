@@ -1,4 +1,4 @@
-from utilities.pklPlotTools import makeLegend, plot, makeStackedList, fillStacked, makeHistList, makePath, countSignal
+from utilities.pklPlotTools import makeLegend, plot, makeStackedList, fillStacked, makeHistList, makePath, countSignal, countSignBkg
 from utilities.utils import makeYlabels, str2tuple
 from utilities.inputParser import readStack
 from ROOT import gROOT, THStack
@@ -15,7 +15,7 @@ parser.add_option("-c", "--conf", default = "samples/2018_total.conf", help = "c
 parser.add_option("-s", "--stack", default = "samples/2018_total.stack", help = "stack file")
 parser.add_option("-p", "--plot", default = "samples/2018_total.plot", help = "plot file")
 parser.add_option("-t", "--typeList", default = None, help = "typeList")
-parser.add_option("-o", "--onlyCount", default = "no", help = "Only count signal events, no plotting?")
+parser.add_option("-o", "--onlyCount", default = "yes", help = "Only count signal events, no plotting?")
 options, args = parser.parse_args(sys.argv[1:])
 
 
@@ -53,7 +53,9 @@ else:
 
     folder = makePath(options.inputFile)
 
-    countSignal(options.inputFile, histList, typeList, xLabelList)
+#    countSignal(options.inputFile, histList, typeList, xLabelList)
+
+    countSignBkg(options.inputFile, histList, typeList, xLabelList)
 
 
 if not os.path.exists(folder):
