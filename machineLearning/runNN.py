@@ -34,9 +34,7 @@ configuration['input_shape'] = ( len(branch_names), )
 configuration['number_of_threads'] = 1
 
 
-# to test
-
-configuration['number_of_epochs'] = 18
+configuration['number_of_epochs'] = 200
 
 inputFile = TFile("../newTrees/reducedTrees/goodTreesTotal/trees_total_2018.root")
 
@@ -44,8 +42,8 @@ signalTree = inputFile.Get("tree_signal_total")
 bkgTree = inputFile.Get("tree_background_total")
 
 #validation and test fractions                                                                                                                                                                              
-validation_fraction = 0.0
-test_fraction = 0.0
+validation_fraction = 0.2
+test_fraction = 0.2
 
 # ensure reproducibility
 
@@ -58,7 +56,8 @@ training_data = concatenateAndShuffleDatasets(signal_collection.training_set, ba
 validation_data = concatenateAndShuffleDatasets(signal_collection.validation_set, background_collection.validation_set)
 test_data = concatenateAndShuffleDatasets(signal_collection.test_set, background_collection.test_set)
 
-model_name = 'NN_Best_FullData_18epochs'
+#model_name = 'NN_Best_FullData_18epochs'
+model_name = 'NN_final_602020'
 
 trainNN(model_name, configuration, training_data, validation_data, test_data, validation_fraction, signal_collection, background_collection)
 plotROCAndShapeComparison_NN(signal_collection, background_collection, model_name, validation_fraction+test_fraction )

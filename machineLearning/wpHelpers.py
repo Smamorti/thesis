@@ -180,9 +180,7 @@ def decideWPs(purity, efficiency, sbr, summed, model_outputs, maximum_index, alg
         print('2) (Maximum of pur*eff): %f' % wp2)
         print('3) (Maximum of pur*eff + sbr): %f' % wp3)
         print('4) (Maximum of sbr): %f' % wp4)
-        print('5) (wp4 + (wp4 - wp3)): %f' % wp5)
-        
-        
+        print('5) (wp4 + (wp4 - wp3)): %f' % wp5)        
 
 def wpMetrics(model_name, signal_collection, background_collection, algo):
 
