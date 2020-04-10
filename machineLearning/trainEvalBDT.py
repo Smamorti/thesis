@@ -33,7 +33,7 @@ def trainBDT( train_data, train_labels, train_weights = None, feature_names = No
     #reset the figure margins for future plots                                                                                                                                                                  
     plt.gcf().subplots_adjust( left = 0.125 )
 
-def evalBDT(model_name, signal_collection, background_collection):
+def evalBDT(model_name, signal_collection, background_collection, alsoPlotting = True):
      
     number_of_threads = 1
 
@@ -61,7 +61,9 @@ def evalBDT(model_name, signal_collection, background_collection):
 
     # get evaluation metrics                                                                                                                                                                               
 
-    plotROCAndShapeComparison(signal_collection, background_collection, model_name )
+    if alsoPlotting:
+
+        plotROCAndShapeComparison(signal_collection, background_collection, model_name )
 #    plotROCAndShapeComparison_test(signal_collection, background_collection, model_name + '_test' )
 
 
@@ -97,6 +99,7 @@ def rocAndAUC( signal_dataset, background_dataset, model_name ):
         background_dataset.weights,
         num_points = 10000
             )
+
     plotROC( eff_signal, eff_background, model_name )
     auc = areaUnderCurve(eff_signal, eff_background )
     print('#####################################################')

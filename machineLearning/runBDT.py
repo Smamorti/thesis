@@ -41,10 +41,8 @@ test_data = concatenateAndShuffleDatasets(signal_collection.test_set, background
 
 model_name = 'BDT_final_602020'
 
-trainBDT( training_data.samples, training_data.labels, train_weights = training_data.weights, 
-          feature_names = branch_names, model_name = model_name, number_of_trees = 3351, learning_rate = 0.00890837798958,  
-          max_depth = 3, min_child_weight = 10.6625443577, subsample = 0.532977100111, 
-          colsample_bytree = 0.872556671469, gamma = 0.44060113248, alpha = 0.700171854761, number_of_threads = 1)
+# trainBDT( training_data.samples, training_data.labels, train_weights = training_data.weights, 
+#           feature_names = branch_names, model_name = model_name, number_of_trees = 3351, learning_rate = 0.00890837798958, max_depth = 3, min_child_weight = 10.6625443577, subsample = 0.532977100111, colsample_bytree = 0.872556671469, gamma = 0.44060113248, alpha = 0.700171854761, number_of_threads = 1)
 
 
 evalBDT(model_name, signal_collection, background_collection)
