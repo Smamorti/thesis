@@ -21,7 +21,8 @@ parser.add_option("-y", "--year", default = "2018", help = "year")
 parser.add_option("-t", "--testing", default = "no", help = "Run in test mode (1% of the data) or not?")
 parser.add_option("-x", "--printHist", default = "no", help = "Print out hist content or not?")
 parser.add_option("-m", "--MLalgo", default = "no", help = "Use ML algo?")
-parser.add_option("-w", "--workingPoint", default = 0.5, help = "Working point?")
+parser.add_option("-w", "--workingPoint", default = "noWorkingPoint", help = "Working point?")
+parser.add_option("-u", "--useWorkingPoint", default = "no", help = "Use working point?")
 options, args = parser.parse_args(sys.argv[1:])
 
 if options.testing not in ['yes', 'no'] or options.printHist not in ['yes', 'no']:
@@ -57,8 +58,11 @@ locationDict, xSecDict = readConf(options.conf)
 # the variables we want to plot
 
 plotList, binList, xLabelList, xtypeList = np.loadtxt(options.plot, comments = "%" ,unpack = True, dtype = str, delimiter='\t')
-print(xtypeList)
-print(xLabelList)
+
+for i in range(len(plotList)):
+
+    plotList[i] = plotList[i].rstrip()
+
 binList = [str2tuple(string) for string in binList]
 histList = makeHists.fillTList(typeList, plotList, binList)
 yLabelList = makeYlabels(xtypeList, binList)
@@ -92,7 +96,7 @@ for i in range(len(typeList)):
 
     channels = sourceDict[source]
     print(channels)
-    makeHists.fillHist(channels, xSecDict, locationDict, histList[i], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint)
+    makeHists.fillHist(channels, xSecDict, locationDict, histList[i], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint, useWorkingPoint = options.useWorkingPoint)
 
 
 # Plotting

@@ -59,4 +59,9 @@ def runCommandAsJob( command, script_name, wall_time = '24:00:00', num_threads =
 #runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_fullData.bin -w {} -x yes'.format(workingPoint), 'lepPlots_{}.sh'.format(workingPoint))
 # runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_Best_FullData_18epochs.h5 -w {} -x yes'.format(workingPoint), 'lepPlots_NN_{}.sh'.format(workingPoint))
 
-runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/{} -w {} -x yes'.format(sys.argv[1], sys.argv[2]), 'lepPlots_{}.sh'.format(sys.argv[2]))
+#runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/{} -w {} -x yes'.format(sys.argv[1], sys.argv[2]), 'lepPlots_{}.sh'.format(sys.argv[2]))
+
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_Best_FullData_18epochs.h5 -x yes', 'lepPlots_noMLcut_NN.sh')
+
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_fullData.bin -x yes', 'lepPlots_noMLcut_BDT.sh')
+

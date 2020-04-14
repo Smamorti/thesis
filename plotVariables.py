@@ -261,6 +261,10 @@ def SR(l1, l2, hist, totalWeight):
     elif njets > 5 and nbjets > 1:
 
         hist.Fill(3, totalWeight)
+
+def modelOutput(hist, totalWeight, value):
+
+    hist.Fill(value, totalWeight)
                  
 ###########################                                                                                                                                                                          
 ######## UTILITIES ########                                                                                                                                                                                
