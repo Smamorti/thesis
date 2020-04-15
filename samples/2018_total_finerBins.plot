@@ -21,4 +21,4 @@ secondTop	(11, 145.5, 200.5)	m(top2) (GeV)	GeV
 leptonMVA	(20, -1, 1)	leptonMVA	Other
 Ht	(20, 0, 500)	H_{t}^{miss} (GeV)	GeV
 SR	(4, 0, 4)	SR	Other
-modelOutput       	(20, 0, 1)	model output	Other
+modelOutput       	(40, 0, 1)	model output	Other

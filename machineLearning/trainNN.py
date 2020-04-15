@@ -63,8 +63,11 @@ def trainNN(model_name, configuration, training_data, validation_data, test_data
 
     signal_collection.training_set.addOutputs( model.predict( signal_collection.training_set.samples ) )
     signal_collection.validation_set.addOutputs( model.predict( signal_collection.validation_set.samples ) )
+    signal_collection.test_set.addOutputs( model.predict( signal_collection.test_set.samples ) )
 
     background_collection.training_set.addOutputs( model.predict( background_collection.training_set.samples ) )
-    background_collection.validation_set.addOutputs( model.predict( background_collection.validation_set.samples ) )
+    background_collection.validation_set.addOutputs( model.predict( background_collection.validation_set.samples))
+    background_collection.test_set.addOutputs( model.predict( background_collection.test_set.samples ) )
+
 
     print(signal_collection.training_set.outputs)

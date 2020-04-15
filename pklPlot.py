@@ -15,7 +15,7 @@ parser.add_option("-c", "--conf", default = "samples/2018_total.conf", help = "c
 parser.add_option("-s", "--stack", default = "samples/2018_total.stack", help = "stack file")
 parser.add_option("-p", "--plot", default = "samples/2018_total.plot", help = "plot file")
 parser.add_option("-t", "--typeList", default = None, help = "typeList")
-parser.add_option("-o", "--onlyCount", default = "yes", help = "Only count signal events, no plotting?")
+parser.add_option("-o", "--onlyCount", default = "no", help = "Only count signal events, no plotting?")
 options, args = parser.parse_args(sys.argv[1:])
 
 
@@ -30,6 +30,9 @@ plotList, binList, xLabelList, xtypeList = loadtxt(options.plot, comments = "%" 
 binList = [str2tuple(string) for string in binList]
 yLabelList = makeYlabels(xtypeList, binList)
 
+for i in range(len(plotList)):
+
+    plotList[i] = plotList[i].rstrip()
 
 
 # also make the plotter able to use seperate source files and then stack the hists together itself

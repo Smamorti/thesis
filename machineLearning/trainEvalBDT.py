@@ -63,9 +63,9 @@ def evalBDT(model_name, signal_collection, background_collection, alsoPlotting =
 
     if alsoPlotting:
 
-        plotROCAndShapeComparison(signal_collection, background_collection, model_name )
+        #plotROCAndShapeComparison(signal_collection, background_collection, model_name )
 #    plotROCAndShapeComparison_test(signal_collection, background_collection, model_name + '_test' )
-
+        plotROCAndShapeComparison_BDT_test(signal_collection, background_collection, model_name )
 
 def evalBDT_fullData(model_name, signal_collection, background_collection):
 
@@ -144,6 +144,17 @@ def plotROCAndShapeComparison(signal_collection, background_collection, model_na
         signal_collection.validation_set,
         background_collection.training_set,
         background_collection.validation_set,
+        model_name
+    )
+
+ 
+def plotROCAndShapeComparison_BDT_test(signal_collection, background_collection, model_name ):
+    rocAndAUC( signal_collection.test_set, background_collection.test_set, model_name )
+    compareOutputShapes(
+        signal_collection.training_set,
+        signal_collection.test_set,
+        background_collection.training_set,
+        background_collection.test_set,
         model_name
     )
 

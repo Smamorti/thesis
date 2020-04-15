@@ -114,7 +114,7 @@ def fillSubCanvas(subCanvas, hist, xlabel, ylabel, leg, leg2, title = None, logs
         hist.GetXaxis().SetBinLabel(4, ">=6 jets,>=2 bjets")
         leg.Draw()
     # hardcoded for now                                                                                                                                                                                     
-    elif xlabel == "leptonMVA l1" or xlabel == "leptonMVA l2" or xlabel == "leptonMVA":
+    elif xlabel == "leptonMVA l1" or xlabel == "leptonMVA l2" or xlabel == "leptonMVA" or xlabel == "model output":
 
         leg2.Draw()
 
