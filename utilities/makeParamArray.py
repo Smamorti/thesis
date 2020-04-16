@@ -97,9 +97,8 @@ def makeParamArray(tree, nLight, nJets):
 
 
     # calculate H_t^miss and add it to tree, also add MET and iso                                                                                                                                                                 
-
-    paramList.append(H_t(lepton1))
     paramList.append(tree._met)
+    paramList.append(H_t(lepton1))
 
 
     paramList.append(tree._relIso[nLight[0]])
