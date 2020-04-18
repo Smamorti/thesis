@@ -88,7 +88,7 @@ def makeCanvas(horizontal, vertical):
 
     return c
 
-def fillSubCanvas(subCanvas, hist, xlabel, ylabel, leg, leg2, title = None, logscale = 1):
+def fillSubCanvas(subCanvas, hist, xlabel, ylabel, leg, leg2, title = None, logscale = 1, ymax = 0):
 
     subCanvas.SetLogy(logscale)
 
@@ -96,6 +96,7 @@ def fillSubCanvas(subCanvas, hist, xlabel, ylabel, leg, leg2, title = None, logs
 
         subCanvas.SetTitle(title)
 
+    hist.SetMaximum(ymax)
     hist.Draw("HIST")
 
     hist.GetXaxis().SetTitle(xlabel)
@@ -172,6 +173,12 @@ def fillStacked(sources, stackedList):
 
         del sourceHists
 
+def findYMax(hist, dataHist):
+
+    max_value  = max(hist.GetMaximum(), dataHist.GetMaximum())
+
+    return 1.1 * max_value
+
 def plot(plotList, histList, dataList, xLabelList, yLabelList, leg, leg2, title =  "", logscale = 1, year = "2018", folder = 'plots/'):
 
     for i in range(len(plotList)):
@@ -183,12 +190,15 @@ def plot(plotList, histList, dataList, xLabelList, yLabelList, leg, leg2, title 
 
         c = makeCanvas(1, 1)
         filename = "{}/Hist_{}_{}_{}".format(folder, year, plotList[i], scale)
-        fillSubCanvas(c, histList[i], xLabelList[i], yLabelList[i], leg, leg2, title, logscale)
+
+        ymax = findYMax(histList[i], dataList[i])
+        
+        fillSubCanvas(c, histList[i], xLabelList[i], yLabelList[i], leg, leg2, title, logscale, ymax)
 
         dataList[i].Draw("SAME P0 E1 X0")
 
         c.Update()
-
+        
         # workingPoint = "0.50"
         # wp = TPaveText()
         # wp.SetX1NDC(0.25)

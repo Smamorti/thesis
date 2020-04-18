@@ -187,7 +187,7 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
                                     hist = histList[k]
 
-                                    if plotList[k] == 'modelOutput':
+                                    if plotList[k] == 'modelOutput' or plotList[k] == 'modelOutput2':
 
 
                                         if isData:

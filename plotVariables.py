@@ -265,7 +265,20 @@ def SR(l1, l2, hist, totalWeight):
 def modelOutput(hist, totalWeight, value):
 
     hist.Fill(value, totalWeight)
-                 
+
+def modelOutput2(hist, totalWeight, value):
+
+    hist.Fill(value, totalWeight)              
+
+def nbJets2(l1, l2, hist, totalWeight):
+
+    hist.Fill(len(countbJets(l1)), totalWeight)
+
+def nJets2(l1, l2, hist, totalWeight):
+
+    hist.Fill(len(l1.goodJets), totalWeight)
+
+   
 ###########################                                                                                                                                                                          
 ######## UTILITIES ########                                                                                                                                                                                
 ########################### 
