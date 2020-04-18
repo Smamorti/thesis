@@ -32,7 +32,7 @@ bkgTree = inputFile.Get("tree_background_2018")
 
 
 #validation and test fractions                                                                                                                                                                              
-validation_fraction = 0.0
+validation_fraction = 0.2
 test_fraction = 0.2
 
 # ensure reproducibility
@@ -46,7 +46,7 @@ training_data = concatenateAndShuffleDatasets(signal_collection.training_set, ba
 validation_data = concatenateAndShuffleDatasets(signal_collection.validation_set, background_collection.validation_set)
 test_data = concatenateAndShuffleDatasets(signal_collection.test_set, background_collection.test_set)
 
-model_name = 'BDT_final_80_0_20_v3'
+model_name = 'BDT_final_60_20_20_v3'
 
 trainBDT( training_data.samples, training_data.labels, train_weights = training_data.weights, 
           feature_names = branch_names, model_name = model_name, number_of_trees = 3351, learning_rate = 0.00890837798958, max_depth = 3, min_child_weight = 10.6625443577, subsample = 0.532977100111, colsample_bytree = 0.872556671469, gamma = 0.44060113248, alpha = 0.700171854761, number_of_threads = 1)

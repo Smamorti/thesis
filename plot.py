@@ -67,7 +67,7 @@ def fillSubCanvas(subCanvas, hist, xlabel, ylabel, leg, leg2, title = None, logs
     subCanvas.Update()
     
 
-def plot(plotList, histList, xLabelList, yLabelList, leg, leg2, title =  "", logscale = 1, histList_nonZ = None, titleNotZ = None, logNotZ = 1, year = "2018", MLalgo = "no", workingPoint = "0.5"):
+def plot(plotList, histList, dataList, xLabelList, yLabelList, leg, leg2, title =  "", logscale = 1, histList_nonZ = None, titleNotZ = None, logNotZ = 1, year = "2018", MLalgo = "no", workingPoint = "0.5"):
 
     if MLalgo != "no":
 
@@ -103,6 +103,9 @@ def plot(plotList, histList, xLabelList, yLabelList, leg, leg2, title =  "", log
             c = makeCanvas(1, 1)
             filename = "plots/{}/Hist_{}_{}_{}".format(model, year, plotList[i], scale)
             fillSubCanvas(c, histList[-1][i], xLabelList[i], yLabelList[i], leg, leg2, title, logscale)
+            dataList[0][i].Draw("SAME P0 E1 X0 PLC")
+            
+            c.Update()
             c.SaveAs(filename + ".pdf")
             c.SaveAs(filename + ".png")
 

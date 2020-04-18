@@ -32,7 +32,7 @@ def addOverflowbin(hist):
     nbins = hist.GetNbinsX()
     hist.SetBinContent(nbins, hist.GetBinContent(nbins) + hist.GetBinContent(nbins + 1))
 
-def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists, model, algo, workingPoint, useWorkingPoint):
+def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists, model, algo, workingPoint, useWorkingPoint, isData = False):
 
 
     if year == "2017":
@@ -46,9 +46,18 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
         channel = channels[k]
 
-        f = TFile.Open(locationDict[channel])
+        if isData:
 
-        weight = calcWeight(f, xSecDict[channel], lumi)
+            f = f = TFile.Open(channel)
+
+            weight = 1
+
+        else:
+
+            f = TFile.Open(locationDict[channel])
+
+            weight = calcWeight(f, xSecDict[channel], lumi)
+
         tree = f.Get("blackJackAndHookers/blackJackAndHookersTree")
 
         count = tree.GetEntries()
@@ -78,27 +87,41 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
             if type(tree._nL) == int:
 
                 nL = tree._nL
-                gen_nL = tree._gen_nL
+                
+                if not isData:
+                    gen_nL = tree._gen_nL
+                
                 nLight = tree._nLight
                 nJets = tree._nJets
 
             else:
 
                 nL = ord(tree._nL)
-                gen_nL = ord(tree._gen_nL)
+                
+                if not isData:
+                    gen_nL = ord(tree._gen_nL)
+                
                 nLight = ord(tree._nLight)
                 nJets = ord(tree._nJets)
 
             progress += 1
 
             if progress / float(count) > 0.01 and testing == 'yes':
-
+                print(progress / float(count))
                 break
 
             if progress / total > toolbarProgress / toolbar_width:
                 toolbarProgress += 1
                 sys.stdout.write("-")
                 sys.stdout.flush()
+
+            if isData:
+
+                # if we are dealing with a data event, we want to check for the triggers first!
+
+                if not (tree._passTrigger_e or tree._passTrigger_ee or tree._passTrigger_m or tree._passTrigger_mm):
+
+                    continue
 
             cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "njets", "nbjets", "twoSF", "onZ"]
 
@@ -107,8 +130,7 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
             for i in range(len(cutList)):
 
-                # from here on out, nLight is an array with all valid nLight values                                                                                          
-
+                # from here on out, nLight is an array with all valid nLight values                                                                                 
                 validEvent, nLight, nJets = getattr(cuts, cutList[i])(event)
 
                 if validEvent:
@@ -116,8 +138,10 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
                     event = cuts(tree, nLight, nJets)
 
                     if i == len(cutList) - 1:
+                        
 
-                        # if we want to use a ML algo, check if it classifies the event as signal using a specific working point
+                                 
+                      # if we want to use a ML algo, check if it classifies the event as signal using a specific working point
 
                         # for plotting the model output, make an exception in the plotvariables thingy
 
@@ -146,7 +170,13 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
                                     hist = histList[k]
 
-                                    getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
+                                    if isData:
+
+                                        getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, weight)
+      
+                                    else:
+                                    
+                                        getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
 
                             else:
 
@@ -159,11 +189,27 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
                                     if plotList[k] == 'modelOutput':
 
-                                        getattr(plotVariables, plotList[k])(hist, tree._weight * weight, output)
+
+                                        if isData:
+
+                                            getattr(plotVariables, plotList[k])(hist, weight, output)
+
+                                        else:
+
+                                            getattr(plotVariables, plotList[k])(hist, tree._weight * weight, output)
+
 
                                     else:
 
-                                        getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
+
+                                        if isData:
+
+                                            getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, weight)
+
+                                        else:
+
+                                            getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
+
 
                                 
 
@@ -177,7 +223,13 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
                                 hist = histList[k]
 
-                                getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
+                                if isData:
+
+                                    getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, weight)
+                                    
+                                else:
+ 
+                                    getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
 
 
                         #getattr(plotVariables, "geen2W")(lepton1, lepton2, hist, tree._weight * weight)
@@ -228,7 +280,7 @@ def fillColor(histList, colorDict, typeList):
             histList[i][j].SetFillColor(colorDict[source])
 
 
-def makeLegend(typeList, histList, texDict, position = (0.8, 0.7, 0.9, 0.9)):
+def makeLegend(typeList, histList, texDict, dataList, position = (0.8, 0.7, 0.9, 0.9)):
     
     leg = TLegend(position[0], position[1], position[2], position[3])
     
@@ -239,7 +291,24 @@ def makeLegend(typeList, histList, texDict, position = (0.8, 0.7, 0.9, 0.9)):
 
         leg.AddEntry(histList[i][0], label, "f")
        
+    leg.AddEntry(dataList[0][0], "data", "f")
+
     return leg
+
+
+
+# def makeLegend(typeList, histList, texDict, position = (0.8, 0.7, 0.9, 0.9)):
+    
+#     leg = TLegend(position[0], position[1], position[2], position[3])
+    
+#     for i in range(len(typeList)):
+    
+#         source = typeList[i]
+#         label = texDict[source]
+
+#         leg.AddEntry(histList[i][0], label, "f")
+       
+#     return leg
 
 
 

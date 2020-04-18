@@ -16,6 +16,7 @@ parser.add_option("-s", "--stack", default = "samples/2018_total.stack", help = 
 parser.add_option("-p", "--plot", default = "samples/2018_total.plot", help = "plot file")
 parser.add_option("-t", "--typeList", default = None, help = "typeList")
 parser.add_option("-o", "--onlyCount", default = "no", help = "Only count signal events, no plotting?")
+parser.add_option("-d", "--dataFile", default = None, help = "Location of datafile?")
 options, args = parser.parse_args(sys.argv[1:])
 
 
@@ -58,8 +59,9 @@ else:
 
 #    countSignal(options.inputFile, histList, typeList, xLabelList)
 
-    countSignBkg(options.inputFile, histList, typeList, xLabelList)
+#    countSignBkg(options.inputFile, histList, typeList, xLabelList)
 
+dataList = pickle.load(file(options.dataFile))
 
 if not os.path.exists(folder):
     os.makedirs(folder)
@@ -69,8 +71,8 @@ if options.onlyCount == "no":
 
     gROOT.SetBatch(True)
 
-    leg = makeLegend(typeList, histList, texDict)
-    leg_2 = makeLegend(typeList, histList, texDict, (0.11, 0.7, 0.2, 0.89))
+    leg = makeLegend(typeList, histList, texDict, dataList)
+    leg_2 = makeLegend(typeList, histList, texDict, dataList, (0.11, 0.7, 0.2, 0.89))
 
-    plot(plotList, stackedList, xLabelList, yLabelList, leg, leg_2, year = options.year, folder = folder)
-    plot(plotList, stackedList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, folder = folder)
+    plot(plotList, stackedList, dataList, xLabelList, yLabelList, leg, leg_2, year = options.year, folder = folder)
+    plot(plotList, stackedList, dataList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, folder = folder)

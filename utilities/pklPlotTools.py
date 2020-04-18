@@ -63,7 +63,7 @@ def makePath(histListPath):
 
         return 'plots/{}'.format(algo)
 
-def makeLegend(typeList, histList, texDict, position = (0.8, 0.7, 0.89, 0.89)):
+def makeLegend(typeList, histList, texDict, dataList, position = (0.8, 0.7, 0.89, 0.89)):
 
     leg = TLegend(position[0], position[1], position[2], position[3], '', 'NBNDC')
 
@@ -75,6 +75,8 @@ def makeLegend(typeList, histList, texDict, position = (0.8, 0.7, 0.89, 0.89)):
         label = texDict[source]
 
         leg.AddEntry(histList[i][0], label, "f")
+
+    leg.AddEntry(dataList[0], "data", "ep")
 
     return leg
 
@@ -170,7 +172,7 @@ def fillStacked(sources, stackedList):
 
         del sourceHists
 
-def plot(plotList, histList, xLabelList, yLabelList, leg, leg2, title =  "", logscale = 1, year = "2018", folder = 'plots/'):
+def plot(plotList, histList, dataList, xLabelList, yLabelList, leg, leg2, title =  "", logscale = 1, year = "2018", folder = 'plots/'):
 
     for i in range(len(plotList)):
         
@@ -182,6 +184,10 @@ def plot(plotList, histList, xLabelList, yLabelList, leg, leg2, title =  "", log
         c = makeCanvas(1, 1)
         filename = "{}/Hist_{}_{}_{}".format(folder, year, plotList[i], scale)
         fillSubCanvas(c, histList[i], xLabelList[i], yLabelList[i], leg, leg2, title, logscale)
+
+        dataList[i].Draw("SAME P0 E1 X0")
+
+        c.Update()
 
         # workingPoint = "0.50"
         # wp = TPaveText()

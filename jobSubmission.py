@@ -54,20 +54,33 @@ def runCommandAsJob( command, script_name, wall_time = '24:00:00', num_threads =
     submitQsubJob( script_name, wall_time, num_threads, high_memory )
 
 #runCommandAsJob('./main data/samples/samples_ttZ_npDD.txt runFullSelection selection:ttZ ', 'submision.sh')
-#runCommandAsJob('python testJob.py' , 'submision.sh') 
-# workingPoint = 0.863306
-#runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_fullData.bin -w {} -x yes'.format(workingPoint), 'lepPlots_{}.sh'.format(workingPoint))
-# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_Best_FullData_18epochs.h5 -w {} -x yes'.format(workingPoint), 'lepPlots_NN_{}.sh'.format(workingPoint))
 
-#runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/{} -w {} -x yes'.format(sys.argv[1], sys.argv[2]), 'lepPlots_{}.sh'.format(sys.argv[2]))
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs.h5 -x yes -w noWorkingPointv2_finerBins -c samples/2018_total.conf -p samples/2018_total_finerBins.plot', 'lepPlots_NN_8020_fine.sh')
 
-# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_602020_run2.h5 -x yes', 'lepPlots_noMLcut_NN.sh')
-# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_Best_FullData_18epochs.h5 -x yes', 'lepPlots_noMLcut_NN.sh')
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs.h5 -x yes -w noWorkingPointv2 -c samples/2018_total.conf -p samples/2018_total.plot', 'lepPlots_NN_8020.sh')
 
-# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_fullData.bin -x yes -p samples/2018_total_BDT.plot -w noWorkingPointv2', 'lepPlots_noMLcut_BDT.sh')
 
-# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs.h5 -x yes -w noWorkingPointv3_finerMObins -c samples/2018_total_v3.conf -p samples/2018_total_finerBins.plot', 'lepPlots_NN_8020_v3.sh')
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w noWorkingPointv3_finerBins -c samples/2018_total_v3.conf -p samples/2018_total_finerBins.plot', 'lepPlots_NN_8020_fine_v3.sh')
 
-runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20.bin -x yes -p samples/2018_total_BDT.plot -w noWorkingPointv2', 'lepPlots_BDT_v2.sh')
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w noWorkingPointv3 -c samples/2018_total_v3.conf -p samples/2018_total.plot', 'lepPlots_NN_8020_v3.sh')
 
-runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20.bin -x yes -p samples/2018_total_BDT.plot -w noWorkingPointv3 -c samples/2018_total_v3.conf', 'lepPlots_BDT_v3.sh')                      
+
+
+
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20_v3.bin -x yes -w noWorkingPointv3_finerBins -c samples/2018_total_v3.conf -p samples/2018_total_BDT_finerBins.plot', 'lepPlots_BDT_v3_fine.sh')
+
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20_v3.bin -x yes -p samples/2018_total_BDT.plot -w noWorkingPointv3 -c samples/2018_total_v3.conf', 'lepPlots_BDT_v3.sh')                      
+
+
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20.bin -x yes -w noWorkingPointv2_finerBins -c samples/2018_total.conf -p samples/2018_total_BDT_finerBins.plot', 'lepPlots_BDT_v2_fine.sh')
+
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20.bin -x yes -p samples/2018_total_BDT.plot -w noWorkingPointv2 -c samples/2018_total.conf', 'lepPlots_BDT_v2.sh')                      
+
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w noWorkingPointv3_finerBins -c samples/2018_total_v3.conf -p samples/2018_total_finerBins.plot', 'lepPlots_NN_8020_fine_v3.sh')
+
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w noWorkingPointv3 -c samples/2018_total_v3.conf -p samples/2018_total.plot', 'lepPlots_NN_8020_v3.sh')
+
+
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20_v3.bin -x yes -w noWorkingPointv3_finerBins -c samples/2018_total_v3.conf -p samples/2018_total_BDT_finerBins.plot', 'lepPlots_BDT_v3_fine.sh')
+
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20_v3.bin -x yes -p samples/2018_total_BDT.plot -w noWorkingPointv3 -c samples/2018_total_v3.conf', 'lepPlots_BDT_v3.sh')                      
