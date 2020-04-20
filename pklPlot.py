@@ -1,4 +1,4 @@
-from utilities.pklPlotTools import makeLegend, plot, makeStackedList, fillStacked, makeHistList, makePath, countSignal, countSignBkg
+from utilities.pklPlotTools import makeLegend, plot, makeStackedList, fillStacked, makeHistList, makePath, countSignal, countSignBkg, makeSummedHist
 from utilities.utils import makeYlabels, str2tuple
 from utilities.inputParser import readStack
 from ROOT import gROOT, THStack
@@ -38,17 +38,19 @@ for i in range(len(plotList)):
 
 # also make the plotter able to use seperate source files and then stack the hists together itself
 
-if ',' in options.inputFile:
+if options.typeList:
 
-    sources = options.inputFile.split(',')
-    print(sources)
     typeList = options.typeList.split(',')
+
+    location = options.inputFile.replace('.pkl', '')
+
+    sources = [location + '_{}.pkl'.format(x) for x in typeList]
+    
     stackedList = makeStackedList(plotList)
     fillStacked(sources, stackedList)
     histList = makeHistList(sources)
-    
-    folder = makePath(sources[0])
 
+    folder = makePath(sources[0])
 
 else:
 
@@ -56,6 +58,8 @@ else:
     stackedList = pickle.load(file(options.inputFile))[-1]
 
     folder = makePath(options.inputFile)
+
+summedList = makeSummedHist(histList)
 
 #    countSignal(options.inputFile, histList, typeList, xLabelList)
 
@@ -72,7 +76,7 @@ if options.onlyCount == "no":
     gROOT.SetBatch(True)
 
     leg = makeLegend(typeList, histList, texDict, dataList)
-    leg_2 = makeLegend(typeList, histList, texDict, dataList, (0.11, 0.7, 0.2, 0.89))
+    leg_2 = makeLegend(typeList, histList, texDict, dataList, (0.15, 0.685, 0.24, 0.875))
 
-    plot(plotList, stackedList, dataList, xLabelList, yLabelList, leg, leg_2, year = options.year, folder = folder)
-    plot(plotList, stackedList, dataList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, folder = folder)
+    plot(plotList, stackedList, dataList, summedList, xLabelList, yLabelList, leg, leg_2, year = options.year, folder = folder)
+    plot(plotList, stackedList, dataList, summedList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, folder = folder)

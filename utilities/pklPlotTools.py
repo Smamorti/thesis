@@ -1,4 +1,5 @@
-from ROOT import TCanvas, TLegend, THStack, TList, TPaveText
+from __future__ import division
+from ROOT import TCanvas, TLegend, THStack, TList, TPaveText, TPolyLine
 import ROOT.gStyle as gStyle
 import ROOT.gPad as gPad
 import pickle
@@ -63,7 +64,8 @@ def makePath(histListPath):
 
         return 'plots/{}'.format(algo)
 
-def makeLegend(typeList, histList, texDict, dataList, position = (0.8, 0.7, 0.89, 0.89)):
+#def makeLegend(typeList, histList, texDict, dataList, position = (0.8, 0.7, 0.89, 0.89)):
+def makeLegend(typeList, histList, texDict, dataList, position = (0.8, 0.685, 0.89, 0.875)):
 
     leg = TLegend(position[0], position[1], position[2], position[3], '', 'NBNDC')
 
@@ -81,26 +83,62 @@ def makeLegend(typeList, histList, texDict, dataList, position = (0.8, 0.7, 0.89
     return leg
 
 
-def makeCanvas(horizontal, vertical):
+# def makeCanvas(horizontal, vertical):
 
-    c = TCanvas("c", "c", 550 * horizontal, 400 * vertical)
-    c.Divide(horizontal, vertical)
+#     c = TCanvas("c", "c", 550 * horizontal, 400 * vertical)
+#     c.Divide(horizontal, vertical)
 
-    return c
+#     return c
+
+def getPad(canvas, number):
+
+    pad = canvas.cd(number)
+    pad.SetLeftMargin(gStyle.GetPadLeftMargin())
+    pad.SetRightMargin(gStyle.GetPadRightMargin())
+    pad.SetTopMargin(gStyle.GetPadTopMargin())
+    pad.SetBottomMargin(gStyle.GetPadBottomMargin())
+
+    return pad
+
+def makeCanvas(yRatioWidth, yWidth):
+
+    #canvas = TCanvas("c", "c", 200, 10, 550, yWidth) #500 for hist, 200 for data/mc
+    canvas = TCanvas("c", "c", 550, yWidth) 
+    yBorder = yRatioWidth / yWidth
+
+    bottomMargin = yWidth/float(yRatioWidth)*gStyle.GetPadBottomMargin()
+
+#    canvas.Divide(1, 2, 0, 0)
+    canvas.Divide(1, 2)
+    canvas.topPad = getPad(canvas, 1)
+    canvas.topPad.SetBottomMargin(0)
+    canvas.topPad.SetPad(canvas.topPad.GetX1(), yBorder, canvas.topPad.GetX2(), canvas.topPad.GetY2())
+    canvas.bottomPad = getPad(canvas, 2)
+    canvas.bottomPad.SetTopMargin(0)
+    canvas.bottomPad.SetBottomMargin(bottomMargin)
+    canvas.bottomPad.SetPad(canvas.bottomPad.GetX1(), canvas.bottomPad.GetY1(), canvas.bottomPad.GetX2(), yBorder)
+
+    return canvas
 
 def fillSubCanvas(subCanvas, hist, xlabel, ylabel, leg, leg2, title = None, logscale = 1, ymax = 0):
 
-    subCanvas.SetLogy(logscale)
+    #subCanvas.SetLogy(logscale)
 
     if title:
 
         subCanvas.SetTitle(title)
 
+
+    if not logscale:
+
+        hist.SetMinimum(0.000001)
+    
     hist.SetMaximum(ymax)
     hist.Draw("HIST")
 
     hist.GetXaxis().SetTitle(xlabel)
     hist.GetYaxis().SetTitle(ylabel)
+#    hist.GetYaxis().SetLimits(0.1, ymax)
 
     # hardcoded for now                                                                                                                                                                                     
     if xlabel == "flavComp":
@@ -126,6 +164,32 @@ def fillSubCanvas(subCanvas, hist, xlabel, ylabel, leg, leg2, title = None, logs
         leg.Draw()
 
     subCanvas.Update()
+
+def drawDataMC(summedHist, dataHist, c, xlabel):
+
+    ratioHist = dataHist.Clone()
+
+    ratioHist.Divide(summedHist)
+
+    # for i in range(1, ratioHist.GetNbinsX()):
+
+    #     print(ratioHist.GetBinContent(i))
+
+    ratioHist.Draw("P0 E1 X0")
+    
+    ratioHist.GetXaxis().SetTitle(xlabel)
+    ratioHist.GetYaxis().SetTitle("Data/MC")
+    ratioHist.GetYaxis().SetLimits(0.5, 1.5)
+
+    c.Update()
+
+def makeRatio(summedHist, dataHist):
+
+    ratioHist = dataHist.Clone()
+
+    ratioHist.Divide(summedHist)
+
+    return ratioHist
 
 def differentOrder(histList, i, hist, order = [2, 0, 1]):
 
@@ -161,6 +225,22 @@ def makeHistList(sources):
 
     return temp
 
+def makeSummedHist(histList):
+
+    summedList = TList()
+
+    for hist in histList[0]:
+
+        summedList.Add(hist.Clone())
+    
+    for source in histList[1:]:
+
+        for j in range(len(source)):
+
+            summedList[j].Add(source[j])
+
+    return summedList
+
 def fillStacked(sources, stackedList):
 
     for source in sources:
@@ -179,7 +259,19 @@ def findYMax(hist, dataHist):
 
     return 1.1 * max_value
 
-def plot(plotList, histList, dataList, xLabelList, yLabelList, leg, leg2, title =  "", logscale = 1, year = "2018", folder = 'plots/'):
+    
+def getRatioLine(xmin, xmax):
+
+    line = TPolyLine(2)
+    line.SetPoint(0, xmin, 1.)
+    line.SetPoint(1, xmax, 1.)
+    line.SetLineWidth(1)
+    return line
+
+def plot(plotList, histList, dataList, summedList, xLabelList, yLabelList, leg, leg2, title =  "", logscale = 1, year = "2018", folder = 'plots/'):
+
+    yWidth = 700
+    yRatioWidth = 200
 
     for i in range(len(plotList)):
         
@@ -188,24 +280,96 @@ def plot(plotList, histList, dataList, xLabelList, yLabelList, leg, leg2, title 
         else:
             scale = "linear"
 
-        c = makeCanvas(1, 1)
+#        c = makeCanvas(1, 1)
+        
+        c = makeCanvas(yRatioWidth, yWidth)
+
+        c.SetLeftMargin(0.5)
+        c.Update()
+
+
         filename = "{}/Hist_{}_{}_{}".format(folder, year, plotList[i], scale)
 
         ymax = findYMax(histList[i], dataList[i])
+ 
+#        c.cd(1)
+        c.topPad.cd()      
+
+        gPad.SetLeftMargin(0.125)
+        gPad.SetLogy(logscale)
         
         fillSubCanvas(c, histList[i], xLabelList[i], yLabelList[i], leg, leg2, title, logscale, ymax)
 
         dataList[i].Draw("SAME P0 E1 X0")
 
         c.Update()
-        
-        # workingPoint = "0.50"
-        # wp = TPaveText()
-        # wp.SetX1NDC(0.25)
-        # wp.SetY1NDC()
-        # wp.SetX2NDC()
-        # wp.SetY2NDC()
 
+
+        c.bottomPad.cd()
+
+        gPad.SetLeftMargin(0.125)
+
+
+        c.SetLogy(0)
+        ratioHist = makeRatio(summedList[i], dataList[i])
+        ratioHist.SetStats(0)
+        # ratioHist.GetYaxis().SetLimits(0.5, 1.5)
+        ratioHist.SetMaximum(1.7)
+        ratioHist.SetMinimum(0.3)
+        ratioHist.Draw("E1 X0")
+
+        ratioHist.GetYaxis().SetTitle("Data / MC")
+        ratioHist.GetXaxis().SetTitle(xLabelList[i])
+#        ratioHist.GetXaxis().SetTitleSize(.10)
+#        ratioHist.GetXaxis().SetTitleOffset(3.2)
+#        ratioHist.GetYaxis().SetTitleOffset(histList[i].GetYaxis().GetTitleOffset())
+        ratioHist.GetYaxis().SetTitleOffset(0.61)
+        # ratioHist.GetXaxis().SetTickLength( 0.03*2 )
+        # ratioHist.GetYaxis().SetTickLength( 0.043 )
+ 
+        ratioHist.GetXaxis().SetTitleSize( (yWidth / yRatioWidth - 1) * histList[i].GetXaxis().GetTitleSize() )
+        ratioHist.GetYaxis().SetTitleSize( 0.085 )
+#        ratioHist.GetYaxis().SetTitleSize( histList[i].GetYaxis().GetTitleSize() )
+
+        
+        ratioHist.GetXaxis().SetTickLength( (yWidth / yRatioWidth - 1) * histList[i].GetXaxis().GetTickLength() )
+        ratioHist.GetYaxis().SetTickLength( histList[i].GetYaxis().GetTickLength() )
+
+        ratioHist.GetXaxis().SetLabelSize( (yWidth / yRatioWidth - 1) * histList[i].GetXaxis().GetLabelSize() )
+        ratioHist.GetYaxis().SetLabelSize( (yWidth / yRatioWidth - 1) * histList[i].GetYaxis().GetLabelSize() )
+
+        ratioHist.GetYaxis().SetNdivisions(505)
+        
+        if xLabelList[i] == "flavComp":
+
+            ratioHist.GetXaxis().SetBinLabel(1, "ee")
+            ratioHist.GetXaxis().SetBinLabel(2, "#mu#mu")
+
+        elif xLabelList[i] == "SR":
+
+            ratioHist.GetXaxis().SetBinLabel(1, "=5 jets,=1 bjets")
+            ratioHist.GetXaxis().SetBinLabel(2, "=5 jets,>=2 bjets")
+            ratioHist.GetXaxis().SetBinLabel(3, ">=6 jets,=1 bjets")
+            ratioHist.GetXaxis().SetBinLabel(4, ">=6 jets,>=2 bjets")
+
+
+        ratioLine = getRatioLine(histList[i].GetXaxis().GetXmin(), histList[i].GetXaxis().GetXmax())
+        ratioLine.Draw()
+    
+#        drawDataMC(summedList[i], dataList[i], c, xLabelList[i])
+
+        c.Update()
+
+        # set ticks on all sides
+
+        gPad.SetTickx()
+        gPad.SetTicky()
+        
+        c.Update()
+
+
+        c.cd(1)
+        
         # TO DO: Add option to customize text!
 
         text1 = "CMS Preliminary"
