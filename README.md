@@ -19,22 +19,18 @@
 
 - Work on the naming of programs and functions
 - Maybe: restrict Wmass funtion from using b-tagged jets for W mass calculation, possibly resulting in the inability to reconstruct two W masses for each events due to a lack of light jets
-- Apply BDT and/or NN to data
 - Generalize creating a legend in various positions (now hardcoded)
 - Generalize setting the yrange
 - Change for _ in tree
 - New top reconstruction script, possibly use Kirills code
-- Maybe: only save seperate histos when making them and stack them at plotting time, with the possibility of determining the order of plotting at that time as well (for instance for mll put ttbar bkg on bottom)
 - Update structure
 - Using TTH MVA for now, get back to using tZq MVA (changed in both cuts.py and plotVariables.py)
-- Make programs compatible with submitting jobs to cream02
-- Maybe write script reduceTuple which handles applying the cuts to one bkg/sign source at a time and saves results in a new .root file, special for this bkg/sign source. This makes for easier parallelization.
 - Remake cutflow table
-- Improve plotter script (now using TList of hists)
 - Scatterplots BDT/NN: for learning rate maybe x axis in logscale
 - Make it such that the cutflow script can handle multiple files for the same bkg/signal source and then re-run it
-- Optimize BDT working point
 - Maybe: try implement a parameter which quantifies the overfitting of a certain BDT, to have two measures to decide best BDTs (AUC and overfit)
+- Add other metrics than Data/MC in plots
+
 
 ## Recently done
 
@@ -44,3 +40,4 @@
 - Match sources from stack files to the actual root files given by the conf files
 - Make a progressbar
 - Make it such that `makeHists.py` is able to assign different bkg/signal source files to one and the same histogram
+- ...
