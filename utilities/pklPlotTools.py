@@ -154,13 +154,58 @@ def fillSubCanvas(subCanvas, hist, xlabel, ylabel, leg, leg2, title = None, logs
     subCanvas.Update()
 
 
-def makeRatio(summedHist, dataHist):
+def makeRatio(summedHist, dataHist, kind):
 
     ratioHist = dataHist.Clone()
 
-    ratioHist.Divide(summedHist)
+    drawStyle = "E1 X0"
 
-    return ratioHist
+    if kind == "Data/MC":
+
+        ratioHist.Divide(summedHist)
+
+        ylabel = "Data / MC"
+
+        ylims = (0.3, 1.7)
+
+    elif kind == "Data-MC/MC":
+
+        ratioHist.Add(summedHist, -1)
+
+        ratioHist.Divide(summedHist)
+
+        ylabel = "(Data-MC) / MC"
+
+        ylims = (-0.7, 0.7)
+
+    elif kind == "Data-MC/unc":
+
+        ratioHist.Add(summedHist, -1)
+
+        temp = ratioHist.Clone()
+
+        for bin in range(1, temp.GetNbinsX()):
+
+            try:
+
+                ratioHist.SetBinContent(bin, temp.GetBinContent(bin) / temp.GetBinError(bin))
+
+            except:
+
+                ratioHist.SetBinContent(bin, -1000)
+
+        ylabel = "(Data-MC) / unc"
+
+        ylims = (-2.2, 2.2)
+
+        drawStyle = "HIST P"
+
+    else:
+
+        raise ValueError("no valid bottompad contents given. Choose from Data/MC, Data-MC/MC or Data-MC/unc")
+
+    return ratioHist, ylabel, ylims, drawStyle
+
 
 def differentOrder(histList, i, hist, order = [2, 0, 1]):
 
@@ -231,16 +276,16 @@ def findYMax(hist, dataHist):
     return 1.1 * max_value
 
     
-def getRatioLine(xmin, xmax):
+def getRatioLine(xmin, xmax, mid):
 
     line = TPolyLine(2)
-    line.SetPoint(0, xmin, 1.)
-    line.SetPoint(1, xmax, 1.)
+    line.SetPoint(0, xmin, mid)
+    line.SetPoint(1, xmax, mid)
     line.SetLineWidth(1)
     return line
 
 
-def plot(plotList, histList, dataList, summedList, xLabelList, yLabelList, leg, leg2, title =  "", logscale = 1, year = "2018", folder = 'plots/'):
+def plot(plotList, histList, dataList, summedList, xLabelList, yLabelList, leg, leg2, title =  "", logscale = 1, year = "2018", folder = 'plots/', bottomPad = "Data/MC"):
 
     yWidth = 700
     yRatioWidth = 200
@@ -282,15 +327,18 @@ def plot(plotList, histList, dataList, summedList, xLabelList, yLabelList, leg, 
         gPad.SetLeftMargin(0.125)
 
         c.SetLogy(0)
+        ratioHist, ylabel, ylims, drawStyle = makeRatio(summedList[i], dataList[i], bottomPad)
 
-        ratioHist = makeRatio(summedList[i], dataList[i])
+        mid = (ylims[0] + ylims[1]) / 2
+
         ratioHist.SetStats(0)
 
-        ratioHist.SetMaximum(1.7)
-        ratioHist.SetMinimum(0.3)
-        ratioHist.Draw("E1 X0")
+        ratioHist.SetMaximum(ylims[1])
+        ratioHist.SetMinimum(ylims[0])
+        
+        ratioHist.Draw(drawStyle)
 
-        ratioHist.GetYaxis().SetTitle("Data / MC")
+        ratioHist.GetYaxis().SetTitle(ylabel)
         ratioHist.GetXaxis().SetTitle(xLabelList[i])
         ratioHist.GetYaxis().SetTitleOffset(0.61)
  
@@ -319,7 +367,7 @@ def plot(plotList, histList, dataList, summedList, xLabelList, yLabelList, leg, 
             ratioHist.GetXaxis().SetBinLabel(4, ">=6 jets,>=2 bjets")
 
 
-        ratioLine = getRatioLine(histList[i].GetXaxis().GetXmin(), histList[i].GetXaxis().GetXmax())
+        ratioLine = getRatioLine(histList[i].GetXaxis().GetXmin(), histList[i].GetXaxis().GetXmax(), mid)
         ratioLine.Draw()
 
         # set ticks on all sides

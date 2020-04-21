@@ -17,6 +17,7 @@ parser.add_option("-p", "--plot", default = "samples/2018_total.plot", help = "p
 parser.add_option("-t", "--typeList", default = None, help = "typeList")
 parser.add_option("-o", "--onlyCount", default = "no", help = "Only count signal events, no plotting?")
 parser.add_option("-d", "--dataFile", default = None, help = "Location of datafile?")
+parser.add_option("-b", "--bottomPad", default = "Data/MC", help = "What info on bottom pad?")
 options, args = parser.parse_args(sys.argv[1:])
 
 
@@ -78,5 +79,5 @@ if options.onlyCount == "no":
     leg = makeLegend(typeList, histList, texDict, dataList)
     leg_2 = makeLegend(typeList, histList, texDict, dataList, (0.15, 0.685, 0.24, 0.875))
 
-    plot(plotList, stackedList, dataList, summedList, xLabelList, yLabelList, leg, leg_2, year = options.year, folder = folder)
-    plot(plotList, stackedList, dataList, summedList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, folder = folder)
+    plot(plotList, stackedList, dataList, summedList, xLabelList, yLabelList, leg, leg_2, year = options.year, folder = folder, bottomPad = options.bottomPad)
+    plot(plotList, stackedList, dataList, summedList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, folder = folder, bottomPad = options.bottomPad)
