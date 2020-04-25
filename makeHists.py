@@ -19,20 +19,28 @@ def initializeStacked(hist, name):
     hist = THStack(name," ")
     return hist
 
-def calcWeight(filename, xSec, lumi = 59.74):
+def calcWeight(filename, xSec, lumi = 59.74, fitWeight = None):
 
     hCounter = TH1F("hCounter","Events Counter",1 ,0 ,1 )
     hCounter = filename.Get("blackJackAndHookers/hCounter")
     totalEvents = hCounter.GetBinContent(1)
 
-    return 1000 * xSec * lumi / totalEvents #times 1000 because cross section is given in picobarn and not in femtobarn!  
+    #times 1000 because cross section is given in picobarn and not in femtobarn!  
+
+    if fitWeight:
+
+        return 1000 * xSec * lumi * fitWeight/ totalEvents
+
+    else:
+
+        return 1000 * xSec * lumi / totalEvents
 
 def addOverflowbin(hist):
 
     nbins = hist.GetNbinsX()
     hist.SetBinContent(nbins, hist.GetBinContent(nbins) + hist.GetBinContent(nbins + 1))
 
-def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists, model, algo, workingPoint, useWorkingPoint, isData = False):
+def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists, model, algo, workingPoint, useWorkingPoint, isData = False, fitWeight = None):
 
 
     if year == "2017":
@@ -56,7 +64,7 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
             f = TFile.Open(locationDict[channel])
 
-            weight = calcWeight(f, xSecDict[channel], lumi)
+            weight = calcWeight(f, xSecDict[channel], lumi, fitWeight = fitWeight)
 
         tree = f.Get("blackJackAndHookers/blackJackAndHookersTree")
 

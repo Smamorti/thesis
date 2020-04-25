@@ -13,17 +13,18 @@ import os
 
 
 parser = OptionParser()
-parser.add_option("-c", "--conf", default = "samples/2018_total.conf", help = "conf file")
+parser.add_option("-c", "--conf", default = "samples/2018_total_v3.conf", help = "conf file")
 parser.add_option("-s", "--stack", default = "samples/2018_total.stack", help = "stack file")
 parser.add_option("-p", "--plot", default = "samples/2018_total.plot", help = "plot file")
 parser.add_option("-o", "--output", default = None, help = "Output file for Histlist?")
 parser.add_option("-y", "--year", default = "2018", help = "year")
 parser.add_option("-t", "--testing", default = "no", help = "Run in test mode (1% of the data) or not?")
 parser.add_option("-x", "--printHist", default = "no", help = "Print out hist content or not?")
-parser.add_option("-m", "--MLalgo", default = "no", help = "Use ML algo?")
+parser.add_option("-m", "--MLalgo", default = "NN_final_80_0_20_18epochs_v3.h5", help = "Use ML algo?")
 parser.add_option("-w", "--workingPoint", default = "noWorkingPoint", help = "Working point?")
 parser.add_option("-u", "--useWorkingPoint", default = "no", help = "Use working point?")
 parser.add_option("-d", "--dataFile", default = "/user/mniedzie/Work/ntuples_ttz_2L_ttZ_2018_v3/data_2018.root", help = "Location of data file?")
+parser.add_option("-f", "--fitWeights", default = False, help = "use extra weight factor gotton from combine fit?")
 options, args = parser.parse_args(sys.argv[1:])
 
 if options.testing not in ['yes', 'no'] or options.printHist not in ['yes', 'no']:
@@ -70,6 +71,23 @@ yLabelList = makeYlabels(xtypeList, binList)
 
 dataList = makeHists.fillTList(['data'], plotList, binList)
 
+# load fitted weight values
+
+if options.fitWeights:
+
+    sources, weights = np.loadtxt(options.fitWeights, comments = "%" ,unpack = True, dtype = str, delimiter='\t')
+
+    fitWeightDic = {}
+
+    for key, value in zip(sources, weights):
+
+        fitWeightDic[key] = float(value)
+
+else:
+
+    fitWeightDic = None
+    fitWeight = None
+
 # load the ML model if we supplied one
 
 if '.h5' in options.MLalgo:
@@ -106,11 +124,15 @@ for i in range(len(typeList)):
 
     source = typeList[i]
 
+    if fitWeightDic:
+
+        fitWeight = fitWeightDic[source]
+
     print('Currently working on {}.'.format(source))
 
     channels = sourceDict[source]
     print(channels)
-    makeHists.fillHist(channels, xSecDict, locationDict, histList[i], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint, useWorkingPoint = options.useWorkingPoint)
+    makeHists.fillHist(channels, xSecDict, locationDict, histList[i], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint, useWorkingPoint = options.useWorkingPoint, fitWeight = fitWeight)
 
 
 

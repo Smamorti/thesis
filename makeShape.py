@@ -21,7 +21,7 @@ if options.algo == 'NN':
 
     partPath = 'histograms/NN_final_80_0_20_18epochs_v3_wp={}/histList_2018_total_'
 
-    output = 'shapes/shapeFile_NN_WithJEC.root'
+    output = 'shapes/shapeFile_NN_fineBins.root'
 
 elif options.algo == 'BDT':
 
@@ -29,7 +29,7 @@ elif options.algo == 'BDT':
 
     partPath = 'histograms/BDT_final_80_0_20_v3_wp={}/histList_2018_total_'
 
-    output = 'shapes/shapeFile_BDT_WithJEC.root'
+    output = 'shapes/shapeFile_BDT_fineBins.root'
 
 else:
 
@@ -48,7 +48,7 @@ for i in range(len(plotList)):
 
 # we want to only keep the modelOutput TH1F
 
-index = np.argwhere(plotList == 'modelOutput')[0][0]
+index = np.argwhere(plotList == 'modelOutput2')[0][0]
 
 
 outputFile = TFile(output, 'RECREATE')
