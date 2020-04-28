@@ -121,6 +121,10 @@ def fillSubCanvas(subCanvas, hist, xlabel, ylabel, leg, leg2, title = None, logs
 
         hist.SetMinimum(0.000001)
     
+    # if xlabel == 'nTrueInt' and logscale:
+
+    #     hist.SetMinimum(10)
+
     hist.SetMaximum(ymax)
     hist.Draw("HIST")
 
@@ -285,7 +289,7 @@ def getRatioLine(xmin, xmax, mid):
     return line
 
 
-def plot(plotList, histList, dataList, summedList, xLabelList, yLabelList, leg, leg2, title =  "", logscale = 1, year = "2018", folder = 'plots/', bottomPad = "Data/MC"):
+def plot(plotList, histList, dataList, summedList, xLabelList, yLabelList, leg, leg2, title =  "", logscale = 1, year = "2018", folder = 'plots/', bottomPad = "Data/MC", extra = ''):
 
     yWidth = 700
     yRatioWidth = 200
@@ -299,7 +303,7 @@ def plot(plotList, histList, dataList, summedList, xLabelList, yLabelList, leg, 
 
         c = makeCanvas(yRatioWidth, yWidth)
 
-        filename = "{}/Hist_{}_{}_{}".format(folder, year, plotList[i], scale)
+        filename = "{}/Hist_{}_{}{}_{}".format(folder, year, plotList[i], extra, scale)
 
         ymax = findYMax(histList[i], dataList[i])
  
@@ -333,8 +337,15 @@ def plot(plotList, histList, dataList, summedList, xLabelList, yLabelList, leg, 
 
         ratioHist.SetStats(0)
 
-        ratioHist.SetMaximum(ylims[1])
-        ratioHist.SetMinimum(ylims[0])
+        if xLabelList[i] == "nTrueInt":
+
+            ratioHist.SetMaximum(2)
+            ratioHist.SetMinimum(0)
+        
+        else:
+
+            ratioHist.SetMaximum(ylims[1])
+            ratioHist.SetMinimum(ylims[0])
         
         ratioHist.Draw(drawStyle)
 
@@ -366,8 +377,14 @@ def plot(plotList, histList, dataList, summedList, xLabelList, yLabelList, leg, 
             ratioHist.GetXaxis().SetBinLabel(3, ">=6 jets,=1 bjets")
             ratioHist.GetXaxis().SetBinLabel(4, ">=6 jets,>=2 bjets")
 
+        if xLabelList[i] == "nTrueInt":
 
-        ratioLine = getRatioLine(histList[i].GetXaxis().GetXmin(), histList[i].GetXaxis().GetXmax(), mid)
+            ratioLine = getRatioLine(histList[i].GetXaxis().GetXmin(), histList[i].GetXaxis().GetXmax(), 1)
+        
+        else:
+
+            ratioLine = getRatioLine(histList[i].GetXaxis().GetXmin(), histList[i].GetXaxis().GetXmax(), mid)
+        
         ratioLine.Draw()
 
         # set ticks on all sides

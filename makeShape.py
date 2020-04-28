@@ -19,9 +19,11 @@ if options.algo == 'NN':
 
     plot = 'samples/2018_total.plot'
 
-    partPath = 'histograms/NN_final_80_0_20_18epochs_v3_wp={}/histList_2018_total_'
+    partPath = 'histograms/withFitWeights/NN_final_80_0_20_18epochs_v3_wp={}_fitWeights/histList_2018_total_'
+#    partPath = 'histograms/NN_final_80_0_20_18epochs_v3_wp={}/histList_2018_total_'
 
-    output = 'shapes/shapeFile_NN_fineBins.root'
+    output = 'shapes/shapeFile_NN_withFitWeights.root'
+#    output = 'shapes/shapeFile_NN_fineBins.root'
 
 elif options.algo == 'BDT':
 
@@ -48,7 +50,8 @@ for i in range(len(plotList)):
 
 # we want to only keep the modelOutput TH1F
 
-index = np.argwhere(plotList == 'modelOutput2')[0][0]
+index = np.argwhere(plotList == 'modelOutput')[0][0]
+#index = np.argwhere(plotList == 'modelOutput2')[0][0]
 
 
 outputFile = TFile(output, 'RECREATE')

@@ -11,13 +11,14 @@ import os
 parser = OptionParser()
 parser.add_option("-f", "--inputFile", default = "histograms/histList_2018_total.pkl", help = "input pkl file")
 parser.add_option("-y", "--year", default = 2018, help = "year")
-parser.add_option("-c", "--conf", default = "samples/2018_total.conf", help = "conf file")
+parser.add_option("-c", "--conf", default = "samples/2018_total_v3.conf", help = "conf file")
 parser.add_option("-s", "--stack", default = "samples/2018_total.stack", help = "stack file")
 parser.add_option("-p", "--plot", default = "samples/2018_total.plot", help = "plot file")
 parser.add_option("-t", "--typeList", default = None, help = "typeList")
 parser.add_option("-o", "--onlyCount", default = "no", help = "Only count signal events, no plotting?")
 parser.add_option("-d", "--dataFile", default = None, help = "Location of datafile?")
 parser.add_option("-b", "--bottomPad", default = "Data/MC", help = "What info on bottom pad?")
+parser.add_option("-e", "--extra", default = '', help = '')
 options, args = parser.parse_args(sys.argv[1:])
 
 
@@ -28,6 +29,13 @@ typeList, sourceDict, texDict, colorDict = readStack(options.stack)
 # the variables we want to plot                                                                  
 
 plotList, binList, xLabelList, xtypeList = loadtxt(options.plot, comments = "%" ,unpack = True, dtype = str, delimiter='\t')
+
+if type(plotList) != list:
+
+    plotList = [plotList]
+    binList = [binList]
+    xLabelList = [xLabelList]
+    xtypeList = [xtypeList]
 
 binList = [str2tuple(string) for string in binList]
 yLabelList = makeYlabels(xtypeList, binList)
@@ -79,5 +87,5 @@ if options.onlyCount == "no":
     leg = makeLegend(typeList, histList, texDict, dataList)
     leg_2 = makeLegend(typeList, histList, texDict, dataList, (0.15, 0.685, 0.24, 0.875))
 
-    plot(plotList, stackedList, dataList, summedList, xLabelList, yLabelList, leg, leg_2, year = options.year, folder = folder, bottomPad = options.bottomPad)
-    plot(plotList, stackedList, dataList, summedList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, folder = folder, bottomPad = options.bottomPad)
+    plot(plotList, stackedList, dataList, summedList, xLabelList, yLabelList, leg, leg_2, year = options.year, folder = folder, bottomPad = options.bottomPad, extra = options.extra)
+    plot(plotList, stackedList, dataList, summedList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, folder = folder, bottomPad = options.bottomPad, extra = options.extra)
