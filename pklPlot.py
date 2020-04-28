@@ -7,6 +7,7 @@ from optparse import OptionParser
 import sys
 from numpy import loadtxt
 import os
+import numpy as np
 
 parser = OptionParser()
 parser.add_option("-f", "--inputFile", default = "histograms/histList_2018_total.pkl", help = "input pkl file")
@@ -30,7 +31,7 @@ typeList, sourceDict, texDict, colorDict = readStack(options.stack)
 
 plotList, binList, xLabelList, xtypeList = loadtxt(options.plot, comments = "%" ,unpack = True, dtype = str, delimiter='\t')
 
-if type(plotList) != list:
+if type(plotList) != list and type(plotList) != np.ndarray:
 
     plotList = [plotList]
     binList = [binList]

@@ -40,7 +40,7 @@ def addOverflowbin(hist):
     nbins = hist.GetNbinsX()
     hist.SetBinContent(nbins, hist.GetBinContent(nbins) + hist.GetBinContent(nbins + 1))
 
-def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists, model, algo, workingPoint, useWorkingPoint, isData = False, fitWeight = None):
+def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists, model, algo, workingPoint, useWorkingPoint, isData = False, fitWeight = None, pileupWeights = None):
 
 
     if year == "2017":
@@ -184,7 +184,7 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
       
                                     else:
                                     
-                                        getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
+                                        getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)))
 
                             else:
 
@@ -204,7 +204,7 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
                                         else:
 
-                                            getattr(plotVariables, plotList[k])(hist, tree._weight * weight, output)
+                                            getattr(plotVariables, plotList[k])(hist, tree._weight * weight, output * pileupWeights.GetBinContent(int(tree._nTrueInt)))
 
 
                                     else:
@@ -216,7 +216,7 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
                                         else:
 
-                                            getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
+                                            getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)))
 
 
                                 
@@ -237,7 +237,7 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
                                     
                                 else:
  
-                                    getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight)
+                                    getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)))
 
 
                         #getattr(plotVariables, "geen2W")(lepton1, lepton2, hist, tree._weight * weight)

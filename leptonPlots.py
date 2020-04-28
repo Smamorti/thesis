@@ -12,6 +12,7 @@ from optparse import OptionParser
 import os
 
 
+
 parser = OptionParser()
 parser.add_option("-c", "--conf", default = "samples/2018_total_v3.conf", help = "conf file")
 parser.add_option("-s", "--stack", default = "samples/2018_total.stack", help = "stack file")
@@ -25,6 +26,8 @@ parser.add_option("-w", "--workingPoint", default = "noWorkingPoint", help = "Wo
 parser.add_option("-u", "--useWorkingPoint", default = "no", help = "Use working point?")
 parser.add_option("-d", "--dataFile", default = "/user/mniedzie/Work/ntuples_ttz_2L_ttZ_2018_v3/data_2018.root", help = "Location of data file?")
 parser.add_option("-f", "--fitWeights", default = False, help = "use extra weight factor gotton from combine fit?")
+parser.add_option("--pileupFile", default = "weights/pileup/pileup_nominal_total.root")
+parser.add_option("--JEC", default = "nominal")
 options, args = parser.parse_args(sys.argv[1:])
 
 if options.testing not in ['yes', 'no'] or options.printHist not in ['yes', 'no']:
@@ -88,6 +91,12 @@ else:
     fitWeightDic = None
     fitWeight = None
 
+# load pileup weights
+
+f = TFile.Open(options.pileupFile)
+
+pileupWeights = f.Get("pileup")
+
 # load the ML model if we supplied one
 
 if '.h5' in options.MLalgo:
@@ -117,7 +126,6 @@ print('Currently working on {}.'.format('data'))
 makeHists.fillHist([options.dataFile], None, None, dataList[0], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint, useWorkingPoint = options.useWorkingPoint, isData = True)
 
 
-
 # MC histograms
 
 for i in range(len(typeList)):
@@ -132,7 +140,7 @@ for i in range(len(typeList)):
 
     channels = sourceDict[source]
     print(channels)
-    makeHists.fillHist(channels, xSecDict, locationDict, histList[i], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint, useWorkingPoint = options.useWorkingPoint, fitWeight = fitWeight)
+    makeHists.fillHist(channels, xSecDict, locationDict, histList[i], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint, useWorkingPoint = options.useWorkingPoint, fitWeight = fitWeight, pileupWeights = pileupWeights)
 
 
 
