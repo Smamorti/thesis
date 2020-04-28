@@ -64,7 +64,7 @@ def makePath(histListPath):
 
         return 'plots/{}'.format(algo)
 
-def makeLegend(typeList, histList, texDict, dataList, position = (0.8, 0.685, 0.89, 0.875)):
+def makeLegend(typeList, histList, texDict, dataList = None, position = (0.8, 0.685, 0.89, 0.875)):
 
     leg = TLegend(position[0], position[1], position[2], position[3], '', 'NBNDC')
 
@@ -77,7 +77,9 @@ def makeLegend(typeList, histList, texDict, dataList, position = (0.8, 0.685, 0.
 
         leg.AddEntry(histList[i][0], label, "f")
 
-    leg.AddEntry(dataList[0], "data", "ep")
+    if dataList:
+
+        leg.AddEntry(dataList[0], "data", "ep")
 
     return leg
 

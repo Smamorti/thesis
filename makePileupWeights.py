@@ -129,8 +129,6 @@ def makeWeight(outputfile, source, hist, data):
     print(hist.Integral())
     print(data.Integral())
 
-    
-
     weightHist, _, _, _ = makeRatio(hist, data, "Data/MC")
 
     output = TFile.Open(outputfile, 'RECREATE')
@@ -144,6 +142,17 @@ def makeWeight(outputfile, source, hist, data):
     t2.Add(hist)
     temp.Add(t2)
     saveHistList([source], temp, 'weights/pkl/ratio.pkl')
+
+
+def makeSummedHist(MClist, typeList):
+
+    summed = MClist[0][0].Clone()
+
+    for i in range(1, len(typeList)):
+
+        summed.Add(MClist[i][0])
+
+    return summed
 
 ## MAIN
 
@@ -223,17 +232,8 @@ else:
         makeWeight(options.outputFile, typeList[i], hist, dataHist)
         
     
+    summed = makeSummedHist(MClist, typeList)
 
-    # for x in MClist:
+    print(summed.Integral())
 
-    #     print(x[0])
-
-    # summedMC = makeSummedHist(MClist[:-1])
-
-    # weightHisto, _, _, _  = makeRatio(summedMC, dataHist, "Data/MC")
-
-    # weightFile = TFile.Open(options.outputFile, "RECREATE")
-    # weightFile.cd()
-    
-    # weightHisto.Write()
-    
+    makeWeight(options.outputFile, 'total', summed, dataHist)
