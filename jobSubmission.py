@@ -79,6 +79,46 @@ def runCommandAsJob( command, script_name, wall_time = '24:00:00', num_threads =
 
 # runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w normal -c samples/2018_total_v3.conf -p samples/2018_total.plot', 'lepPlots_NN_8020_v3.sh')
 
-runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w normal_fitWeights -f samples/NN.fit', 'lepPlots_NN_8020_v3.sh') 
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w normal_fitWeights -f samples/NN.fit', 'lepPlots_NN_8020_v3.sh') 
 
-runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20_v3.bin -x yes -p samples/2018_total_BDT.plot -w normal_fitWeights -c samples/2018_total_v3.conf -f samples/BDT.fit', 'lepPlots_BDT_v3.sh')                      
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20_v3.bin -x yes -p samples/2018_total_BDT.plot -w normal_fitWeights -c samples/2018_total_v3.conf -f samples/BDT.fit', 'lepPlots_BDT_v3.sh')   
+
+# -------------------Pileup-----------------
+
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w pileupDown --pileupFile weights/pileup/pileup_down_total.root', 'NN_PDown.sh')
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w pileupUp --pileupFile weights/pileup/pileup_up_total.root', 'NN_PUp.sh')
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w pileupNominal --pileupFile weights/pileup/pileup_nominal_total.root', 'NN_PNominal.sh')
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w noPileUp --pileupFile weights/pileup/noPileup.root', 'NN_noPileup.sh')
+
+
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20_v3.bin -x yes -w pileupDown --pileupFile weights/pileup/pileup_down_total.root -p samples/2018_total_BDT.plot', 'BDT_PDown.sh')
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20_v3.bin -x yes -w pileupUp --pileupFile weights/pileup/pileup_up_total.root -p samples/2018_total_BDT.plot', 'BDT_PUp.sh')
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20_v3.bin -x yes -w pileupNominal --pileupFile weights/pileup/pileup_nominal_total.root -p samples/2018_total_BDT.plot', 'BDT_PNominal.sh')
+# runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20_v3.bin -x yes -w noPileup --pileupFile weights/pileup/noPileup.root -p samples/2018_total_BDT.plot', 'BDT_noPileUp.sh')
+
+
+
+# ----------------JEC----------------
+
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w pileupNominal_JECup --pileupFile weights/pileup/pileup_nominal_total.root --JEC up', 'NN_PNominal_JECup.sh')
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w noPileUp_JECup --pileupFile weights/pileup/noPileup.root --JEC up', 'NN_noPileup_JECup.sh')
+
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w pileupNominal_JECdown --pileupFile weights/pileup/pileup_nominal_total.root --JEC down', 'NN_PNominal_JECdown.sh')
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w noPileUp_JECdown --pileupFile weights/pileup/noPileup.root --JEC down', 'NN_noPileup_JECdown.sh')
+
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w pileupNominal_JECnominal --pileupFile weights/pileup/pileup_nominal_total.root --JEC nominal', 'NN_PNominal_jecnom.sh')
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/NN_final_80_0_20_18epochs_v3.h5 -x yes -w noPileUp_JECnominal --pileupFile weights/pileup/noPileup.root --JEC nominal', 'NN_noPileup_JECnom.sh')
+
+
+
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20_v3.bin -p samples/2018_total_BDT.plot -x yes -w pileupNominal_JECup --pileupFile weights/pileup/pileup_nominal_total.root --JEC up', 'BDT_PNominal_JECup.sh')
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20_v3.bin -p samples/2018_total_BDT.plot -x yes -w noPileUp_JECup --pileupFile weights/pileup/noPileup.root --JEC up', 'BDT_noPileup_JECup.sh')
+
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20_v3.bin -p samples/2018_total_BDT.plot -x yes -w pileupNominal_JECdown --pileupFile weights/pileup/pileup_nominal_total.root --JEC down', 'BDT_PNominal_JECdown.sh')
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20_v3.bin -p samples/2018_total_BDT.plot -x yes -w noPileUp_JECdown --pileupFile weights/pileup/noPileup.root --JEC down', 'BDT_noPileup_JECdown.sh')
+
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20_v3.bin -p samples/2018_total_BDT.plot -x yes -w pileupNominal_JECnominal --pileupFile weights/pileup/pileup_nominal_total.root --JEC nominal', 'BDT_PNominal_jecnom.sh')
+runCommandAsJob('python leptonPlots.py -t no -m machineLearning/models/BDT_final_80_0_20_v3.bin -p samples/2018_total_BDT.plot -x yes -w noPileUp_JECnominal --pileupFile weights/pileup/noPileup.root --JEC nominal', 'BDT_noPileup_JECnom.sh')
+
+
+

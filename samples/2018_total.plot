@@ -4,9 +4,11 @@ subleading_lPt	(20, 0, 200)	p_{T}(l_{2}) (GeV)	GeV
 leading_lEta	(10, 0, 2.5)	|#eta|(l_{1})	Other
 subleading_lEta	(10, 0, 2.5)	|#eta|(l_{2})	Other
 nJets	(12, 0, 12)	nJets	Other
+nJets2	(7, 5, 12)	nJets	Other
 m_ll	(11, 80, 102)	m(ll) (GeV)	GeV
 flavComp	(2, 0, 2)	flavComp	Other
 nbJets	(5, 0, 5)	nbJets	Other
+nbJets2	(4, 1, 5)	nbJets	Other
 MET	(20, 0, 500)	MET (GeV)	GeV
 leading_DeltaR	(12, 0, 4.8)	#DeltaR(l_{1}, j)	Other
 leading_DeltaR_b	(12, 0, 4.8)	#DeltaR(l_{1}, b)	Other
@@ -22,3 +24,5 @@ leptonMVA	(20, -1, 1)	leptonMVA	Other
 Ht	(20, 0, 500)	H_{t}^{miss} (GeV)	GeV
 SR	(4, 0, 4)	SR	Other
 modelOutput       	(20, 0, 1)	model output	Other
+modelOutput2	(40, 0, 1)	model output	Other
+nVertex	(100, 0, 100)	nVertex	Other

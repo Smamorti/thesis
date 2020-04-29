@@ -37,7 +37,7 @@ def selectBest(massMatrix, jetAmount, skipids = {}):
 def Wmass(lepton):
 
     tree = lepton.tree
-
+    JEC = lepton.JEC
     jets = lepton.goodJets
     jetAmount = len(jets)
     
@@ -51,7 +51,24 @@ def Wmass(lepton):
 
         jet = jets[i]
         vec = PtEtaPhiEVector()
-        vec.SetCoordinates(tree._jetPt[jet], tree._jetEta[jet], tree._jetPhi[jet], tree._jetE[jet])
+
+        if JEC == 'nominal':
+
+            pt = tree._jetPt[jet]
+
+        elif JEC == 'up':
+
+            pt = tree._jetPt_JECUp[jet]
+
+        elif JEC == 'down':
+
+            pt = tree._jetPt_JECDown[jet]
+
+        else:
+
+            raise ValueError('invalid JEC option')
+
+        vec.SetCoordinates(pt, tree._jetEta[jet], tree._jetPhi[jet], tree._jetE[jet])
         jetVecs.append(vec)
 
     for i in range(jetAmount):
@@ -70,5 +87,7 @@ def Wmass(lepton):
 
     bestWmass, j1, j2 = selectBest(masses, jetAmount)
     secondWmass, j3, j4 = selectBest(masses, jetAmount, skipids = {j1, j2})
+
+    print(bestWmass)
 
     return bestWmass, secondWmass, (j1, j2, j3, j4), jetVecs

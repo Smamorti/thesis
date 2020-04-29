@@ -7,9 +7,10 @@ from utilities import calculateTopMass as top
 class lepton:
 
 
-    def __init__(self, tree, nLight, checknJets = True, calcWmass = False, nJets = []):
+    def __init__(self, tree, nLight, JEC, checknJets = True, calcWmass = False, nJets = []):
         self.tree = tree
         self.nLight = nLight
+        self.JEC = JEC
 
         if checknJets:
 
@@ -34,7 +35,7 @@ class lepton:
 
         for j in range(self.nJets()):
 
-            if goodJet(self.tree, j):
+            if goodJet(self.tree, j, self.JEC):
 
                 goodJets.append(j)
 
@@ -120,6 +121,10 @@ class lepton:
     def fillLepList(self): #later add gen_nl?
                                                                                          
         return [self.nLight, self.lFlavor(), self.lCharge(), self.lMatchPdgId()]#, _gen_lMomPdg]                                                                                                
+    def nVertex(self):
+
+        return self.tree._nVertex
+
 
 ###########################
 #### VARIABLES TO PLOT ####
@@ -278,6 +283,15 @@ def nJets2(l1, l2, hist, totalWeight):
 
     hist.Fill(len(l1.goodJets), totalWeight)
 
+def nTrueInt(l1, l2, hist, totalWeight):
+
+    hist.Fill(lepton.nTrueInt(l1), totalWeight)
+
+def nVertex(l1, l2, hist, totalWeight):
+
+    hist.Fill(lepton.nVertex(l1), totalWeight)
+
+
    
 ###########################                                                                                                                                                                          
 ######## UTILITIES ########                                                                                                                                                                                
@@ -285,10 +299,26 @@ def nJets2(l1, l2, hist, totalWeight):
 
 # maybe move this to seperate .py file?
 
-def goodJet(tree, j):
+def goodJet(tree, j, JEC):
+
+    if JEC == 'nominal':
+
+        pt = tree._jetPt[j]
+
+    elif JEC == 'up':
+
+        pt = tree._jetPt_JECUp[j]
+
+    elif JEC == 'down':
+
+        pt = tree._jetPt_JECDown[j]
+
+    else:
+
+        raise ValueError('invalid JEC option')
 
     if (tree._jetIsTight[j]
-        and tree._jetPt[j] > 30
+        and pt > 30
         and np.absolute(tree._jetEta[j]) < 2.4
         ):
 
@@ -346,15 +376,31 @@ def diLeptonMass(l1, l2):
 def H_t(lep):
 
     jets = lep.goodJets
-    
+    JEC = lep.JEC
     h = PtEtaPhiEVector()
     vec = PtEtaPhiEVector()
 
     for jet in jets:
 
-       vec.SetCoordinates(lep.tree._jetPt[jet], lep.tree._jetEta[jet], lep.tree._jetPhi[jet], lep.tree._jetE[jet])
+        if JEC == 'nominal':
+
+            pt = lep.tree._jetPt[jet]
+
+        elif JEC == 'up':
+
+            pt = lep.tree._jetPt_JECUp[jet]
+
+        elif JEC == 'down':
+
+            pt = lep.tree._jetPt_JECDown[jet]
+
+        else:
+
+            raise ValueError('invalid JEC option')
+
+        vec.SetCoordinates(pt, lep.tree._jetEta[jet], lep.tree._jetPhi[jet], lep.tree._jetE[jet])
        
-       h += vec
+        h += vec
 
     return h.Pt()
     

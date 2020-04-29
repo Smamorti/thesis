@@ -5,11 +5,12 @@ import numpy as np
 
 class cuts:
 
-    def __init__(self, tree, nLight, nJets):
+    def __init__(self, tree, nLight, nJets, JEC):
 
         self.tree = tree
         self.nLight = nLight
         self.nJets = nJets
+        self.JEC = JEC
 
     def lMVA(self):
 
@@ -113,7 +114,7 @@ class cuts:
 
         for i in self.nJets:
 
-            if goodJet(self.tree, i):
+            if goodJet(self.tree, i, self.JEC):
                 
                 # Now we implement the last good jet criterion, namely having DeltaR > 0.4 wrt the two prompt leptons
                 
@@ -183,8 +184,8 @@ class cuts:
 
         #check mll requirement          
 
-        lepton1 = lepton(self.tree, self.nLight[0], checknJets = False)    
-        lepton2 = lepton(self.tree, self.nLight[1], checknJets = False)
+        lepton1 = lepton(self.tree, self.nLight[0], self.JEC, checknJets = False)    
+        lepton2 = lepton(self.tree, self.nLight[1], self.JEC, checknJets = False)
 
         if 81 < diLeptonMass(lepton1, lepton2) < 101:
 

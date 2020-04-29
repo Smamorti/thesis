@@ -40,7 +40,7 @@ def addOverflowbin(hist):
     nbins = hist.GetNbinsX()
     hist.SetBinContent(nbins, hist.GetBinContent(nbins) + hist.GetBinContent(nbins + 1))
 
-def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists, model, algo, workingPoint, useWorkingPoint, isData = False, fitWeight = None, pileupWeights = None):
+def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists, model, algo, workingPoint, useWorkingPoint, isData = False, fitWeight = None, pileupWeights = None, JEC = 'nominal'):
 
 
     if year == "2017":
@@ -56,7 +56,7 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
         if isData:
 
-            f = f = TFile.Open(channel)
+            f = TFile.Open(channel)
 
             weight = 1
 
@@ -134,7 +134,7 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
             cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "njets", "nbjets", "twoSF", "onZ"]
 
             leptons = None
-            event = cuts(tree, range(nLight), range(nJets))
+            event = cuts(tree, range(nLight), range(nJets), JEC)
 
             for i in range(len(cutList)):
 
@@ -143,104 +143,53 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
                 if validEvent:
 
-                    event = cuts(tree, nLight, nJets)
+                    event = cuts(tree, nLight, nJets, JEC)
 
                     if i == len(cutList) - 1:
                         
-
-                                 
-                      # if we want to use a ML algo, check if it classifies the event as signal using a specific working point
-
                         # for plotting the model output, make an exception in the plotvariables thingy
 
-                        if model:
+                        # make array of used parameters in model training
 
-                            # make array of used parameters in model training
+                        if '.h5' in algo:
 
-                            if '.h5' in algo:
+                            output = model.predict(makeParamArray(tree, nLight, nJets, JEC))[0][0]
 
-                                output = model.predict(makeParamArray(tree, nLight, nJets))[0][0]
+                        else:
 
-                            else:
+                            from xgboost import DMatrix
 
-                                from xgboost import DMatrix
-                                              
-                                matrix = DMatrix(makeParamArray(tree, nLight, nJets))
-                                output = model.predict(matrix)
+                            matrix = DMatrix(makeParamArray(tree, nLight, nJets, JEC))
+                            output = model.predict(matrix)
 
-                                
-                            if useWorkingPoint == "yes" and output >= float(workingPoint):
+                        lepton1 = lepton(tree, nLight[0], JEC, checknJets = True, calcWmass = True, nJets = nJets)
+                        lepton2 = lepton(tree, nLight[1], JEC, checknJets = False)
 
-                                lepton1 = lepton(tree, nLight[0], checknJets = True, calcWmass = True, nJets = nJets)
-                                lepton2 = lepton(tree, nLight[1], checknJets = False)
+                        for k in range(len(plotList)):
 
-                                for k in range(len(plotList)):
+                            hist = histList[k]
 
-                                    hist = histList[k]
-
-                                    if isData:
-
-                                        getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, weight)
-      
-                                    else:
-                                    
-                                        getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)))
-
-                            else:
-
-                                lepton1 = lepton(tree, nLight[0], checknJets = True, calcWmass = True, nJets = nJets)
-                                lepton2 = lepton(tree, nLight[1], checknJets = False)
-
-                                for k in range(len(plotList)):
-
-                                    hist = histList[k]
-
-                                    if plotList[k] == 'modelOutput' or plotList[k] == 'modelOutput2':
-
-
-                                        if isData:
-
-                                            getattr(plotVariables, plotList[k])(hist, weight, output)
-
-                                        else:
-
-                                            getattr(plotVariables, plotList[k])(hist, tree._weight * weight, output * pileupWeights.GetBinContent(int(tree._nTrueInt)))
-
-
-                                    else:
-
-
-                                        if isData:
-
-                                            getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, weight)
-
-                                        else:
-
-                                            getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)))
-
-
-                                
-
-                        else: # no model is used and event passed all cuts --> fill hists
-
-                            
-                            lepton1 = lepton(tree, nLight[0], checknJets = True, calcWmass = True, nJets = nJets)
-                            lepton2 = lepton(tree, nLight[1], checknJets = False)
-
-                            for k in range(len(plotList)):
-
-                                hist = histList[k]
+                            if plotList[k] == 'modelOutput' or plotList[k] == 'modelOutput2':
 
                                 if isData:
 
-                                    getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, weight)
-                                    
+                                    getattr(plotVariables, plotList[k])(hist, weight, output)
+
                                 else:
- 
-                                    getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)))
+
+                                    getattr(plotVariables, plotList[k])(hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)), output )
 
 
-                        #getattr(plotVariables, "geen2W")(lepton1, lepton2, hist, tree._weight * weight)
+                            else:
+
+                                if isData:
+
+                                        getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, weight)
+
+                                else:
+
+                                    getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)))               
+
                 else:
 
                     break

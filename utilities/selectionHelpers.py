@@ -1,10 +1,26 @@
 import numpy as np
 from ROOT.Math import PtEtaPhiEVector
 
-def goodJet(tree, j):
+def goodJet(tree, j, JEC):
+
+    if JEC == 'nominal':
+
+        pt = tree._jetPt[j]
+
+    elif JEC == 'up':
+
+        pt = tree._jetPt_JECUp[j]
+
+    elif JEC == 'down':
+
+        pt = tree._jetPt_JECDown[j]
+
+    else:
+
+        raise ValueError('invalid JEC option')
 
     if (tree._jetIsTight[j]
-        and tree._jetPt[j] > 30
+        and pt > 30
         and np.absolute(tree._jetEta[j]) < 2.4
         ):
 

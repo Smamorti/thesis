@@ -3,7 +3,7 @@ import sys
 sys.path.append("..")
 from plotVariables import lepton, calculateDeltaR, H_t
 
-def makeParamArray(tree, nLight, nJets):
+def makeParamArray(tree, nLight, nJets, JEC):
 
     paramList = []
 
@@ -35,8 +35,8 @@ def makeParamArray(tree, nLight, nJets):
 
     # make two lepton objects to calculate DeltaR, mW, mtop                                                                                                                                                                 
 
-    lepton1 = lepton(tree, nLight[0], checknJets = True, calcWmass = True, nJets = nJets)
-    lepton2 = lepton(tree, nLight[1], checknJets = False)
+    lepton1 = lepton(tree, nLight[0], JEC, checknJets = True, calcWmass = True, nJets = nJets)
+    lepton2 = lepton(tree, nLight[1], JEC, checknJets = False)
 
     # calculate all DeltaR values                                                                                                                                                                                           
 
@@ -60,25 +60,53 @@ def makeParamArray(tree, nLight, nJets):
     paramList.append(nbjets)
     paramList.append(tree._jetDeepCsv_b[nJets[0]]) #jetDeepCsv_b of leading jet                                                                                                                                        
 
-    # add all jet properties                                                                                                                                                                                                
+    # add all jet properties                                                                                   
 
-    paramList.append(tree._jetPt[nJets[0]])
+    if JEC == 'nominal':
+
+        pt0 = tree._jetPt[nJets[0]]
+        pt1 = tree._jetPt[nJets[1]]
+        pt2 = tree._jetPt[nJets[2]]
+        pt3 = tree._jetPt[nJets[3]]
+        pt4 = tree._jetPt[nJets[4]]
+
+    elif JEC == 'up':
+
+        pt0 = tree._jetPt_JECUp[nJets[0]]
+        pt1 = tree._jetPt_JECUp[nJets[1]]
+        pt2 = tree._jetPt_JECUp[nJets[2]]
+        pt3 = tree._jetPt_JECUp[nJets[3]]
+        pt4 = tree._jetPt_JECUp[nJets[4]]
+
+    elif JEC == 'down':
+
+        pt0 = tree._jetPt_JECDown[nJets[0]]
+        pt1 = tree._jetPt_JECDown[nJets[1]]
+        pt2 = tree._jetPt_JECDown[nJets[2]]
+        pt3 = tree._jetPt_JECDown[nJets[3]]
+        pt4 = tree._jetPt_JECDown[nJets[4]]
+
+    else:
+
+        raise ValueError('invalid JEC option')                                                                                                             
+
+    paramList.append(pt0)
     paramList.append(tree._jetEta[nJets[0]])
     paramList.append(tree._jetPhi[nJets[0]])
 
-    paramList.append(tree._jetPt[nJets[1]])
+    paramList.append(pt1)
     paramList.append(tree._jetEta[nJets[1]])
     paramList.append(tree._jetPhi[nJets[1]])
 
-    paramList.append(tree._jetPt[nJets[2]])
+    paramList.append(pt2)
     paramList.append(tree._jetEta[nJets[2]])
     paramList.append(tree._jetPhi[nJets[2]])
 
-    paramList.append(tree._jetPt[nJets[3]])
+    paramList.append(pt3)
     paramList.append(tree._jetEta[nJets[3]])
     paramList.append(tree._jetPhi[nJets[3]])
 
-    paramList.append(tree._jetPt[nJets[4]])
+    paramList.append(pt4)
     paramList.append(tree._jetEta[nJets[4]])
     paramList.append(tree._jetPhi[nJets[4]])
 
@@ -99,7 +127,6 @@ def makeParamArray(tree, nLight, nJets):
     # calculate H_t^miss and add it to tree, also add MET and iso                                                                                                                                                                 
     paramList.append(tree._met)
     paramList.append(H_t(lepton1))
-
 
     paramList.append(tree._relIso[nLight[0]])
     paramList.append(tree._relIso[nLight[1]])
