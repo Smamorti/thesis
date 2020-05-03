@@ -13,6 +13,8 @@ import os
 #        --> should I care about jet pt/eta? 
 # 3) basically same question, but for the discriminant value
 
+
+
 #####
 
 
@@ -21,6 +23,15 @@ import os
 # Read in the csv ONCE when starting the making of histos
 # From the csv, select the formula(s) corresponding to the region we want to look for
 #    For example: loose tagging, inclusive and the up-correction leaves you w/ only 1 formula!
+#
+# In the csv file, one should not care about the eta values or discriminant values
+# formula purely based on hadronFalvor and pt range
+#
+# sysType: add to arg parser
+# measurementType: to do some pre-cleaning, we will give ALL arrays to final program, just less entries
+# operatingPoint: probably not worth adding to argparser, only keep loose, hardcode
+
+
 
 parser = OptionParser()
 parser.add_option("-c", "--csv", default = "DeepCSV_94XSF_WP_V4_B_F.csv", help = "input csv file?")
@@ -36,18 +47,18 @@ def getWeightFormula(formula, i):
 
 OperatingPoint, measurementType, sysType, jetFlavor, etaMin, etaMax, ptMin, ptMax, discrMin, discrMax, formulas = np.loadtxt(options.csv, unpack = True, skiprows = 1, delimiter = ', ', dtype = str)
 
-print(formulas[(sysType == 'up') & (measurementType == 'incl') & (OperatingPoint == '0')])
+print(formulas[(sysType == 'up') & ((measurementType == 'incl') | (measurementType == 'comb'))& (OperatingPoint == '0')])
 
 
-tformulas = TList()
+# tformulas = TList()
 
-for i in range(len(formulas)):
+# for i in range(len(formulas)):
 
-    f = getWeightFormula(formulas, i)
+#     f = getWeightFormula(formulas, i)
 
-    tformulas.Add(f)
+#     tformulas.Add(f)
 
-for x in tformulas:
+# for x in tformulas:
 
-    print(x.Eval(50))
+#     print(x.Eval(50))
 
