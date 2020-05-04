@@ -7,6 +7,8 @@ from cuts import cuts
 import sys
 from ROOT import TFile, TH1F, THStack, TLegend, TList
 from utilities.makeParamArray import makeParamArray
+from weights.calcBjetWeights import calcBtagWeight
+
 
 def initializeHist(hist, name, nbins, llim, ulim):
 
@@ -40,7 +42,7 @@ def addOverflowbin(hist):
     nbins = hist.GetNbinsX()
     hist.SetBinContent(nbins, hist.GetBinContent(nbins) + hist.GetBinContent(nbins + 1))
 
-def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists, model, algo, workingPoint, useWorkingPoint, isData = False, fitWeight = None, pileupWeights = None, JEC = 'nominal'):
+def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists, model, algo, workingPoint, useWorkingPoint, isData = False, fitWeight = None, pileupWeights = None, JEC = 'nominal', btagArrays = None, btagHists = None):
 
 
     if year == "2017":
@@ -65,6 +67,9 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
             f = TFile.Open(locationDict[channel])
 
             weight = calcWeight(f, xSecDict[channel], lumi, fitWeight = fitWeight)
+
+            measurementTypes, jetFlavors, ptLow, ptHigh, tformulas, inclusiveFormula = btagArrays
+            udsgHist, cHist, bHist = btagHists
 
         tree = f.Get("blackJackAndHookers/blackJackAndHookersTree")
 
@@ -177,7 +182,9 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
                                 else:
 
-                                    getattr(plotVariables, plotList[k])(hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)), output )
+                                    btagFactor = calcBtagWeight(tree, nJets, udsgHist, cHist, bHist, jetFlavors, ptLow, ptHigh, tformulas, inclusiveFormula, JEC)
+
+                                    getattr(plotVariables, plotList[k])(hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)) * btagFactor, output )
 
 
                             else:
@@ -188,7 +195,9 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
                                 else:
 
-                                    getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)))               
+                                    btagFactor = calcBtagWeight(tree, nJets, udsgHist, cHist, bHist, jetFlavors, ptLow, ptHigh, tformulas, inclusiveFormula, JEC)
+
+                                    getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)) * btagFactor)               
 
                 else:
 

@@ -7,6 +7,7 @@ import makeHists, plot
 from utilities.utils import makeYlabels, str2tuple
 from utilities.inputParser import readStack, readConf
 from utilities.saveHistList import saveHistList
+from weights.calcBjetWeights import getBtagArrays, loadBtagHists
 import sys
 from optparse import OptionParser
 import os
@@ -28,21 +29,26 @@ parser.add_option("-d", "--dataFile", default = "/user/mniedzie/Work/ntuples_ttz
 parser.add_option("-f", "--fitWeights", default = False, help = "use extra weight factor gotton from combine fit?")
 parser.add_option("--pileupFile", default = "weights/pileup/pileup_nominal_total.root")
 parser.add_option("--JEC", default = "nominal")
+parser.add_option("-b","--btagType", default = 'central', help = 'central, up or down?')
 options, args = parser.parse_args(sys.argv[1:])
 
 if options.testing not in ['yes', 'no'] or options.printHist not in ['yes', 'no']:
 
     raise ValueError("Please give a yes or no answer to testing and printHist")
 
+if options.btagType not in ['central', 'up', 'down']:
+
+    raise ValueError("Please choose central, up or down for btagType")
+
 if not options.output:
 
     if options.MLalgo:
 
-        if not os.path.exists("histograms/{}_wp={}".format(options.MLalgo.replace(".h5", "").replace(".bin","").replace("machineLearning/models/", ""), options.workingPoint)):
+        if not os.path.exists("histograms/{}/{}".format(options.MLalgo.replace(".h5", "").replace(".bin","").replace("machineLearning/models/", ""), options.workingPoint)):
 
-            os.makedirs("histograms/{}_wp={}".format(options.MLalgo.replace(".h5", "").replace(".bin","").replace("machineLearning/models/", ""), options.workingPoint))
+            os.makedirs("histograms/{}/{}".format(options.MLalgo.replace(".h5", "").replace(".bin","").replace("machineLearning/models/", ""), options.workingPoint))
 
-        output = "histograms/{}_wp={}/histList_{}.pkl".format(options.MLalgo.replace(".h5", "").replace(".bin","").replace("machineLearning/models/", ""), options.workingPoint ,options.stack.replace("samples/", "").replace(".stack", ""))
+        output = "histograms/{}/{}/histList_{}.pkl".format(options.MLalgo.replace(".h5", "").replace(".bin","").replace("machineLearning/models/", ""), options.workingPoint ,options.stack.replace("samples/", "").replace(".stack", ""))
     
     else:
 
@@ -97,6 +103,14 @@ f = TFile.Open(options.pileupFile)
 
 pileupWeights = f.Get("pileup")
 
+# load arrays needed to calculate btag arrays
+
+csvFile = "weights/DeepCSV_94XSF_WP_V4_B_F.csv"
+btagArrays = getBtagArrays(csvFile, options.btagType)
+btagFile = TFile.Open("weights/bTagEff_looseLeptonCleaned_2018.root")
+btagHists = loadBtagHists(btagFile)
+
+
 # load the ML model if we supplied one
 
 if '.h5' in options.MLalgo:
@@ -140,7 +154,7 @@ for i in range(len(typeList)):
 
     channels = sourceDict[source]
     print(channels)
-    makeHists.fillHist(channels, xSecDict, locationDict, histList[i], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint, useWorkingPoint = options.useWorkingPoint, fitWeight = fitWeight, pileupWeights = pileupWeights, JEC = options.JEC)
+    makeHists.fillHist(channels, xSecDict, locationDict, histList[i], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint, useWorkingPoint = options.useWorkingPoint, fitWeight = fitWeight, pileupWeights = pileupWeights, JEC = options.JEC, btagArrays = btagArrays, btagHists = btagHists)
 
 
 
@@ -163,16 +177,20 @@ for i in range(len(plotList)):
 saveHistList(["data"], dataList, output)
 saveHistList(typeList, histList, output)
 
-gROOT.SetBatch(True)
+plotting = False
 
-# hardcoded different legend position for now
+if plotting:
 
-leg = makeHists.makeLegend(typeList, histList, texDict, dataList)
-leg_2 = makeHists.makeLegend(typeList, histList, texDict, dataList, (0.1, 0.7, 0.2, 0.9))
+    gROOT.SetBatch(True)
 
-plot.plot(plotList, histList, dataList, xLabelList, yLabelList, leg, leg_2, year = options.year, MLalgo = options.MLalgo, workingPoint = options.workingPoint)
-# plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, title =  "No Logscale", logscale = 0, histList_nonZ = histList, titleNotZ = "Logscale", logNotZ = 1, year = options.year, MLalgo = options.MLalgo, workingPoint = options.workingPoint)
-plot.plot(plotList, histList, dataList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, MLalgo = options.MLalgo, workingPoint = options.workingPoint)
+    # hardcoded different legend position for now
 
-print("Time elapsed: {} seconds".format((time.time() - start)))
+    leg = makeHists.makeLegend(typeList, histList, texDict, dataList)
+    leg_2 = makeHists.makeLegend(typeList, histList, texDict, dataList, (0.1, 0.7, 0.2, 0.9))
+
+    plot.plot(plotList, histList, dataList, xLabelList, yLabelList, leg, leg_2, year = options.year, MLalgo = options.MLalgo, workingPoint = options.workingPoint)
+    # plot.plot(plotList, histList, xLabelList, yLabelList, leg, leg_2, title =  "No Logscale", logscale = 0, histList_nonZ = histList, titleNotZ = "Logscale", logNotZ = 1, year = options.year, MLalgo = options.MLalgo, workingPoint = options.workingPoint)
+    plot.plot(plotList, histList, dataList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, MLalgo = options.MLalgo, workingPoint = options.workingPoint)
+
+    print("Time elapsed: {} seconds".format((time.time() - start)))
 

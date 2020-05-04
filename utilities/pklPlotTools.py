@@ -4,6 +4,8 @@ import ROOT.gStyle as gStyle
 import ROOT.gPad as gPad
 import pickle
 import numpy as np
+import os
+
 
 def countSignal(inputFile, histList, typeList, xLabelList):
     
@@ -63,6 +65,22 @@ def makePath(histListPath):
         algo = histListPath.split('/')[1]
 
         return 'plots/{}'.format(algo)
+
+def makePath2(histListPath):
+
+    splitted = histListPath.split('/')
+
+    plotPath = ''
+
+    for x in splitted[:-1]:
+
+        plotPath += x
+        plotPath += '/'
+    
+    plotPath = plotPath.replace("histograms", "plots")
+
+    return plotPath
+
 
 def makeLegend(typeList, histList, texDict, dataList = None, position = (0.8, 0.685, 0.89, 0.875)):
 

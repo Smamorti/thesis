@@ -88,6 +88,4 @@ def Wmass(lepton):
     bestWmass, j1, j2 = selectBest(masses, jetAmount)
     secondWmass, j3, j4 = selectBest(masses, jetAmount, skipids = {j1, j2})
 
-    print(bestWmass)
-
     return bestWmass, secondWmass, (j1, j2, j3, j4), jetVecs
