@@ -24,6 +24,7 @@ branch_names = [
     ]
 
 input_file_path = sys.argv[1]
+epochs = int(sys.argv[2])
 
 parameter_dict = {}
 with open( input_file_path ) as f:
@@ -34,12 +35,9 @@ configuration['input_shape'] = ( len(branch_names), )
 configuration['number_of_threads'] = 1
 
 
-configuration['number_of_epochs'] = 18
+#configuration['number_of_epochs'] = 200
+configuration['number_of_epochs'] = epochs
 
-# inputFile = TFile("../newTrees/reducedTrees/goodTreesTotal/trees_total_2018.root")
-
-# signalTree = inputFile.Get("tree_signal_total")
-# bkgTree = inputFile.Get("tree_background_total")
 
 inputFile = TFile("../newTrees/reducedTrees/goodTreesTotal/trees_total_2018_v3.root")
 
@@ -62,9 +60,16 @@ validation_data = concatenateAndShuffleDatasets(signal_collection.validation_set
 test_data = concatenateAndShuffleDatasets(signal_collection.test_set, background_collection.test_set)
 
 #model_name = 'NN_Best_FullData_18epochs'
-model_name = 'NN_final_80_0_20_18epochs_v3'
+#model_name = 'NN_final_80_0_20_18epochs_v3'
+model_name = 'NN_gen39_1_80_0_20_{}epochs'.format(epochs)
 
 trainNN(model_name, configuration, training_data, validation_data, test_data, validation_fraction, signal_collection, background_collection)
-# plotROCAndShapeComparison_NN(signal_collection, background_collection, model_name, validation_fraction+test_fraction )
 
-plotROCAndShapeComparison_test(signal_collection, background_collection, model_name )
+if validation_fraction == 0:
+
+    plotROCAndShapeComparison_test(signal_collection, background_collection, model_name )
+
+else:
+
+    plotROCAndShapeComparison_NN(signal_collection, background_collection, model_name, validation_fraction+test_fraction )
+
