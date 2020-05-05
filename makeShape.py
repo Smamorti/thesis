@@ -12,6 +12,7 @@ parser = OptionParser()
 # parser.add_option('-o', '--output', default = 'shapes/shapeWithJEC.root', help = 'location of output root file')
 # parser.add_option('--plot', default = 'samples/2018_total.plot', help = 'location of used plot file')
 parser.add_option('-a', '--algo', default = 'NN', help = 'which ML algo do you want to use?') 
+parser.add_option('-b', '--binning', default = 'modelOutput', help = 'which binning?')
 options, args = parser.parse_args(sys.argv[1:])
 
 
@@ -19,11 +20,15 @@ if options.algo == 'NN':
 
     plot = 'samples/2018_total.plot'
 
-    partPath = 'histograms/withFitWeights/NN_final_80_0_20_18epochs_v3_wp={}_fitWeights/histList_2018_total_'
-#    partPath = 'histograms/NN_final_80_0_20_18epochs_v3_wp={}/histList_2018_total_'
+#    partPath = 'histograms/withFitWeights/NN_final_80_0_20_18epochs_v3_wp={}_fitWeights/histList_2018_total_'
+ #   partPath = 'histograms/NN_final_80_0_20_18epochs_v3_wp={}/histList_2018_total_'
 
-    output = 'shapes/shapeFile_NN_withFitWeights.root'
-#    output = 'shapes/shapeFile_NN_fineBins.root'
+    partPath = 'histograms/NN_final_80_0_20_18epochs_v3/{}/histList_2018_total_'
+
+#    output = 'shapes/shapeFile_NN_withFitWeights.root'
+  #  output = 'shapes/shapeFile_NN_fineBins.root'
+
+    output = 'shapes/shapeFile_NN.root'
 
 elif options.algo == 'BDT':
 
@@ -38,9 +43,8 @@ else:
     raise ValueError('Please choose a valid ML algo (NN or BDT)')
 
 sources = ['ttZ', 'ttX', 'ttW', 'tt', 'other', 'DY', 'data']
-types = ['', '_JECUp', '_JECDown']
-
-# types = ['']
+#types = ['', 'JECUp', 'JECDown', 'btagUp',  'btagDown', 'pileupUp', 'pileupDown']
+types = ['', '_JECUp', '_JECDown', '_pileupUp', '_pileupDown', '_btagUp',  '_btagDown']
 
 plotList, _, _, _ = np.loadtxt(plot, comments = "%" ,unpack = True, dtype = str, delimiter='\t')
 
@@ -50,8 +54,7 @@ for i in range(len(plotList)):
 
 # we want to only keep the modelOutput TH1F
 
-index = np.argwhere(plotList == 'modelOutput')[0][0]
-#index = np.argwhere(plotList == 'modelOutput2')[0][0]
+index = np.argwhere(plotList == options.binning)[0][0]
 
 
 outputFile = TFile(output, 'RECREATE')
@@ -62,7 +65,7 @@ for kind in types:
 
     if kind == '':
 
-        path = partPath.format('normal')
+        path = partPath.format('nominal')
 
     else:
 
@@ -79,6 +82,10 @@ for kind in types:
         if source == 'data':
 
             source = 'data_obs'
+
+            if kind != '':
+
+                continue
     
         hist.SetName(source + kind)
         print(hist.GetBinContent(20))

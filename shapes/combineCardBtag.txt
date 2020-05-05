@@ -1,0 +1,22 @@
+imax * number of channels 
+jmax * number of backgrounds 
+kmax * number of nuisance parameters (sources of systematical uncertainties) 
+----------- 
+shapes * * shapeFile_NN.root  $PROCESS $PROCESS_$SYSTEMATIC
+-----------  
+bin  bin1
+observation  -1
+-----------  
+bin     bin1	bin1	bin1	bin1	bin1	bin1
+process     ttZ	ttX	ttW	tt	other	DY	
+process     0	1	2	3	4	5	
+rate        -1 -1 -1 -1 -1 -1	
+----------- 
+lumi2018      lnN  1.02	1.02	1.02	1.02	1.02	1.02
+trigger2018      lnN  1.02	1.02	1.02	1.02	1.02	1.02	
+JEC shape     1	1	1	1	1	1	
+pileup shape  1	1	1	1	1	1
+btag shape    1	1	1	1	1	1
+ttW     lnN -	-	1.50	-	-	-	
+other     lnN -	-	-	-	2.00	-
+* autoMCStats 0

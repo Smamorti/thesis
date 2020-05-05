@@ -1,0 +1,3 @@
+combine --saveNormalizations -M MaxLikelihoodFit -d newCard.root
+python mlfitNormsToText.py fitDiagnostics.root 
+./runImpact combineCard.txt
