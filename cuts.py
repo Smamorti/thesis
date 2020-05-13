@@ -5,7 +5,7 @@ import numpy as np
 
 class cuts:
 
-    def __init__(self, tree, nLight, nJets, JEC):
+    def __init__(self, tree, nLight, nJets, JEC = 'nominal'):
 
         self.tree = tree
         self.nLight = nLight

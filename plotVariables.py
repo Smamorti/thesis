@@ -7,7 +7,7 @@ from utilities import calculateTopMass as top
 class lepton:
 
 
-    def __init__(self, tree, nLight, JEC, checknJets = True, calcWmass = False, nJets = []):
+    def __init__(self, tree, nLight, JEC = 'nominal', checknJets = True, calcWmass = False, nJets = []):
         self.tree = tree
         self.nLight = nLight
         self.JEC = JEC

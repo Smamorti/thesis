@@ -1,6 +1,7 @@
 from __future__ import division
 from ROOT import TFile, TTree
 from utilities.makeBranches import makeBranches
+from weights.calcBjetWeights import getBtagArrays, loadBtagHists, calcBtagWeight
 from cuts import cuts
 from makeHists import calcWeight
 from plotVariables import lepton, calculateDeltaR, H_t
@@ -10,19 +11,21 @@ from optparse import OptionParser
 
 
 parser = OptionParser()
-parser.add_option("-c", "--conf", default = "samples/signal_2018.conf", help = "conf file")
+parser.add_option("-c", "--conf", default = "samples/signal_2018_v3.conf", help = "conf file")
 parser.add_option("-s", "--source", default = "signal_2018", help = "signal or background?")
 parser.add_option("-y", "--year", default = 2018, help = "year")
+parser.add_option("--pileupFile", default = "weights/pileup/pileup_nominal_total.root")
+parser.add_option("-b","--btagType", default = 'central', help = 'central, up or down?')
 options, args = parser.parse_args(sys.argv[1:])
 
 
-def makeTree(inputFiles, sampleName, branches, year, xSecs):
+def makeTree(inputFiles, sampleName, branches, year, xSecs, pileupWeights, btagArrays, btagHists):
 
     print("Currently working on the {} samples".format(sampleName))
 
     # create output file and new tree                                                                                                                                                                     
 
-    outputFile = TFile('newTrees/reducedTrees/tree_' + sampleName + '_' + str(year) + '.root', 'RECREATE')
+    outputFile = TFile('newTrees/reducedTrees/tree_' + sampleName + '_nominal.root', 'RECREATE')
     outputFile.cd()
     newTree = TTree('tree_' + sampleName, sampleName)
 
@@ -43,7 +46,7 @@ def makeTree(inputFiles, sampleName, branches, year, xSecs):
 
         # loop over the events, apply cuts, if all cuts apply: fill tree
 
-        fillTree(inputFile, inputTree, newTree, variables, year, xSecs[i])
+        fillTree(inputFile, inputTree, newTree, variables, year, xSecs[i], pileupWeights, btagArrays, btagHists)
         inputFile.Close()
 
     # save tree and close file
@@ -52,7 +55,9 @@ def makeTree(inputFiles, sampleName, branches, year, xSecs):
     outputFile.Close()
 
 
-def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
+def fillTree(inputFile, inputTree, newTree, variables, year, xSec, pileupWeights, btagArrays, btagHists):
+
+    JEC = 'nominal'
 
     # loop over all events, apply cuts, if all cuts apply: fill tree
 
@@ -79,6 +84,10 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
     sys.stdout.write("\b" * (toolbar_width+1)) # return to start of line, after '['                                                                                                                        
     progress = 0
     toolbarProgress = 0
+
+    measurementTypes, jetFlavors, ptLow, ptHigh, tformulas, inclusiveFormula = btagArrays
+    udsgHist, cHist, bHist = btagHists
+
 
     for _ in t:
 
@@ -129,7 +138,11 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec):
 
                 if i == len(cutList) - 1:                    
 
-                    variables.weight = t._weight * weight
+                    btagFactor = calcBtagWeight(t, nJets, udsgHist, cHist, bHist, jetFlavors, ptLow, ptHigh, tformulas, inclusiveFormula, JEC)
+
+                    
+
+                    variables.weight = t._weight * weight * pileupWeights.GetBinContent(int(t._nTrueInt)) * btagFactor
                     variables.lPt1 = t._lPt[nLight[0]]
                     variables.lPt2 = t._lPt[nLight[1]]
                     variables.lEta1 = t._lEta[nLight[0]]
@@ -240,8 +253,22 @@ if type(files) == np.string_:
     files = [files]
     xSecs = [xSecs]
 
+# load pileup weights                                                                                              
+f = TFile.Open(options.pileupFile)
 
-makeTree(files, options.source, branches, options.year, xSecs)
+pileupWeights = f.Get("pileup")
+
+# load arrays needed to calculate btag arrays                                                                      
+csvFile = "weights/DeepCSV_94XSF_WP_V4_B_F.csv"
+btagArrays = getBtagArrays(csvFile, options.btagType)
+btagFile = TFile.Open("weights/bTagEff_looseLeptonCleaned_2018.root")
+btagHists = loadBtagHists(btagFile)
+
+
+
+
+
+makeTree(files, options.source, branches, options.year, xSecs, pileupWeights = pileupWeights, btagArrays = btagArrays, btagHists = btagHists)
 
 
 print("Finished!")
