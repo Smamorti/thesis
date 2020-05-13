@@ -7,9 +7,9 @@ from optparse import OptionParser
 import sys
 
 parser = OptionParser()
-parser.add_option("-c", "--signal", default = "../newTrees/reducedTrees/goodTreesv3/tree_signal_2018_2018.root", help = "signal root file")
-parser.add_option("-b", "--background", default = "../newTrees/reducedTrees/goodTreesv3/tree_background_2018_2018.root", help = "background root file")
-parser.add_option("-o", "--outputfile", default = "../newTrees/reducedTrees/goodTreesTotal/trees_total_2018_v3.root", help = "output root file")
+parser.add_option("-c", "--signal", default = "../newTrees/reducedTrees/goodTreesTotal/tree_signal_2018_nominal.root", help = "signal root file")
+parser.add_option("-b", "--background", default = "../newTrees/reducedTrees/goodTreesTotal/tree_background_2018_nominal.root", help = "background root file")
+parser.add_option("-o", "--outputfile", default = "../newTrees/reducedTrees/goodTreesTotal/trees_total_2018_nominal.root", help = "output root file")
 parser.add_option("-y", "--year", default = 2018, help = "year")
 
 options, args = parser.parse_args(sys.argv[1:])

@@ -6,7 +6,7 @@ import numpy as np
 from trainEvalBDT import plotROCAndShapeComparison_NN, plotROCAndShapeComparison_test
 import json
 import sys
-
+from keras.models import load_model
 branch_names = [
     'lPt1', 'lPt2',
     'lEta1', 'lEta2',
@@ -39,7 +39,7 @@ configuration['number_of_threads'] = 1
 configuration['number_of_epochs'] = epochs
 
 
-inputFile = TFile("../newTrees/reducedTrees/goodTreesTotal/trees_total_2018_v3.root")
+inputFile = TFile("../newTrees/reducedTrees/goodTreesTotal/trees_total_2018_nominal.root")
 
 signalTree = inputFile.Get("tree_signal_2018")
 bkgTree = inputFile.Get("tree_background_2018")
@@ -61,9 +61,22 @@ test_data = concatenateAndShuffleDatasets(signal_collection.test_set, background
 
 #model_name = 'NN_Best_FullData_18epochs'
 #model_name = 'NN_final_80_0_20_18epochs_v3'
-model_name = 'NN_gen39_1_80_0_20_{}epochs'.format(epochs)
+#model_name = 'NN_gen39_1_80_0_20_{}epochs'.format(epochs)
+model_name = '{}_8020_{}epochs'.format(input_file_path.replace('.json', ''), epochs)
 
 trainNN(model_name, configuration, training_data, validation_data, test_data, validation_fraction, signal_collection, background_collection)
+
+model = load_model( model_name + '.h5' )
+
+# signal_collection.training_set.addOutputs( model.predict( signal_collection.training_set.samples ) )
+# signal_collection.validation_set.addOutputs( model.predict( signal_collection.validation_set.samples ) )
+# signal_collection.test_set.addOutputs( model.predict( signal_collection.test_set.samples ) )
+
+# background_collection.training_set.addOutputs( model.predict( background_collection.training_set.samples ) )
+# background_collection.validation_set.addOutputs( model.predict( background_collection.validation_set.samples))
+# background_collection.test_set.addOutputs( model.predict( background_collection.test_set.samples ) )
+
+
 
 if validation_fraction == 0:
 

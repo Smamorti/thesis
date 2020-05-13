@@ -140,6 +140,43 @@ def plotOutputShapeComparison( outputs_signal_training, weights_signal_training,
     plt.clf()
     
 
+def calcDifferenceBetweenBins(outputs_signal_training, weights_signal_training,
+    outputs_background_training, weights_background_training,
+    outputs_signal_testing, weights_signal_testing,
+    outputs_background_testing, weights_background_testing,
+    model_name
+    ):
+
+    min_output = min( np.min(outputs_signal_training), np.min(outputs_background_training), np.min(outputs_signal_testing), np.min(outputs_background_testing ) )
+    max_output = max( np.max(outputs_signal_training), np.max(outputs_background_training), np.max(outputs_signal_testing), np.max(outputs_background_testing ) )
+
+
+    
+#    print(outputs_background_testing[0])
+
+    testdata = np.resize(outputs_background_testing, outputs_background_testing.shape[0])
+    traindata = np.resize(outputs_background_training, outputs_background_training.shape[0])
+    
+
+    test, test_bind_edges = np.histogram(testdata, 20, range = (0, 1), weights = weights_background_testing/np.sum(weights_background_testing))
+    train, train_bind_edges = np.histogram(traindata, 20, range = (0, 1), weights = weights_background_training/np.sum(weights_background_training))
+   
+    sumAll = 0
+    sumHighest = 0
+
+    for i in range(len(test)):
+
+        sumAll += abs(test[i] - train[i])
+        
+        if i > 13:
+
+            sumHighest += abs(test[i] -train[i])
+
+    print(sumAll)
+    print(sumHighest)
+
+    return sumAll, sumHighest
+
 def binWidth(num_bins, min_bin, max_bin):
     return float( max_bin - min_bin) / num_bins
 

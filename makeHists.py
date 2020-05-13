@@ -42,7 +42,7 @@ def addOverflowbin(hist):
     nbins = hist.GetNbinsX()
     hist.SetBinContent(nbins, hist.GetBinContent(nbins) + hist.GetBinContent(nbins + 1))
 
-def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists, model, algo, workingPoint, useWorkingPoint, isData = False, fitWeight = None, pileupWeights = None, JEC = 'nominal', btagArrays = None, btagHists = None):
+def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists, model, algo, workingPoint, useWorkingPoint, isData = False, fitWeight = None, pileupWeights = None, JEC = 'nominal', btagArrays = None, btagHists = None, useMVAcut = None):
 
 
     if year == "2017":
@@ -167,37 +167,47 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
                             matrix = DMatrix(makeParamArray(tree, nLight, nJets, JEC))
                             output = model.predict(matrix)
 
+                        addToHist = True
+
+                        if useMVAcut != None:
+                            
+                            if output < float(useMVAcut):
+                            
+                                addToHist = False
+
                         lepton1 = lepton(tree, nLight[0], JEC, checknJets = True, calcWmass = True, nJets = nJets)
                         lepton2 = lepton(tree, nLight[1], JEC, checknJets = False)
 
-                        for k in range(len(plotList)):
+                        if addToHist:
 
-                            hist = histList[k]
+                            for k in range(len(plotList)):
 
-                            if plotList[k] == 'modelOutput' or plotList[k] == 'modelOutput2':
+                                hist = histList[k]
 
-                                if isData:
+                                if plotList[k] == 'modelOutput' or plotList[k] == 'modelOutput2':
 
-                                    getattr(plotVariables, plotList[k])(hist, weight, output)
+                                    if isData:
 
-                                else:
+                                        getattr(plotVariables, plotList[k])(hist, weight, output)
 
-                                    btagFactor = calcBtagWeight(tree, nJets, udsgHist, cHist, bHist, jetFlavors, ptLow, ptHigh, tformulas, inclusiveFormula, JEC)
+                                    else:
 
-                                    getattr(plotVariables, plotList[k])(hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)) * btagFactor, output )
+                                        btagFactor = calcBtagWeight(tree, nJets, udsgHist, cHist, bHist, jetFlavors, ptLow, ptHigh, tformulas, inclusiveFormula, JEC)
 
+                                        getattr(plotVariables, plotList[k])(hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)) * btagFactor, output )
 
-                            else:
-
-                                if isData:
-
-                                        getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, weight)
 
                                 else:
 
-                                    btagFactor = calcBtagWeight(tree, nJets, udsgHist, cHist, bHist, jetFlavors, ptLow, ptHigh, tformulas, inclusiveFormula, JEC)
+                                    if isData:
 
-                                    getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)) * btagFactor)               
+                                            getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, weight)
+
+                                    else:
+
+                                        btagFactor = calcBtagWeight(tree, nJets, udsgHist, cHist, bHist, jetFlavors, ptLow, ptHigh, tformulas, inclusiveFormula, JEC)
+
+                                        getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)) * btagFactor)               
 
                 else:
 

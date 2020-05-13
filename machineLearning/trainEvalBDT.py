@@ -135,6 +135,15 @@ def compareOutputShapes( signal_training_dataset, signal_validation_dataset, bac
             model_name
         )
 
+    # calcDifferenceBetweenBins(
+    #     signal_training_dataset.outputs, signal_training_dataset.weights,
+    #         background_training_dataset.outputs, background_training_dataset.weights,
+    #     signal_validation_dataset.outputs, signal_validation_dataset.weights,
+    #         background_validation_dataset.outputs, background_validation_dataset.weights,
+    #         model_name
+    #     )
+
+
 
 #plot ROC curve, compute AUC and plot shape comparison after adding model predictions to the datasets                                                                                                       
 def plotROCAndShapeComparison(signal_collection, background_collection, model_name ):
@@ -181,6 +190,25 @@ def plotROCAndShapeComparison_NN(signal_collection, background_collection, model
             background_collection.training_set,
             model_name
         )
+
+def getDifBins(signal_collection, background_collection, model_name ):
+
+    signal_training_dataset = signal_collection.training_set
+    background_training_dataset = background_collection.training_set
+    signal_testing_dataset = signal_collection.test_set
+    background_testing_dataset = background_collection.test_set
+
+
+
+    sumAll, sumHigh = calcDifferenceBetweenBins(
+        signal_training_dataset.outputs, signal_training_dataset.weights,
+            background_training_dataset.outputs, background_training_dataset.weights,
+        signal_testing_dataset.outputs, signal_testing_dataset.weights,
+            background_testing_dataset.outputs, background_testing_dataset.weights,
+            model_name
+        )
+
+    return sumAll, sumHigh
 
 
 def plotROCAndShapeComparison_test(signal_collection, background_collection, model_name ):

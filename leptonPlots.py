@@ -30,6 +30,7 @@ parser.add_option("-f", "--fitWeights", default = False, help = "use extra weigh
 parser.add_option("--pileupFile", default = "weights/pileup/pileup_nominal_total.root")
 parser.add_option("--JEC", default = "nominal")
 parser.add_option("-b","--btagType", default = 'central', help = 'central, up or down?')
+parser.add_option("--useMVAcut", default = None)
 options, args = parser.parse_args(sys.argv[1:])
 
 if options.testing not in ['yes', 'no'] or options.printHist not in ['yes', 'no']:
@@ -137,7 +138,7 @@ else:
 
 print('Currently working on {}.'.format('data'))
 
-makeHists.fillHist([options.dataFile], None, None, dataList[0], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint, useWorkingPoint = options.useWorkingPoint, isData = True, JEC = options.JEC)
+makeHists.fillHist([options.dataFile], None, None, dataList[0], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint, useWorkingPoint = options.useWorkingPoint, isData = True, JEC = options.JEC, useMVAcut = options.useMVAcut)
 
 
 # MC histograms
@@ -154,7 +155,7 @@ for i in range(len(typeList)):
 
     channels = sourceDict[source]
     print(channels)
-    makeHists.fillHist(channels, xSecDict, locationDict, histList[i], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint, useWorkingPoint = options.useWorkingPoint, fitWeight = fitWeight, pileupWeights = pileupWeights, JEC = options.JEC, btagArrays = btagArrays, btagHists = btagHists)
+    makeHists.fillHist(channels, xSecDict, locationDict, histList[i], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint, useWorkingPoint = options.useWorkingPoint, fitWeight = fitWeight, pileupWeights = pileupWeights, JEC = options.JEC, btagArrays = btagArrays, btagHists = btagHists, useMVAcut = options.useMVAcut)
 
 
 

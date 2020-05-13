@@ -23,13 +23,14 @@ if options.algo == 'NN':
 #    partPath = 'histograms/withFitWeights/NN_final_80_0_20_18epochs_v3_wp={}_fitWeights/histList_2018_total_'
  #   partPath = 'histograms/NN_final_80_0_20_18epochs_v3_wp={}/histList_2018_total_'
 
-    partPath = 'histograms/NN_final_80_0_20_18epochs_v3/{}/histList_2018_total_'
-
+#    partPath = 'histograms/NN_final_80_0_20_18epochs_v3/{}/histList_2018_total_'
+    partPath = 'histograms/NN_2_8020_10epochs/{}/histList_2018_total_'
+#    partPath = 'histograms/NN_gen39_1_80_0_20_19epochs/{}/histList_2018_total_'
 #    output = 'shapes/shapeFile_NN_withFitWeights.root'
   #  output = 'shapes/shapeFile_NN_fineBins.root'
 
-    output = 'shapes/shapeFile_NN.root'
-
+#    output = 'shapes/shapeFile_NN.root'
+    output = 'shapes/shapeFile_NN_2_10_SRs.root'
 elif options.algo == 'BDT':
 
     plot = 'samples/2018_total_BDT.plot'
@@ -44,7 +45,8 @@ else:
 
 sources = ['ttZ', 'ttX', 'ttW', 'tt', 'other', 'DY', 'data']
 #types = ['', 'JECUp', 'JECDown', 'btagUp',  'btagDown', 'pileupUp', 'pileupDown']
-types = ['', '_JECUp', '_JECDown', '_pileupUp', '_pileupDown', '_btagUp',  '_btagDown']
+#types = ['', '_JECUp', '_JECDown', '_pileupUp', '_pileupDown', '_btagUp',  '_btagDown']
+types = ['']
 
 plotList, _, _, _ = np.loadtxt(plot, comments = "%" ,unpack = True, dtype = str, delimiter='\t')
 

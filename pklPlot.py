@@ -1,4 +1,4 @@
-from utilities.pklPlotTools import makeLegend, plot, makeStackedList, fillStacked, makeHistList, makePath, countSignal, countSignBkg, makeSummedHist
+from utilities.pklPlotTools import makeLegend, plot, makeStackedList, fillStacked, makeHistList, makePath, countSignal, countSignBkg, makeSummedHist, makePath2
 from utilities.utils import makeYlabels, str2tuple
 from utilities.inputParser import readStack
 from ROOT import gROOT, THStack
@@ -60,14 +60,14 @@ if options.typeList:
     fillStacked(sources, stackedList)
     histList = makeHistList(sources)
 
-    folder = makePath(sources[0])
+    folder = makePath2(sources[0])
 
 else:
 
     histList = pickle.load(file(options.inputFile))[:-1]
     stackedList = pickle.load(file(options.inputFile))[-1]
 
-    folder = makePath(options.inputFile)
+    folder = makePath2(options.inputFile)
 
 summedList = makeSummedHist(histList)
 
