@@ -154,12 +154,24 @@ def calcDifferenceBetweenBins(outputs_signal_training, weights_signal_training,
     
 #    print(outputs_background_testing[0])
 
-    testdata = np.resize(outputs_background_testing, outputs_background_testing.shape[0])
-    traindata = np.resize(outputs_background_training, outputs_background_training.shape[0])
-    
+    if 'NN' in model_name:
 
-    test, test_bind_edges = np.histogram(testdata, 20, range = (0, 1), weights = weights_background_testing/np.sum(weights_background_testing))
-    train, train_bind_edges = np.histogram(traindata, 20, range = (0, 1), weights = weights_background_training/np.sum(weights_background_training))
+        testdata = np.resize(outputs_background_testing, outputs_background_testing.shape[0])
+        traindata = np.resize(outputs_background_training, outputs_background_training.shape[0])
+
+        rangeBins = (0, 1)
+        nBins = 20
+
+    else:
+
+        testdata = outputs_background_testing
+        traindata = outputs_background_training
+
+        rangeBins = (-0.2, 1.4)
+        nBins = 26
+
+    test, test_bind_edges = np.histogram(testdata, nBins, range = rangeBins, weights = weights_background_testing/np.sum(weights_background_testing))
+    train, train_bind_edges = np.histogram(traindata, nBins, range = rangeBins, weights = weights_background_training/np.sum(weights_background_training))
    
     sumAll = 0
     sumHighest = 0
@@ -168,7 +180,7 @@ def calcDifferenceBetweenBins(outputs_signal_training, weights_signal_training,
 
         sumAll += abs(test[i] - train[i])
         
-        if i > 13:
+        if i > 0.7 * nBins:
 
             sumHighest += abs(test[i] -train[i])
 

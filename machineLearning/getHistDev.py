@@ -7,6 +7,9 @@ from trainEvalBDT import plotROCAndShapeComparison_NN, plotROCAndShapeComparison
 import json
 import sys
 from keras.models import load_model
+import xgboost as xgb
+
+
 branch_names = [
     'lPt1', 'lPt2',
     'lEta1', 'lEta2',
@@ -65,31 +68,81 @@ test_data = concatenateAndShuffleDatasets(signal_collection.test_set, background
 
 #trainNN(model_name, configuration, training_data, validation_data, test_data, validation_fraction, signal_collection, background_collection)
 
-totSum = np.zeros(20)
-highSum = np.zeros(20)
+#totSum = np.zeros(20)
+#highSum = np.zeros(20)
 #totSum = np.zeros((20, 6))
 #highSum = np.zeros((20,6))
 
 
+# make program compatible with BDTs as well
+# -> use load_model from xgboost
+
+def loadModel(model_name):
+
+    if 'NN' in model_name:
+
+        model = load_model( 'models/' + model_name + '.h5' )
+
+    else:
+
+        model = xgb.Booster()
+        model.load_model('models/' + model_name + '.bin')
+
+    return model
+
+number_of_threads = 1
+
+numbers = [120 ,121 ,122 ,123 ,130 ,131 ,132 ,133 ,143 ,171 ,328 ,329 ,330 ,331 ,332 ,333 ,365 ,449 ,450 ,451 ,452 ,453 ,454 ,467 ,468 ,469 ,470 ,471 ,475 ,476 ,477 ,478 ,479 ,480]        
+
+totSum = np.zeros(len(numbers))
+highSum = np.zeros(len(numbers))
+
 epochs = range(5, 25)
 j = 'final'
-for i in epochs:
+#for i in epochs:
+
+for i in range(len(numbers)):
 
 #    for j in range(1, 7):
 
  #       print(i, j)
 
-    model_name = 'NN_{}_8020_{}epochs'.format(j, i)
-    model = load_model( model_name + '.h5' )
+#    model_name = 'NN_{}_8020_{}epochs'.format(j, i)
+    model_name = 'BDT_GS_{}'.format(numbers[i])
 
-    signal_collection.training_set.addOutputs( model.predict( signal_collection.training_set.samples ) )
-    signal_collection.validation_set.addOutputs( model.predict( signal_collection.validation_set.samples ) )
-    signal_collection.test_set.addOutputs( model.predict( signal_collection.test_set.samples ) )
+    model = loadModel( model_name )
 
-    background_collection.training_set.addOutputs( model.predict( background_collection.training_set.samples ) )
-    background_collection.validation_set.addOutputs( model.predict( background_collection.validation_set.samples))
-    background_collection.test_set.addOutputs( model.predict( background_collection.test_set.samples ) )
+    if 'NN' in model_name:
 
+        signal_collection.training_set.addOutputs( model.predict( signal_collection.training_set.samples ) )
+        signal_collection.validation_set.addOutputs( model.predict( signal_collection.validation_set.samples ) )
+        signal_collection.test_set.addOutputs( model.predict( signal_collection.test_set.samples ) )
+
+        background_collection.training_set.addOutputs( model.predict( background_collection.training_set.samples ) )
+        background_collection.validation_set.addOutputs( model.predict( background_collection.validation_set.samples))
+        background_collection.test_set.addOutputs( model.predict( background_collection.test_set.samples ) )
+
+    else:
+
+        #make xgboost DMatrices for predictions                                                                      
+
+        signal_training_matrix = xgb.DMatrix( signal_collection.training_set.samples, label = signal_collection.training_set.labels, nthread = number_of_threads)
+        signal_validation_matrix = xgb.DMatrix( signal_collection.validation_set.samples, label = signal_collection.validation_set.labels, nthread = number_of_threads)
+        signal_test_matrix = xgb.DMatrix( signal_collection.test_set.samples, label = signal_collection.test_set.labels, nthread = number_of_threads)
+
+        background_training_matrix = xgb.DMatrix( background_collection.training_set.samples, label = background_collection.training_set.labels, nthread = number_of_threads)
+        background_validation_matrix = xgb.DMatrix( background_collection.validation_set.samples, label = background_collection.validation_set.labels, nthread = number_of_threads)
+        background_test_matrix = xgb.DMatrix( background_collection.test_set.samples, label = background_collection.test_set.labels, nthread = number_of_threads)
+
+        #make predictions                                                                                    
+
+        signal_collection.training_set.addOutputs( model.predict( signal_training_matrix ) )
+        signal_collection.validation_set.addOutputs( model.predict( signal_validation_matrix ) )
+        signal_collection.test_set.addOutputs( model.predict( signal_test_matrix ) )
+
+        background_collection.training_set.addOutputs( model.predict( background_training_matrix ) )
+        background_collection.validation_set.addOutputs( model.predict( background_validation_matrix ) )
+        background_collection.test_set.addOutputs( model.predict( background_test_matrix ) )
 
 
     if validation_fraction == 0:
@@ -98,8 +151,10 @@ for i in epochs:
 
         sumAll, sumHigh = getDifBins(signal_collection, background_collection, model_name )
 
-        totSum[i-5] = sumAll
-        highSum[i-5] = sumHigh
+        totSum[i] = sumAll
+        highSum[i] = sumHigh
+        # totSum[i-5] = sumAll
+        # highSum[i-5] = sumHigh
         # totSum[i-5][j-1] = sumAll
         # highSum[i-5][j-1] = sumHigh
 
@@ -112,5 +167,5 @@ for i in epochs:
         plotROCAndShapeComparison_NN(signal_collection, background_collection, model_name, validation_fraction+test_fraction )
 
 
-np.save('totsum.npy', totSum)
-np.save('highsum.npy', highSum)
+np.save('totsum_BDT_GS.npy', totSum)
+np.save('highsum_BDT_GS.npy', highSum)

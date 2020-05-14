@@ -60,9 +60,9 @@ validation_data = concatenateAndShuffleDatasets(signal_collection.validation_set
 test_data = concatenateAndShuffleDatasets(signal_collection.test_set, background_collection.test_set)
 
 #model_name = 'NN_Best_FullData_18epochs'
-#model_name = 'NN_final_80_0_20_18epochs_v3'
+model_name = 'NN_final_80_0_20_18epochs_nominal'
 #model_name = 'NN_gen39_1_80_0_20_{}epochs'.format(epochs)
-model_name = '{}_8020_{}epochs'.format(input_file_path.replace('.json', ''), epochs)
+#model_name = '{}_8020_{}epochs'.format(input_file_path.replace('.json', '').replace("jsons/",""), epochs)
 
 trainNN(model_name, configuration, training_data, validation_data, test_data, validation_fraction, signal_collection, background_collection)
 
