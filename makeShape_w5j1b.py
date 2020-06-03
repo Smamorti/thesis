@@ -34,17 +34,15 @@ if options.algo == 'NN':
   #  output = 'shapes/shapeFile_NN_fineBins.root'
 
 #    output = 'shapes/shapeFile_NN.root
-    output = 'shapes/shapeFile_{}_{}.root'.format(model.replace('.h5', ''), options.binning)
+    output = 'shapes/shapeFile_{}_{}_3bins.root'.format(model.replace('.h5', ''), options.binning)
 
 elif options.algo == 'BDT':
 
     plot = 'samples/2018_total_BDT.plot'
 
-#    partPath = 'histograms/BDT_final_80_0_20_v3_wp={}/histList_2018_total_'
+    partPath = 'histograms/BDT_final_80_0_20_v3_wp={}/histList_2018_total_'
 
-    partPath = 'histograms/{}/{}/histList_2018_total_'
-
-    output = 'shapes/shapeFile_{}_{}.root'.format(model, options.binning)
+    output = 'shapes/shapeFile_BDT_fineBins.root'
 
 else:
 
@@ -53,7 +51,7 @@ else:
 sources = ['ttZ', 'ttX', 'ttW', 'tt', 'other', 'DY', 'data']
 #types = ['', 'JECUp', 'JECDown', 'btagUp',  'btagDown', 'pileupUp', 'pileupDown']
 types = ['', '_JECUp', '_JECDown', '_pileupUp', '_pileupDown', '_btagUp',  '_btagDown']
-#types = ['']
+# types = ['']
 
 plotList, _, _, _ = np.loadtxt(plot, comments = "%" ,unpack = True, dtype = str, delimiter='\t')
 
@@ -95,12 +93,16 @@ for kind in types:
             if kind != '':
 
                 continue
+
+        hist2 = TH1F(source + kind, " ", 3, 0, 3)
     
-        hist.SetName(source + kind)
-        print(hist.GetBinContent(20))
+        for i in range(2, 5):
 
-#        hist.Rebin(15)
+            hist2.SetBinContent(i-1, hist.GetBinContent(i))
 
-        hist.Write()
+#        hist.SetName(source + kind)
+#       print(hist.GetBinContent(20))
+
+        hist2.Write()
 
 outputFile.Close()

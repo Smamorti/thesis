@@ -1,4 +1,4 @@
-from utilities.pklPlotTools import makeLegend, plot, makeStackedList, fillStacked, makeHistList, makePath, countSignal, countSignBkg, makeSummedHist, makePath2
+from utilities.pklPlotTools import makeLegend, plot, makeStackedList, fillStacked, makeHistList, makePath, countSignal, countSignBkg, makeSummedHist, makePath2, fillStacked_fitWeights, makeHistList_fitWeights
 from utilities.utils import makeYlabels, str2tuple
 from utilities.inputParser import readStack
 from ROOT import gROOT, THStack
@@ -20,8 +20,27 @@ parser.add_option("-o", "--onlyCount", default = "no", help = "Only count signal
 parser.add_option("-d", "--dataFile", default = None, help = "Location of datafile?")
 parser.add_option("-b", "--bottomPad", default = "Data/MC", help = "What info on bottom pad?")
 parser.add_option("-e", "--extra", default = '', help = '')
+parser.add_option("-x", "--fitWeights", default = False, help = "use extra weight factor gotton from combine fit?")
 options, args = parser.parse_args(sys.argv[1:])
 
+
+# if there are fitweights, read them in (NOT FULLY IMPLEMENTED YET)
+
+if options.fitWeights:
+
+    sources, weights = np.loadtxt(options.fitWeights, comments = "%" ,unpack = True, dtype = str, delimiter='\t')
+
+    fitWeightDic = {}
+
+    for key, value in zip(sources, weights):
+
+        fitWeightDic[key] = float(value)
+    fitWeight = True
+
+else:
+
+    fitWeightDic = None
+    fitWeight = None
 
 # get all info on the data we want to plot                                           
 
@@ -57,8 +76,16 @@ if options.typeList:
     sources = [location + '_{}.pkl'.format(x) for x in typeList]
     
     stackedList = makeStackedList(plotList)
-    fillStacked(sources, stackedList)
-    histList = makeHistList(sources)
+
+    if fitWeight:
+
+        fillStacked_fitWeights(sources, stackedList, fitWeightDic, typeList)
+        histList = makeHistList_fitWeights(sources, fitWeightDic, typeList)
+
+    else:
+
+        histList = makeHistList(sources)
+        fillStacked(sources, stackedList)
 
     folder = makePath2(sources[0])
 
@@ -88,5 +115,5 @@ if options.onlyCount == "no":
     leg = makeLegend(typeList, histList, texDict, dataList)
     leg_2 = makeLegend(typeList, histList, texDict, dataList, (0.15, 0.685, 0.24, 0.875))
 
-    plot(plotList, stackedList, dataList, summedList, xLabelList, yLabelList, leg, leg_2, year = options.year, folder = folder, bottomPad = options.bottomPad, extra = options.extra)
+    plot(plotList, stackedList, dataList, summedList, xLabelList, yLabelList, leg, leg_2, year = options.year, folder = folder, bottomPad = options.bottomPad, extra = options.extra, )
     plot(plotList, stackedList, dataList, summedList, xLabelList, yLabelList, leg, leg_2, year = options.year, logscale = 0, folder = folder, bottomPad = options.bottomPad, extra = options.extra)

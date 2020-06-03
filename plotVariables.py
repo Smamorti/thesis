@@ -291,8 +291,30 @@ def nVertex(l1, l2, hist, totalWeight):
 
     hist.Fill(lepton.nVertex(l1), totalWeight)
 
+def modelOutput15(hist, totalWeight, value):
 
+    hist.Fill(value, totalWeight)
    
+def modelOutput10(hist, totalWeight, value):
+
+    hist.Fill(value, totalWeight)
+
+def modelOutput20(hist, totalWeight, value):
+
+    hist.Fill(value, totalWeight)
+
+def modelOutput8(hist, totalWeight, value):
+
+    hist.Fill(value, totalWeight)
+
+def modelOutput6(hist, totalWeight, value):
+
+    hist.Fill(value, totalWeight)
+
+def modelOutput4(hist, totalWeight, value):
+
+    hist.Fill(value, totalWeight)
+
 ###########################                                                                                                                                                                          
 ######## UTILITIES ########                                                                                                                                                                                
 ########################### 

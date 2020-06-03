@@ -31,8 +31,6 @@ parser.add_option("--pileupFile", default = "weights/pileup/pileup_nominal_total
 parser.add_option("--JEC", default = "nominal")
 parser.add_option("-b","--btagType", default = 'central', help = 'central, up or down?')
 parser.add_option("--useMVAcut", default = None)
-parser.add_option("--DY", default = 1)
-parser.add_option("--QCD", default = 'nominal')
 options, args = parser.parse_args(sys.argv[1:])
 
 if options.testing not in ['yes', 'no'] or options.printHist not in ['yes', 'no']:
@@ -140,7 +138,7 @@ else:
 
 print('Currently working on {}.'.format('data'))
 
-makeHists.fillHist([options.dataFile], None, None, dataList[0], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint, useWorkingPoint = options.useWorkingPoint, isData = True, JEC = options.JEC, useMVAcut = options.useMVAcut)
+#makeHists.fillHist([options.dataFile], None, None, dataList[0], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint, useWorkingPoint = options.useWorkingPoint, isData = True, JEC = options.JEC, useMVAcut = options.useMVAcut)
 
 
 # MC histograms
@@ -148,14 +146,6 @@ makeHists.fillHist([options.dataFile], None, None, dataList[0], plotList, year =
 for i in range(len(typeList)):
 
     source = typeList[i]
-
-    if source == 'DY':
-
-        DYmultiplicator = float(options.DY)
-
-    else:
-
-        DYmultiplicator = 1
 
     if fitWeightDic:
 
@@ -165,7 +155,7 @@ for i in range(len(typeList)):
 
     channels = sourceDict[source]
     print(channels)
-    makeHists.fillHist(channels, xSecDict, locationDict, histList[i], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint, useWorkingPoint = options.useWorkingPoint, fitWeight = fitWeight, pileupWeights = pileupWeights, JEC = options.JEC, btagArrays = btagArrays, btagHists = btagHists, useMVAcut = options.useMVAcut, DYmultiplicator = DYmultiplicator, qcdScale = options.QCD)
+    makeHists.fillHist(channels, xSecDict, locationDict, histList[i], plotList, year = options.year, testing = options.testing, printHists = options.printHist, model = model, algo = options.MLalgo, workingPoint = options.workingPoint, useWorkingPoint = options.useWorkingPoint, fitWeight = fitWeight, pileupWeights = pileupWeights, JEC = options.JEC, btagArrays = btagArrays, btagHists = btagHists, useMVAcut = options.useMVAcut)
 
 
 

@@ -5,10 +5,10 @@ from weights.calcBjetWeights import getBtagArrays, loadBtagHists, calcBtagWeight
 from cuts import cuts
 from makeHists import calcWeight
 from plotVariables import lepton, calculateDeltaR, H_t
+from plotVariables import diLeptonMass
 import numpy as np
 import sys
 from optparse import OptionParser
-
 
 parser = OptionParser()
 parser.add_option("-c", "--conf", default = "samples/signal_2018_v3.conf", help = "conf file")
@@ -99,9 +99,16 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec, pileupWeights
 
         # total = count * 0.01
 
-        # if progress / float(count) > 0.01:
+        # if progress / float(count) >= 0.01:
 
         #     break
+
+
+        total = count * 0.5
+
+        if progress / float(count) >= 0.5:
+
+            break
 
         if progress / total > toolbarProgress / toolbar_width:
             toolbarProgress += 1
@@ -218,6 +225,10 @@ def fillTree(inputFile, inputTree, newTree, variables, year, xSec, pileupWeights
 
                     variables.MET = t._met
 
+                    # add mll
+
+                    variables.mll = diLeptonMass(lepton1, lepton2)
+
                     # Fill tree
 
                     newTree.Fill()
@@ -242,6 +253,7 @@ branches += ['jetPt5/F', 'jetEta5/F', 'jetPhi5/F']
 branches += ['mW1/F', 'mtop1/F', 'weight/F']
 branches += ['MET/F', 'H_t/F']
 branches += ['I_rel1/F', 'I_rel2/F']
+branches += ['mll/F']
 
 channels_conf, files, xSecs = np.loadtxt(options.conf, comments = "%", unpack = True, dtype = str)
 xSecs = xSecs.astype(float)

@@ -42,7 +42,7 @@ def addOverflowbin(hist):
     nbins = hist.GetNbinsX()
     hist.SetBinContent(nbins, hist.GetBinContent(nbins) + hist.GetBinContent(nbins + 1))
 
-def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists, model, algo, workingPoint, useWorkingPoint, isData = False, fitWeight = None, pileupWeights = None, JEC = 'nominal', btagArrays = None, btagHists = None, useMVAcut = None):
+def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing, printHists, model, algo, workingPoint, useWorkingPoint, isData = False, fitWeight = None, pileupWeights = None, JEC = 'nominal', btagArrays = None, btagHists = None, useMVAcut = None, DYmultiplicator = 1, qcdScale = 'nominal'):
 
 
     if year == "2017":
@@ -66,7 +66,7 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
             f = TFile.Open(locationDict[channel])
 
-            weight = calcWeight(f, xSecDict[channel], lumi, fitWeight = fitWeight)
+            weight = calcWeight(f, xSecDict[channel], lumi, fitWeight = fitWeight) * DYmultiplicator
 
             measurementTypes, jetFlavors, ptLow, ptHigh, tformulas, inclusiveFormula = btagArrays
             udsgHist, cHist, bHist = btagHists
@@ -95,7 +95,22 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
         for _ in tree:
 
+            progress += 1
+
+            if progress / total > toolbarProgress / toolbar_width:
+                toolbarProgress += 1
+                sys.stdout.write("-")
+                sys.stdout.flush()
+
+
+            # to only use half of the data
+
+            if progress < 0.5 * total and not isData:
+
+                continue
+
             # make script compatible with both 2017 and 2018 files
+
 
             if type(tree._nL) == int:
 
@@ -117,16 +132,16 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
                 nLight = ord(tree._nLight)
                 nJets = ord(tree._nJets)
 
-            progress += 1
-
+            #progress += 1
+            
             if progress / float(count) > 0.01 and testing == 'yes':
                 print(progress / float(count))
                 break
 
-            if progress / total > toolbarProgress / toolbar_width:
-                toolbarProgress += 1
-                sys.stdout.write("-")
-                sys.stdout.flush()
+            # if progress / total > toolbarProgress / toolbar_width:
+            #     toolbarProgress += 1
+            #     sys.stdout.write("-")
+            #     sys.stdout.flush()
 
             if isData:
 
@@ -136,7 +151,7 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
                     continue
 
-            cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta", "justTwoLeptons", "twoOS", "njets", "nbjets", "twoSF", "onZ"]
+            cutList = ["lPogLoose", "lMVA", "twoPtLeptons", "lEta","otherLeptonCuts", "justTwoLeptons", "twoOS", "njets", "nbjets", "twoSF", "onZ"]
 
             leptons = None
             event = cuts(tree, range(nLight), range(nJets), JEC)
@@ -180,11 +195,35 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
                         if addToHist:
 
+
+                            try:
+
+                                qcdSF = 1
+
+                                if qcdScale == 'up' and not isData:
+
+                                    qcdSF = tree._lheWeight[4]
+
+                                elif qcdScale == 'down' and not isData:
+
+                                    qcdSF = tree._lheWeight[8]
+
+
+                            except:
+
+                                print('QCD ding bestaat niet')
+                                print(len(tree._lheWeight))
+                                print(tree._nLheWeights)
+                                qcdSF = 1
+
                             for k in range(len(plotList)):
 
                                 hist = histList[k]
 
-                                if plotList[k] == 'modelOutput' or plotList[k] == 'modelOutput2':
+
+                                if 'modelOutput' in plotList[k]:
+#                                if plotList[k] == 'modelOutput' or plotList[k] == 'modelOutput2':
+
 
                                     if isData:
 
@@ -194,7 +233,8 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
                                         btagFactor = calcBtagWeight(tree, nJets, udsgHist, cHist, bHist, jetFlavors, ptLow, ptHigh, tformulas, inclusiveFormula, JEC)
 
-                                        getattr(plotVariables, plotList[k])(hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)) * btagFactor, output )
+
+                                        getattr(plotVariables, plotList[k])(hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)) * btagFactor * 2 * qcdSF, output )
 
 
                                 else:
@@ -207,7 +247,7 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
                                         btagFactor = calcBtagWeight(tree, nJets, udsgHist, cHist, bHist, jetFlavors, ptLow, ptHigh, tformulas, inclusiveFormula, JEC)
 
-                                        getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)) * btagFactor)               
+                                        getattr(plotVariables, plotList[k])(lepton1, lepton2, hist, tree._weight * weight * pileupWeights.GetBinContent(int(tree._nTrueInt)) * btagFactor * 2 * qcdSF)               
 
                 else:
 
@@ -223,7 +263,7 @@ def fillHist(channels, xSecDict, locationDict, histList, plotList, year, testing
 
         for hist in histList:
 
-            #addOverflowbin(hist)
+            addOverflowbin(hist)
             print("Entries: {}".format(hist.GetEntries()))
 
             totalContent = 0

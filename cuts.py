@@ -66,6 +66,24 @@ class cuts:
 
         return False, validnLight, self.nJets
 
+    def otherLeptonCuts(self):
+
+        validnLight = []
+
+        for i in self.nLight:
+
+            if np.absolute(self.tree._dxy[i]) < 0.05 and np.absolute(self.tree._dz[i]) < 0.1 and self.tree._relIso[i] < 0.4 and self.tree._3dIPSig[i] < 8:
+
+                validnLight.append(i)
+
+
+        if len(validnLight) >= 2:
+
+            return True, validnLight, self.nJets
+
+        return False, validnLight, self.nJets
+
+
     def lEta(self):
 
         validnLight = []

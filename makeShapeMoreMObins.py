@@ -22,7 +22,7 @@ model = options.model
 
 if options.algo == 'NN':
 
-    plot = 'samples/2018_total.plot'
+    plot = 'samples/2018_total_Alot.plot'
 
 #    partPath = 'histograms/withFitWeights/NN_final_80_0_20_18epochs_v3_wp={}_fitWeights/histList_2018_total_'
  #   partPath = 'histograms/NN_final_80_0_20_18epochs_v3_wp={}/histList_2018_total_'
@@ -38,7 +38,7 @@ if options.algo == 'NN':
 
 elif options.algo == 'BDT':
 
-    plot = 'samples/2018_total_BDT.plot'
+    plot = 'samples/2018_total_BDT_Alot.plot'
 
 #    partPath = 'histograms/BDT_final_80_0_20_v3_wp={}/histList_2018_total_'
 
@@ -74,11 +74,11 @@ for kind in types:
 
     if kind == '':
 
-        path = partPath.format(model, 'nominal')
+        path = partPath.format(model, 'moreMObins_nominal')
 
     else:
 
-        path = partPath.format(model, kind.replace('_', ''))
+        path = partPath.format(model, 'moreMObins_' + kind.replace('_', ''))
     
     print(path)
 

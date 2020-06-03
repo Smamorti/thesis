@@ -16,6 +16,11 @@ parser.add_option('-b', '--binning', default = 'modelOutput', help = 'which binn
 parser.add_option('-x', '--model', default = None)
 options, args = parser.parse_args(sys.argv[1:])
 
+def initializeHist(hist, name, nbins, llim, ulim):
+
+    hist = TH1F(name," ", nbins, llim, ulim)
+    hist.Sumw2()
+    return hist
 
 
 model = options.model
@@ -34,7 +39,7 @@ if options.algo == 'NN':
   #  output = 'shapes/shapeFile_NN_fineBins.root'
 
 #    output = 'shapes/shapeFile_NN.root
-    output = 'shapes/shapeFile_{}_{}.root'.format(model.replace('.h5', ''), options.binning)
+    output = 'shapes/shapeFile_{}_{}_rebinned.root'.format(model.replace('.h5', ''), options.binning)
 
 elif options.algo == 'BDT':
 
@@ -44,7 +49,7 @@ elif options.algo == 'BDT':
 
     partPath = 'histograms/{}/{}/histList_2018_total_'
 
-    output = 'shapes/shapeFile_{}_{}.root'.format(model, options.binning)
+    output = 'shapes/shapeFile_{}_{}_rebinned.root'.format(model, options.binning)
 
 else:
 
@@ -95,12 +100,42 @@ for kind in types:
             if kind != '':
 
                 continue
-    
-        hist.SetName(source + kind)
-        print(hist.GetBinContent(20))
 
-#        hist.Rebin(15)
+#        h = TH1F(source+kind, " ", 15, -0.2, 1.2) 
+        nbins = 15
+        llim = -0.2
+        ulim = 1.2
+        h = initializeHist(source+kind, source+kind, nbins, llim, ulim)
+        for x in range(1, 16):
 
-        hist.Write()
+            h.SetBinContent(x, hist.GetBinContent(2*x-1) + hist.GetBinContent(2*x))
+
+            h.SetBinError(x, np.sqrt(hist.GetBinError(2*x-1) ** 2 + hist.GetBinError(2*x) ** 2)) 
+
+            # print(hist.GetBinError(2*x-1))
+            # print(hist.GetBinError(2*x-1) **2)
+
+            # print(hist.GetBinError(2*x) ** 2)
+
+            # print(hist.GetBinError(2*x-1) **2 + hist.GetBinError(2*x) ** 2)
+
+            # print(np.sqrt(hist.GetBinError(2*x-1) **2 + hist.GetBinError(2*x) ** 2))
+
+            # print(h.GetBinError(x))
+
+#            print(h.GetBinContent(x))
+
+#        hist.SetName(source + kind)
+#        print(hist.GetBinContent(20))
+
+#        h = hist.Rebin(2, source+kind)
+
+#        hist.Write()
+
+        for i in range(1, 16):
+
+            print(h.GetBinContent(i))
+
+        h.Write()
 
 outputFile.Close()
